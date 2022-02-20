@@ -1,0 +1,96 @@
+{
+  "main": {
+    "id": "76582a91acd97409",
+    "type": "split",
+    "children": [
+      {
+        "id": "9df6eb5a463bf556",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "Software.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aba372dbf4edb5fa",
+    "type": "split",
+    "children": [
+      {
+        "id": "e0497a81d44e0782",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a1f109ecf55429e3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "98fad3c11c00a054",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "8576fab9e625b9b2",
+    "type": "split",
+    "children": [
+      {
+        "id": "29df0dc0be92d7ce",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "391f68634caa74bb",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Software.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "9df6eb5a463bf556",
+  "lastOpenFiles": [
+    "Software.md",
+    "Goal and project description.md",
+    "Hardware.md"
+  ]
+}
