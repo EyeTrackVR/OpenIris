@@ -1,4 +1,4 @@
-#include "camera_pins.h"
+#include "pinout.h"
 #include "esp_camera.h"
 #include <Arduino.h>
 

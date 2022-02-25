@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "pinout.h"
 
 void setupCamera();
 void setupWifi();
@@ -9,9 +10,14 @@ void setup(){
     Serial.setDebugOutput(true);
     Serial.println();
 
+    pinMode(LED_INDICATOR, OUTPUT);
+
     setupCamera();
     setupWifi();
     startStreamServer();
+    
+    // for indicating that everything is working
+    digitalWrite(LED_INDICATOR, HIGH);
 }
 
 void loop(){
