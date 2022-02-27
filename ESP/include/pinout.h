@@ -1,5 +1,3 @@
-#define LED_INDICATOR    33
-
 // AI Tinker camera, the ov2650
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
