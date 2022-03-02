@@ -2,5 +2,5 @@
 #include "pinout.h"
 
 namespace WiFiHandler {
-    void setupWifi();
+    void setupWifi(const char* ssid, const char* password);
 }

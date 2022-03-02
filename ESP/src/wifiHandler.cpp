@@ -1,9 +1,8 @@
 #include "WifiHandler.h" 
-#include "credentials.h"
 #include "LEDManager.h"
 
 namespace WiFiHandler {
-    void setupWifi(){
+    void setupWifi(const char* ssid, const char* password){
         Serial.println("Initializing connection to wifi");
 
         WiFi.begin(ssid, password);
