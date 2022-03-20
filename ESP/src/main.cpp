@@ -6,24 +6,29 @@
 #include "LEDManager.h"
 #include "httpdHandler.h"
 #include "OTA.h"
+#include "StateManager.h"
+
+auto ota = OpenIris::OTA();
+auto ledManager = OpenIris::LEDManager(33);
+auto cameraHandler = OpenIris::CameraHandler();
+auto stateManager = OpenIris::StateManager();
+auto httpdHandler = OpenIris::HTTPDHandler();
 
 void setup(){
     Serial.begin(115200);
     Serial.setDebugOutput(true);
     Serial.println();
-    
-    Serial.println("setting up led");
-    LEDManager::setupLED();
-    // todo add blink handling
-    CameraHandler::setupCamera();
-    WiFiHandler::setupWifi(ssid, password);
-    // todo add blink handling
-    HttpdHandler::startStreamServer();
-    LEDManager::on();
 
-    OTA::SetupOTA(OTAPassword, OTAServerPort);
+    ledManager.setupLED();
+    cameraHandler.setupCamera();
+    OpenIris::WiFiHandler::setupWifi(ssid, password);
+    httpdHandler.startStreamServer();
+    ledManager.on();
+
+    ota.SetupOTA(OTAPassword, OTAServerPort);
 }
 
 void loop(){
-    OTA::HandleOTAUpdate();
+    ota.HandleOTAUpdate();
+    ledManager.displayStatus();
 }

@@ -1,20 +1,19 @@
+#pragma once
 #include <Arduino.h>
 
-namespace LEDManager{
+namespace OpenIris{
 
-    enum Status {
-        ConnectingToWifi = 1,
-        ConnectingToWifiError = 2,
-        ConnectingToWifiSuccess = 3,
-        ServerError = 3,
-        CameraError = 4
+    class LEDManager{
+    private:
+        uint8_t ledPin;
+
+    public:
+        explicit LEDManager(uint8_t pin) : ledPin(pin) {}
+
+        void setupLED() const;
+        void on() const;
+        void off() const;
+        void blink(unsigned int time);
+        void displayStatus();
     };
-
-    extern uint8_t ledPin;
-
-    void setupLED();
-    void on();
-    void off();
-    void blink(unsigned int time);
-    void displayPattern(Status status);
 }
