@@ -61,7 +61,7 @@ But we're not there yet so here's how to get it running manually:
 5. Open the cloned project in VSC
 6. Set your own credentials in ESP/include/credentials.h **NOTE: special characters are not supported by the ESP**
 7. Connect the esp to the pc via a micro usb cable. Make sure that it can transfer data, otherwise this will **not** work
-8. Click on the Ant's head icon on the left and from the menu select **build**, wait till it finished and then click on **upload and monitor**
+8. Click on the Ant's head icon on the left and from the menu select **build**, wait till it finishes and then click on **upload and monitor**
 
 # Aight, I want to help, what should I do?
 
