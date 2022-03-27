@@ -137,6 +137,8 @@ int OpenIris::HTTPDHandler::startStreamServer(){
 
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.max_uri_handlers = 3;
+    config.server_port = STREAM_SERVER_PORT;
+    config.ctrl_port = STREAM_SERVER_PORT;
 
     httpd_uri_t control_page = {
         .uri = "/control/",
@@ -154,8 +156,8 @@ int OpenIris::HTTPDHandler::startStreamServer(){
 
     int streamer_status = httpd_start(&control_httpd, &config);
 
-    config.server_port += 1;
-    config.ctrl_port += 1;
+    config.server_port = CONTROL_SERVER_PORT;
+    config.ctrl_port = CONTROL_SERVER_PORT;
 
     int cmd_controller_status = httpd_start(&camera_httpd, &config);
 
