@@ -8,7 +8,7 @@ This is a work in progress project, things in the main branch are tested and sho
 
 Nonetheless, pull requests and issues are welcome, let's get this cracking! 
 
-#Features
+# Features
 ### Working right now
 - [x] Basic stream in 60FPS at 248x248px in MJPEG in greyscale
 - [X] A basic HTTP server with API
