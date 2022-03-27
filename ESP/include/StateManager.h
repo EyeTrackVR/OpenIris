@@ -7,7 +7,9 @@ namespace OpenIris{
             ConnectingToWifiError = 3,
             ConnectingToWifiSuccess = 4,
             ServerError = 5,
-            CameraError = 6
+            CameraError = 6,
+            MDNSSuccess = 7,
+            MDNSError = 8,
     };
 
     class StateManager{
