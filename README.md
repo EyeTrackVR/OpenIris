@@ -9,7 +9,7 @@ This is a work in progress project, things in the main branch are tested and sho
 Nonetheless, pull requests and issues are welcome, let's get this cracking! 
 
 #Features
-###Working right now
+### Working right now
 - [x] Basic stream in 60FPS at 248x248px in MJPEG in greyscale
 - [X] A basic HTTP server with API
 - [x] Basic control of the camera though API
@@ -17,7 +17,7 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 - [X] OTA updates
 - [X] ROI selection for eye area
 
-###TODO
+### TODO
 - [ ] Implementation of littleFS for saving camera and ROI settings
 - [ ] MDNS - so that the server itself will detect and communicate with the tracker without you doing anything. No need to configure IPs and stuff, it's automagic
 - [ ] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
@@ -25,7 +25,7 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 - [ ] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker
 - [ ] CI/CD with github actions - so we can more seamlessly update the trackers
 
-#Accompanying projects
+# Accompanying projects
 
 [EyeTrackVR](https://github.com/RedHawk989/EyeTrackVR) - The core project, made by Prohurtz
 
@@ -33,7 +33,7 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 
 [VrEyeToolbox](https://github.com/SummerSigh/VrEyeToolbox) - A compilation of different AI/ML methods and models for eye tracking in VR, made by Summer from CFVR! 
 
-#Additional equipment and software:
+# Additional equipment and software:
 Below is a list of parts, mounts, etc
 
 ## Electronics
