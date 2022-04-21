@@ -16,10 +16,10 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 - [x] Health checks
 - [X] OTA updates
 - [X] ROI selection for eye area
+- [X] MDNS - so that the server itself will detect and communicate with the tracker without you doing anything. No need to configure IPs and stuff, it's automagic
 
 ### TODO
 - [ ] Implementation of littleFS for saving camera and ROI settings
-- [ ] MDNS - so that the server itself will detect and communicate with the tracker without you doing anything. No need to configure IPs and stuff, it's automagic
 - [ ] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
 - [ ] FEC encoding with packet injection for even faster streams!
 - [ ] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker

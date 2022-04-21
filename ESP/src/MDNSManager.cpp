@@ -6,7 +6,6 @@ void OpenIris::MDNSHandler::setupMDNS() {
         stateManager.setState(OpenIris::State::MDNSSuccess);
         MDNS.addService("openIrisTracker", "tcp", 80);
         MDNS.addServiceTxt("openIrisTracker", "tcp", "stream_port", String(80));
-        MDNS.addServiceTxt("openIrisTracker", "tcp", "api_port", String(81));
         Serial.println("MDNS initialized!");
     }else{
         stateManager.setState(OpenIris::State::MDNSError);

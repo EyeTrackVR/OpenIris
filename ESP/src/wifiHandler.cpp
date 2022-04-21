@@ -25,7 +25,7 @@ void OpenIris::WiFiHandler::setupWifi(const char* ssid, const char* password){
         Serial.print("\n\rWiFi connected\n\r");
         Serial.print("ESP will be streaming under 'http://");
         Serial.print(WiFi.localIP());
-        Serial.print(":81/\r\n");
+        Serial.print(":80/\r\n");
         Serial.print("ESP will be accepting commands under 'http://");
         Serial.print(WiFi.localIP());
         Serial.print(":80/control\r\n");

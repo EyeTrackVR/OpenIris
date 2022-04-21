@@ -5,13 +5,12 @@
 #include "MDNSManager.h"
 #include "cameraHandler.h"
 #include "LEDManager.h"
-#include "httpdHandler.h"
+#include "webServer/webserverHandler.h"
 #include "OTA.h"
 #include "StateManager.h"
 
 char* MDSNTrackerName = "OpenIrisTracker";
 int STREAM_SERVER_PORT = 80;
-int CONTROL_SERVER_PORT = 81;
 
 auto ota = OpenIris::OTA();
 auto ledManager = OpenIris::LEDManager(33);
@@ -26,8 +25,8 @@ void setup(){
     ledManager.setupLED();
     cameraHandler.setupCamera();
     OpenIris::WiFiHandler::setupWifi(ssid, password);
-    httpdHandler.startStreamServer();
     OpenIris::MDNSHandler::setupMDNS();
+    httpdHandler.startStreamServer();
     ledManager.on();
 
     ota.SetupOTA(OTAPassword, OTAServerPort);
