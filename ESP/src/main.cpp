@@ -9,7 +9,7 @@
 #include "OTA.h"
 #include "StateManager.h"
 
-char* MDSNTrackerName = "OpenIrisTracker";
+char *MDSNTrackerName = "OpenIrisTracker";
 int STREAM_SERVER_PORT = 80;
 
 auto ota = OpenIris::OTA();
@@ -18,21 +18,23 @@ auto cameraHandler = OpenIris::CameraHandler();
 auto stateManager = OpenIris::StateManager();
 auto httpdHandler = OpenIris::HTTPDHandler();
 
-void setup(){
-    Serial.begin(115200);
-    Serial.setDebugOutput(true);
-    Serial.println();
-    ledManager.setupLED();
-    cameraHandler.setupCamera();
-    OpenIris::WiFiHandler::setupWifi(ssid, password);
-    OpenIris::MDNSHandler::setupMDNS();
-    httpdHandler.startStreamServer();
-    ledManager.on();
+void setup()
+{
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);
+  Serial.println();
+  ledManager.setupLED();
+  cameraHandler.setupCamera();
+  OpenIris::WiFiHandler::setupWifi(ssid, password);
+  OpenIris::MDNSHandler::setupMDNS();
+  httpdHandler.startStreamServer();
+  ledManager.on();
 
-    ota.SetupOTA(OTAPassword, OTAServerPort);
+  ota.SetupOTA(OTAPassword, OTAServerPort);
 }
 
-void loop(){
-    ota.HandleOTAUpdate();
-    ledManager.displayStatus();
+void loop()
+{
+  ota.HandleOTAUpdate();
+  ledManager.displayStatus();
 }

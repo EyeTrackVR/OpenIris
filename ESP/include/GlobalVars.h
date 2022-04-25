@@ -5,7 +5,7 @@
 #include "StateManager.h"
 #include "LEDManager.h"
 #include "cameraHandler.h"
-extern char* MDSNTrackerName;
+extern char *MDSNTrackerName;
 extern int STREAM_SERVER_PORT;
 
 extern OpenIris::LEDManager ledManager;
