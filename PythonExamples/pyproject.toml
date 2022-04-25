@@ -8,6 +8,7 @@ license = "gnu gplv3"
 [tool.poetry.dependencies]
 python = "^3.8"
 zeroconf = "^0.38.4"
+black = "^22.3.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -3,12 +3,13 @@
 #include "esp_camera.h"
 #include <Arduino.h>
 
-
-namespace OpenIris{
-    class CameraHandler {
+namespace OpenIris
+{
+    class CameraHandler
+    {
     private:
-         sensor_t* camera_sensor;
-         camera_config_t config;
+        sensor_t *camera_sensor;
+        camera_config_t config;
 
     public:
         int setupCamera();
