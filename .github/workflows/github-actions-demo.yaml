@@ -1,5 +1,6 @@
 name: GitHub Actions Demo
 on:
+  - workflow_dispatch
   push:
     branches:
       - "dev/**"
