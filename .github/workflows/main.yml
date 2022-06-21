@@ -34,4 +34,4 @@ jobs:
           pip install --upgrade platformio
       - name: Build OpenIris
         working-directory: ./ESP
-        run: ls .
+        run: pio run --environment esp32cam
