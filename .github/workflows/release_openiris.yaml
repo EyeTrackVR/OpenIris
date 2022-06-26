@@ -6,8 +6,35 @@ on:
     branches: ["master"]
   workflow_dispatch:
 jobs:
-  build-openiris:
-    uses: ./.github/workflows/build_openiris.yaml
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v3
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Setup Python install
+        uses: actions/setup-python@v3
+
+      - name: Install PlatformIO with Pip
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+      - name: Build OpenIris
+        working-directory: ./ESP
+        run: pio run --environment esp32cam
+
   release-openiris:
     runs-on: ubuntu-latest
     steps:
