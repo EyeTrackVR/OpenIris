@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - "dev"
+      - "master"
   pull_request:
     branches:
       - "dev"
+      - "master"
   workflow_dispatch:
 jobs:
   build:
