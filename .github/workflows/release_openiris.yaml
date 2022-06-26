@@ -1,0 +1,17 @@
+name: Build and release the  OpenIris bin file
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+jobs:
+  build-openiris:
+    uses: ./.github/workflows/build_openiris.yaml
+  release-openiris:
+    runs-on: ubuntu-latest
+    steps:
+      - name: relese
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ~/.pio/build/esp32cam/firmware.bin
