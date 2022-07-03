@@ -2,7 +2,7 @@
 
 int OpenIris::CameraHandler::setupCamera()
 {
-  Serial.print("Setting up camera \r\n");
+  log_d("Setting up camera \r\n");
 
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -27,14 +27,14 @@ int OpenIris::CameraHandler::setupCamera()
 
   if (psramFound())
   {
-    Serial.println("Found psram, setting the 176x144 image quality");
+    log_d("Found psram, setting the 176x144 image quality");
     config.frame_size = FRAMESIZE_240X240;
     config.jpeg_quality = 5;
     config.fb_count = 3;
   }
   else
   {
-    Serial.println("Did not find psram, setting svga quality");
+    log_e("Did not find psram, setting svga quality");
     config.frame_size = FRAMESIZE_SVGA;
     config.jpeg_quality = 1;
     config.fb_count = 1;
@@ -67,14 +67,14 @@ int OpenIris::CameraHandler::setupCamera()
 
   if (err != ESP_OK)
   {
-    Serial.printf("Camera initialization failed with error: 0x%x \r\n", err);
-    // TODO add led blinking here
+    log_e("Camera initialization failed with error: 0x%x \r\n", err);
+    //! TODO add led blinking here
     return -1;
   }
   else
   {
-    Serial.println("Sucessfully initialized the camera!");
-    // TODO add led blinking here
+    log_d("Sucessfully initialized the camera!");
+    //! TODO add led blinking here
     return 0;
   }
 }

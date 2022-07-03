@@ -23,7 +23,7 @@ void OpenIris::HTTPDHandler::startStreamServer()
       HTTP_GET,
       std::bind(&OpenIris::HTTPDHandler::roi_crop_command_handler, this, std::placeholders::_1));
 
-  Serial.println("Initializing web server");
+  log_d("Initializing web server");
   this->server->begin();
 }
 
