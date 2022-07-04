@@ -3,11 +3,11 @@
 
 void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
 {
-  Serial.println("Initializing connection to wifi");
+  log_d("Initializing connection to wifi");
 
   WiFi.begin(ssid, password);
 
-  Serial.print("connecting");
+  log_d("connecting");
   int time_spent_connecting = 0;
   int connection_timeout = 6400;
   int wifi_status = WiFi.status();
@@ -25,13 +25,9 @@ void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
   {
     stateManager.setState(OpenIris::State::ConnectingToWifiSuccess);
     delay(1600);
-    Serial.print("\n\rWiFi connected\n\r");
-    Serial.print("ESP will be streaming under 'http://");
-    Serial.print(WiFi.localIP());
-    Serial.print(":80/\r\n");
-    Serial.print("ESP will be accepting commands under 'http://");
-    Serial.print(WiFi.localIP());
-    Serial.print(":80/control\r\n");
+    log_i("\n\rWiFi connected\n\r");
+    log_i("ESP will be streaming under 'http://%s:80/\r\n", WiFi.localIP().toString().c_str());
+    log_i("ESP will be accepting commands under 'http://%s:80/control\r\n", WiFi.localIP().toString().c_str());
   }
   else
   {
