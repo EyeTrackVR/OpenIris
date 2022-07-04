@@ -27,7 +27,7 @@ int OpenIris::CameraHandler::setupCamera()
 
   if (psramFound())
   {
-    log_d("Found psram, setting the 176x144 image quality");
+    log_d("Found psram, setting the 240x240 image quality");
     config.frame_size = FRAMESIZE_240X240;
     config.jpeg_quality = 5;
     config.fb_count = 3;
@@ -43,6 +43,7 @@ int OpenIris::CameraHandler::setupCamera()
   esp_err_t err = esp_camera_init(&config);
 
   camera_sensor = esp_camera_sensor_get();
+  // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00); // banksel
   camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);    // clock
   camera_sensor->set_brightness(camera_sensor, 0);
