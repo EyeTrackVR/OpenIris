@@ -22,14 +22,16 @@ int OpenIris::CameraHandler::setupCamera()
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 16500000;
+  config.xclk_freq_hz = 20000000; //10000000 stable, 
+                                  //16500000 optimal,
+                                  //20000000 max fps
   config.pixel_format = PIXFORMAT_JPEG;
 
   if (psramFound())
   {
     log_d("Found psram, setting the 240x240 image quality");
     config.frame_size = FRAMESIZE_240X240;
-    config.jpeg_quality = 5;
+    config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
     config.fb_count = 3;
   }
   else
@@ -44,19 +46,18 @@ int OpenIris::CameraHandler::setupCamera()
 
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
-  camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00); // banksel
-  camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);    // clock
-  camera_sensor->set_brightness(camera_sensor, 0);
-  camera_sensor->set_contrast(camera_sensor, -2);                  // -2 to 2
+  camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);         // banksel
+  camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);         // clock
+  camera_sensor->set_brightness(camera_sensor, 2);                 // -2 to 2   I see no difference between numbers..
+  camera_sensor->set_contrast(camera_sensor, 2);                  // -2 to 2
   camera_sensor->set_saturation(camera_sensor, -2);                // -2 to 2
   camera_sensor->set_whitebal(camera_sensor, 1);                   // 0 = disable , 1 = enable
-  camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable
-  camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable
+  camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable                   
   camera_sensor->set_wb_mode(camera_sensor, 0);                    // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
   camera_sensor->set_exposure_ctrl(camera_sensor, 1);              // 0 = disable , 1 = enable
   camera_sensor->set_aec2(camera_sensor, 0);                       // 0 = disable , 1 = enable
   camera_sensor->set_gain_ctrl(camera_sensor, 0);                  // 0 = disable , 1 = enable
-  camera_sensor->set_agc_gain(camera_sensor, 0);                   // 0 to 30
+  camera_sensor->set_agc_gain(camera_sensor, 0);                   // 0 to 30  brightness of sorts? higher = brighter with more lag
   camera_sensor->set_gainceiling(camera_sensor, (gainceiling_t)6); // 0 to 6
   camera_sensor->set_bpc(camera_sensor, 1);                        // 0 = disable , 1 = enable
   camera_sensor->set_wpc(camera_sensor, 1);                        // 0 = disable , 1 = enable
@@ -64,7 +65,7 @@ int OpenIris::CameraHandler::setupCamera()
   camera_sensor->set_lenc(camera_sensor, 0);                       // 0 = disable , 1 = enable                // 0 = disable , 1 = enable
   camera_sensor->set_dcw(camera_sensor, 0);                        // 0 = disable , 1 = enable
   camera_sensor->set_colorbar(camera_sensor, 0);                   // 0 = disable , 1 = enable
-  camera_sensor->set_special_effect(camera_sensor, 2);
+  camera_sensor->set_special_effect(camera_sensor, 2);             // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
 
   if (err != ESP_OK)
   {
