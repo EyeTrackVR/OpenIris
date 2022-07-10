@@ -27,7 +27,7 @@ void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
     delay(1600);
     log_i("\n\rWiFi connected\n\r");
     log_i("ESP will be streaming under 'http://%s:80/\r\n", WiFi.localIP().toString().c_str());
-    log_i("ESP will be accepting commands under 'http://%s:80/control\r\n", WiFi.localIP().toString().c_str());
+    log_i("ESP will be accepting commands under 'http://%s:81/control\r\n", WiFi.localIP().toString().c_str());
   }
   else
   {
