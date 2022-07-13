@@ -16,12 +16,12 @@ const char *MDSNTrackerName = "OpenIrisTracker";
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
-auto ota = OpenIris::OTA();
-auto ledManager = OpenIris::LEDManager(33);
-auto cameraHandler = OpenIris::CameraHandler();
-auto stateManager = OpenIris::StateManager();
-auto apiServer = OpenIris::APIServer();
-auto streamServer = OpenIris::StreamServer();
+auto ota = OTA();
+auto ledManager = LEDManager(33);
+auto cameraHandler = CameraHandler();
+auto stateManager = StateManager();
+auto apiServer = APIServer();
+auto streamServer = StreamServer();
 
 void setup()
 {
@@ -29,8 +29,8 @@ void setup()
   Serial.setDebugOutput(true);
   ledManager.setupLED();
   cameraHandler.setupCamera();
-  OpenIris::WiFiHandler::setupWifi(ssid, password);
-  OpenIris::MDNSHandler::setupMDNS();
+  WiFiHandler::setupWifi(ssid, password);
+  MDNSHandler::setupMDNS();
   apiServer.startAPIServer();
   streamServer.startStreamServer();
   ledManager.on();

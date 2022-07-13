@@ -1,10 +1,7 @@
 #pragma once
 #include <ESPmDNS.h>
 
-namespace OpenIris
+namespace MDNSHandler
 {
-  namespace MDNSHandler
-  {
-    void setupMDNS();
-  }
+  void setupMDNS();
 }
