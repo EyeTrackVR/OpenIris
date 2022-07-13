@@ -4,19 +4,16 @@
 #include "esp_camera.h"
 #include "esp_http_server.h"
 
-namespace OpenIris
+namespace StreamHelpers
 {
-  namespace StreamHelpers
-  {
-    esp_err_t stream(httpd_req_t *req);
-  }
-  class StreamServer
-  {
-
-  private:
-    httpd_handle_t camera_stream = nullptr;
-
-  public:
-    int startStreamServer();
-  };
+  esp_err_t stream(httpd_req_t *req);
 }
+class StreamServer
+{
+
+private:
+  httpd_handle_t camera_stream = nullptr;
+
+public:
+  int startStreamServer();
+};

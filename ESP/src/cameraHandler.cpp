@@ -1,6 +1,6 @@
 #include "cameraHandler.h"
 
-int OpenIris::CameraHandler::setupCamera()
+int CameraHandler::setupCamera()
 {
   log_d("Setting up camera \r\n");
 
@@ -31,7 +31,7 @@ int OpenIris::CameraHandler::setupCamera()
   {
     log_d("Found psram, setting the 240x240 image quality");
     config.frame_size = FRAMESIZE_240X240;
-    config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
+    config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
     config.fb_count = 3;
   }
   else
@@ -47,9 +47,9 @@ int OpenIris::CameraHandler::setupCamera()
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);         // banksel
-  camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);         // clock
+  camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);            // clock
   camera_sensor->set_brightness(camera_sensor, 2);                 // -2 to 2   I see no difference between numbers..
-  camera_sensor->set_contrast(camera_sensor, 2);                  // -2 to 2
+  camera_sensor->set_contrast(camera_sensor, 2);                   // -2 to 2
   camera_sensor->set_saturation(camera_sensor, -2);                // -2 to 2
   camera_sensor->set_whitebal(camera_sensor, 1);                   // 0 = disable , 1 = enable
   camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable
@@ -81,7 +81,7 @@ int OpenIris::CameraHandler::setupCamera()
   }
 }
 
-int OpenIris::CameraHandler::setCameraResolution(framesize_t frameSize)
+int CameraHandler::setCameraResolution(framesize_t frameSize)
 {
   if (camera_sensor->pixformat == PIXFORMAT_JPEG)
   {
@@ -98,23 +98,12 @@ int OpenIris::CameraHandler::setCameraResolution(framesize_t frameSize)
   return -1;
 }
 
-int OpenIris::CameraHandler::setVFlip(int direction)
+int CameraHandler::setVFlip(int direction)
 {
   return camera_sensor->set_vflip(camera_sensor, direction);
 }
 
-int OpenIris::CameraHandler::setHFlip(int direction)
+int CameraHandler::setHFlip(int direction)
 {
   return camera_sensor->set_hmirror(camera_sensor, direction);
-}
-
-int OpenIris::CameraHandler::setVieWindow(int offsetX, int offsetY, int outputX, int outputY)
-{
-  // we're only providing these parameters as these are the only ones that actually affect the ov2640
-  // TODO: if we're going to support different sensors - this will have to be moved to per-sensor implementation 'cause
-  // TODO: manufacturers handle it differently each time
-
-  // we're doubling the totalX and totalY parameters to make it easier for end user to adjust the eye ROI
-  // it also seems to produce a cleaner image
-  return camera_sensor->set_res_raw(camera_sensor, 0, 0, 0, 0, offsetX, offsetY, outputX * 2, outputY * 2, outputX, outputY, true, true);
 }

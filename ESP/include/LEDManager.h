@@ -1,21 +1,17 @@
 #pragma once
 #include <Arduino.h>
 
-namespace OpenIris
+class LEDManager
 {
+private:
+  uint8_t ledPin;
 
-  class LEDManager
-  {
-  private:
-    uint8_t ledPin;
+public:
+  explicit LEDManager(uint8_t pin) : ledPin(pin) {}
 
-  public:
-    explicit LEDManager(uint8_t pin) : ledPin(pin) {}
-
-    void setupLED() const;
-    void on() const;
-    void off() const;
-    void blink(unsigned int time);
-    void displayStatus();
-  };
-}
+  void setupLED() const;
+  void on() const;
+  void off() const;
+  void blink(unsigned int time);
+  void displayStatus();
+};

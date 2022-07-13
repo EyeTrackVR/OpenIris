@@ -1,7 +1,7 @@
 #include "WifiHandler.h"
 #include "GlobalVars.h"
 
-void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
+void WiFiHandler::setupWifi(const char *ssid, const char *password)
 {
   log_d("Initializing connection to wifi");
 
@@ -16,14 +16,14 @@ void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
   {
     wifi_status = WiFi.status();
     Serial.print(".");
-    stateManager.setState(OpenIris::State::ConnectingToWifi);
+    stateManager.setState(State::ConnectingToWifi);
     time_spent_connecting += 1600;
     delay(1600);
   }
 
   if (wifi_status == WL_CONNECTED)
   {
-    stateManager.setState(OpenIris::State::ConnectingToWifiSuccess);
+    stateManager.setState(State::ConnectingToWifiSuccess);
     delay(1600);
     log_i("\n\rWiFi connected\n\r");
     log_i("ESP will be streaming under 'http://%s:80/\r\n", WiFi.localIP().toString().c_str());
@@ -31,7 +31,7 @@ void OpenIris::WiFiHandler::setupWifi(const char *ssid, const char *password)
   }
   else
   {
-    stateManager.setState(OpenIris::State::ConnectingToWifiError);
+    stateManager.setState(State::ConnectingToWifiError);
     return;
   }
 }

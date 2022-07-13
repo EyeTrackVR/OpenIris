@@ -1,23 +1,23 @@
 #include "GlobalVars.h"
 #include "webserverHandler.h"
 
-OpenIris::APIServer::APIServer()
+APIServer::APIServer()
 {
   this->server = new AsyncWebServer(CONTROL_SERVER_PORT);
 }
 
-void OpenIris::APIServer::startAPIServer()
+void APIServer::startAPIServer()
 {
   this->server->on(
       "/control",
       HTTP_GET,
-      std::bind(&OpenIris::APIServer::command_handler, this, std::placeholders::_1));
+      std::bind(&APIServer::command_handler, this, std::placeholders::_1));
 
   log_d("Initializing web server");
   this->server->begin();
 }
 
-void OpenIris::APIServer::command_handler(AsyncWebServerRequest *request)
+void APIServer::command_handler(AsyncWebServerRequest *request)
 {
   if (request->hasParam("framesize"))
   {
