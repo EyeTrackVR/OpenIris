@@ -1,0 +1,39 @@
+#include "GlobalVars.h"
+#include "webserverHandler.h"
+
+OpenIris::APIServer::APIServer()
+{
+  this->server = new AsyncWebServer(CONTROL_SERVER_PORT);
+}
+
+void OpenIris::APIServer::startAPIServer()
+{
+  this->server->on(
+      "/control",
+      HTTP_GET,
+      std::bind(&OpenIris::APIServer::command_handler, this, std::placeholders::_1));
+
+  log_d("Initializing web server");
+  this->server->begin();
+}
+
+void OpenIris::APIServer::command_handler(AsyncWebServerRequest *request)
+{
+  if (request->hasParam("framesize"))
+  {
+    AsyncWebParameter *framesize_param = request->getParam("framesize");
+    cameraHandler.setCameraResolution((framesize_t)atoi(framesize_param->value().c_str()));
+  }
+  if (request->hasParam("hmirror"))
+  {
+    AsyncWebParameter *hmirror_param = request->getParam("hmirror");
+    cameraHandler.setHFlip(atoi(hmirror_param->value().c_str()));
+  }
+  if (request->hasParam("vflip"))
+  {
+    AsyncWebParameter *vflip_param = request->getParam("vflip");
+    cameraHandler.setVFlip(atoi(vflip_param->value().c_str()));
+  }
+
+  request->send(200);
+}

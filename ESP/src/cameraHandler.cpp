@@ -22,9 +22,9 @@ int OpenIris::CameraHandler::setupCamera()
   config.pin_sscb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000; //10000000 stable, 
-                                  //16500000 optimal,
-                                  //20000000 max fps
+  config.xclk_freq_hz = 20000000; // 10000000 stable,
+                                  // 16500000 optimal,
+                                  // 20000000 max fps
   config.pixel_format = PIXFORMAT_JPEG;
 
   if (psramFound())
@@ -52,7 +52,7 @@ int OpenIris::CameraHandler::setupCamera()
   camera_sensor->set_contrast(camera_sensor, 2);                  // -2 to 2
   camera_sensor->set_saturation(camera_sensor, -2);                // -2 to 2
   camera_sensor->set_whitebal(camera_sensor, 1);                   // 0 = disable , 1 = enable
-  camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable                   
+  camera_sensor->set_awb_gain(camera_sensor, 1);                   // 0 = disable , 1 = enable
   camera_sensor->set_wb_mode(camera_sensor, 0);                    // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
   camera_sensor->set_exposure_ctrl(camera_sensor, 1);              // 0 = disable , 1 = enable
   camera_sensor->set_aec2(camera_sensor, 0);                       // 0 = disable , 1 = enable

@@ -6,8 +6,7 @@ namespace OpenIris
   class OTA
   {
   private:
-    unsigned long bootTimestamp = 0;
-    bool isOtaEnabled = true;
+    bool isOTAEnabled = false;
 
   public:
     void SetupOTA(const char *OTAPassword, uint16_t OTAServerPort)
@@ -20,6 +19,7 @@ namespace OpenIris
         return;
       }
       ArduinoOTA.setPort(OTAServerPort);
+      isOTAEnabled = true;
 
       ArduinoOTA
           .onStart([]()
@@ -44,20 +44,12 @@ namespace OpenIris
       log_i("Starting up basic OTA server");
       log_i("OTA will be live for 30s, after which it will be disabled until restart");
       ArduinoOTA.begin();
-      bootTimestamp = millis();
     }
 
     void HandleOTAUpdate()
     {
-      if (isOtaEnabled)
+      if (isOTAEnabled)
       {
-        if (bootTimestamp + 30000 < millis())
-        {
-          // we're disabling ota after first 30sec so that nothing bad happens during playtime
-          isOtaEnabled = false;
-          log_i("From now on, OTA is disabled");
-          return;
-        }
         ArduinoOTA.handle();
       }
     }

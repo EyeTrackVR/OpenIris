@@ -5,29 +5,34 @@
 #include "MDNSManager.h"
 #include "cameraHandler.h"
 #include "LEDManager.h"
-#include "webServer/webserverHandler.h"
+#include "streamServer.h"
+#include "webserverHandler.h"
+
 #include "OTA.h"
 #include "StateManager.h"
 
-char *MDSNTrackerName = "OpenIrisTracker";
+const char *MDSNTrackerName = "OpenIrisTracker";
+
 int STREAM_SERVER_PORT = 80;
+int CONTROL_SERVER_PORT = 81;
 
 auto ota = OpenIris::OTA();
 auto ledManager = OpenIris::LEDManager(33);
 auto cameraHandler = OpenIris::CameraHandler();
 auto stateManager = OpenIris::StateManager();
-auto httpdHandler = OpenIris::HTTPDHandler();
+auto apiServer = OpenIris::APIServer();
+auto streamServer = OpenIris::StreamServer();
 
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  Serial.println();
   ledManager.setupLED();
   cameraHandler.setupCamera();
   OpenIris::WiFiHandler::setupWifi(ssid, password);
   OpenIris::MDNSHandler::setupMDNS();
-  httpdHandler.startStreamServer();
+  apiServer.startAPIServer();
+  streamServer.startStreamServer();
   ledManager.on();
 
   ota.SetupOTA(OTAPassword, OTAServerPort);
