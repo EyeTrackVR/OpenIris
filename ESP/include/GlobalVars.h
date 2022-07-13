@@ -9,8 +9,8 @@ extern char *MDSNTrackerName;
 extern int STREAM_SERVER_PORT;
 extern int CONTROL_SERVER_PORT;
 
-extern OpenIris::LEDManager ledManager;
-extern OpenIris::StateManager stateManager;
-extern OpenIris::CameraHandler cameraHandler;
+extern LEDManager ledManager;
+extern StateManager stateManager;
+extern CameraHandler cameraHandler;
 
 #endif

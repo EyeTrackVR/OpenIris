@@ -6,16 +6,13 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-namespace OpenIris
+class APIServer
 {
-  class APIServer
-  {
-  private:
-    void command_handler(AsyncWebServerRequest *request);
-    AsyncWebServer *server;
+private:
+  void command_handler(AsyncWebServerRequest *request);
+  AsyncWebServer *server;
 
-  public:
-    APIServer();
-    void startAPIServer();
-  };
-}
+public:
+  APIServer();
+  void startAPIServer();
+};

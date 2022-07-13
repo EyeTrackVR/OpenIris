@@ -5,7 +5,7 @@ constexpr static char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary
 constexpr static char *STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 constexpr static char *STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: %d.%06d\r\n\r\n";
 
-esp_err_t OpenIris::StreamHelpers::stream(httpd_req_t *req)
+esp_err_t StreamHelpers::stream(httpd_req_t *req)
 {
   long last_request_time = 0;
   camera_fb_t *fb = NULL;
@@ -83,7 +83,7 @@ esp_err_t OpenIris::StreamHelpers::stream(httpd_req_t *req)
   return res;
 }
 
-int OpenIris::StreamServer::startStreamServer()
+int StreamServer::startStreamServer()
 {
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.max_uri_handlers = 1;
@@ -93,7 +93,7 @@ int OpenIris::StreamServer::startStreamServer()
   httpd_uri_t stream_page = {
       .uri = "/",
       .method = HTTP_GET,
-      .handler = &OpenIris::StreamHelpers::stream,
+      .handler = &StreamHelpers::stream,
       .user_ctx = nullptr};
 
   int status = httpd_start(&camera_stream, &config);
