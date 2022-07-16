@@ -13,7 +13,9 @@ class StreamServer
 
 private:
   httpd_handle_t camera_stream = nullptr;
+  int STREAM_SERVER_PORT;
 
 public:
+  StreamServer(int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
   int startStreamServer();
 };

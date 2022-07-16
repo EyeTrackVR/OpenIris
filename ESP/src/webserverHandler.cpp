@@ -1,9 +1,9 @@
-#include "GlobalVars.h"
 #include "webserverHandler.h"
 
-APIServer::APIServer()
+APIServer::APIServer(int CONTROL_PORT, CameraHandler *cameraHandler)
 {
-  this->server = new AsyncWebServer(CONTROL_SERVER_PORT);
+  this->server = new AsyncWebServer(CONTROL_PORT);
+  this->cameraHandler = cameraHandler;
 }
 
 void APIServer::startAPIServer()
@@ -22,17 +22,17 @@ void APIServer::command_handler(AsyncWebServerRequest *request)
   if (request->hasParam("framesize"))
   {
     AsyncWebParameter *framesize_param = request->getParam("framesize");
-    cameraHandler.setCameraResolution((framesize_t)atoi(framesize_param->value().c_str()));
+    cameraHandler->setCameraResolution((framesize_t)atoi(framesize_param->value().c_str()));
   }
   if (request->hasParam("hmirror"))
   {
     AsyncWebParameter *hmirror_param = request->getParam("hmirror");
-    cameraHandler.setHFlip(atoi(hmirror_param->value().c_str()));
+    cameraHandler->setHFlip(atoi(hmirror_param->value().c_str()));
   }
   if (request->hasParam("vflip"))
   {
     AsyncWebParameter *vflip_param = request->getParam("vflip");
-    cameraHandler.setVFlip(atoi(vflip_param->value().c_str()));
+    cameraHandler->setVFlip(atoi(vflip_param->value().c_str()));
   }
 
   request->send(200);
