@@ -17,11 +17,11 @@ int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
 auto ota = OTA();
+auto stateManager = StateManager();
 auto ledManager = LEDManager(33);
 auto cameraHandler = CameraHandler();
-auto stateManager = StateManager();
-auto apiServer = APIServer();
-auto streamServer = StreamServer();
+auto apiServer = APIServer(CONTROL_SERVER_PORT, &cameraHandler);
+auto streamServer = StreamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
@@ -29,8 +29,8 @@ void setup()
   Serial.setDebugOutput(true);
   ledManager.setupLED();
   cameraHandler.setupCamera();
-  WiFiHandler::setupWifi(ssid, password);
-  MDNSHandler::setupMDNS();
+  WiFiHandler::setupWifi(ssid, password, &stateManager);
+  MDNSHandler::setupMDNS(MDSNTrackerName, &stateManager);
   apiServer.startAPIServer();
   streamServer.startStreamServer();
   ledManager.on();

@@ -1,18 +1,18 @@
 #include "MDNSManager.h"
-#include "GlobalVars.h"
 
-void MDNSHandler::setupMDNS()
+void MDNSHandler::setupMDNS(const char *trackerName, StateManager *stateManager)
 {
-  if (MDNS.begin(MDSNTrackerName))
+  // TODO make it have a separate state manager
+  if (MDNS.begin(trackerName))
   {
-    stateManager.setState(State::MDNSSuccess); // todo make it a separate state from the global one
+    stateManager->setState(State::MDNSSuccess); // todo make it a separate state from the global one
     MDNS.addService("openIrisTracker", "tcp", 80);
     MDNS.addServiceTxt("openIrisTracker", "tcp", "stream_port", String(80));
     log_d("MDNS initialized!");
   }
   else
   {
-    stateManager.setState(State::MDNSError);
+    stateManager->setState(State::MDNSError);
     log_e("Error initializing MDNS");
   }
 }

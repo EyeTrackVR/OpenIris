@@ -1,5 +1,4 @@
 #include "streamServer.h"
-#include "GlobalVars.h"
 
 constexpr static char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 constexpr static char *STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
@@ -87,8 +86,8 @@ int StreamServer::startStreamServer()
 {
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.max_uri_handlers = 1;
-  config.server_port = STREAM_SERVER_PORT;
-  config.ctrl_port = STREAM_SERVER_PORT;
+  config.server_port = this->STREAM_SERVER_PORT;
+  config.ctrl_port = this->STREAM_SERVER_PORT;
 
   httpd_uri_t stream_page = {
       .uri = "/",
