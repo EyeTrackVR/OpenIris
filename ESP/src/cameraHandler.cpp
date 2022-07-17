@@ -57,7 +57,7 @@ int OpenIris::CameraHandler::setupCamera()
   camera_sensor->set_exposure_ctrl(camera_sensor, 1);              // 0 = disable , 1 = enable
   camera_sensor->set_aec2(camera_sensor, 0);                       // 0 = disable , 1 = enable
   camera_sensor->set_gain_ctrl(camera_sensor, 0);                  // 0 = disable , 1 = enable
-  camera_sensor->set_agc_gain(camera_sensor, 0);                   // 0 to 30  brightness of sorts? higher = brighter with more lag
+  camera_sensor->set_agc_gain(camera_sensor, 2);                   // 0 to 30  brightness of sorts? higher = brighter with more lag
   camera_sensor->set_gainceiling(camera_sensor, (gainceiling_t)6); // 0 to 6
   camera_sensor->set_bpc(camera_sensor, 1);                        // 0 = disable , 1 = enable
   camera_sensor->set_wpc(camera_sensor, 1);                        // 0 = disable , 1 = enable
