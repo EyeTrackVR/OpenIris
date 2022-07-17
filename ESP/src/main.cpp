@@ -1,39 +1,45 @@
 #include <Arduino.h>
 #include "pinout.h"
 #include "credentials.h"
-#include "WifiHandler.h"
-#include "MDNSManager.h"
-#include "cameraHandler.h"
-#include "LEDManager.h"
-#include "streamServer.h"
-#include "webserverHandler.h"
+#include <network/WifiHandler/WifiHandler.hpp>
+#include <network/mDNS/MDNSManager.hpp>
+#include <io/camera/cameraHandler.hpp>
+#include <io/LEDManager/LEDManager.hpp>
+#include <network/stream/streamServer.hpp>
+#include <network/webserver/webserverHandler.hpp>
 
-#include "OTA.h"
-#include "StateManager.h"
+#include <network/OTA/OTA.hpp>
 
 const char *MDSNTrackerName = "OpenIrisTracker";
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
-auto ota = OTA();
-auto stateManager = StateManager();
-auto ledManager = LEDManager(33);
-auto cameraHandler = CameraHandler();
-auto apiServer = APIServer(CONTROL_SERVER_PORT, &cameraHandler);
-auto streamServer = StreamServer(STREAM_SERVER_PORT);
+StateManager<ProgramStates::DeviceStates::MDNSState_e> mdns_stateManager;
+StateManager<ProgramStates::DeviceStates::WiFiState_e> wifi_stateManager;
+StateManager<ProgramStates::DeviceStates::WebServerState_e> web_stateManager;
+StateManager<ProgramStates::DeviceStates::CameraState_e> camera_stateManager;
+StateManager<ProgramStates::DeviceStates::ButtonState_e> button_stateManager;
+StateManager<ProgramStates::DeviceStates::StreamState_e> stream_stateManager;
+
+OTA ota;
+LEDManager ledManager(33);
+CameraHandler cameraHandler;
+APIServer apiServer(CONTROL_SERVER_PORT, &cameraHandler);
+StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  ledManager.setupLED();
+  ledManager.begin();
   cameraHandler.setupCamera();
-  WiFiHandler::setupWifi(ssid, password, &stateManager);
-  MDNSHandler::setupMDNS(MDSNTrackerName, &stateManager);
+
+  WiFiHandler::setupWifi(ssid, password, &wifi_stateManager);
+  MDNSHandler::setupMDNS(MDSNTrackerName, &mdns_stateManager);
   apiServer.startAPIServer();
   streamServer.startStreamServer();
-  ledManager.on();
+  ledManager.onOff(true);
 
   ota.SetupOTA(OTAPassword, OTAServerPort);
 }

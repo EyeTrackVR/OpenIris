@@ -1,4 +1,4 @@
-#include "cameraHandler.h"
+#include "cameraHandler.hpp"
 
 int CameraHandler::setupCamera()
 {
