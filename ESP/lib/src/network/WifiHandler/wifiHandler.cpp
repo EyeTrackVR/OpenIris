@@ -1,6 +1,6 @@
-#include "WifiHandler.h"
+#include "WifiHandler.hpp"
 
-void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager *stateManager)
+void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager)
 {
   log_d("Initializing connection to wifi");
 
@@ -15,14 +15,14 @@ void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager
   {
     wifi_status = WiFi.status();
     Serial.print(".");
-    stateManager->setState(State::ConnectingToWifi);
+    stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
     time_spent_connecting += 1600;
     delay(1600);
   }
 
   if (wifi_status == WL_CONNECTED)
   {
-    stateManager->setState(State::ConnectingToWifiSuccess);
+    stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
     delay(1600);
     log_i("\n\rWiFi connected\n\r");
     log_i("ESP will be streaming under 'http://%s:80/\r\n", WiFi.localIP().toString().c_str());
@@ -30,7 +30,7 @@ void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager
   }
   else
   {
-    stateManager->setState(State::ConnectingToWifiError);
+    stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
     return;
   }
 }

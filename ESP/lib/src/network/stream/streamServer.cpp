@@ -1,8 +1,8 @@
-#include "streamServer.h"
+#include "streamServer.hpp"
 
-constexpr static char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-constexpr static char *STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
-constexpr static char *STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: %d.%06d\r\n\r\n";
+constexpr static const char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
+constexpr static const char *STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+constexpr static const char *STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: %d.%06d\r\n\r\n";
 
 esp_err_t StreamHelpers::stream(httpd_req_t *req)
 {
