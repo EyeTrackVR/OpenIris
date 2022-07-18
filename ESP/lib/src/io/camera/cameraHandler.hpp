@@ -1,5 +1,4 @@
 #pragma once
-#include "pinout.h"
 #include "esp_camera.h"
 #include <Arduino.h>
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <WiFi.h>
-#include "pinout.h"
 #include "../../data/StateManager/StateManager.hpp"
 
 namespace WiFiHandler
