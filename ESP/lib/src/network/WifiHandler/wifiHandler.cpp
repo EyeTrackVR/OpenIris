@@ -15,7 +15,7 @@ void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager
   {
     wifi_status = WiFi.status();
     Serial.print(".");
-    stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+    stateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting));
     time_spent_connecting += 1600;
     delay(1600);
   }
