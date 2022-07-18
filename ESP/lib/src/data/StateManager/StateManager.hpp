@@ -85,15 +85,27 @@ template <class T>
 class StateManager
 {
 public:
-    StateManager();
-    virtual ~StateManager();
+    StateManager() {}
 
-    void setState(T state);
+    virtual ~StateManager() {}
 
-    T getCurrentState();
+    void setState(T state)
+    {
+        _current_state = state;
+    }
+
+    /*
+     * Get States
+     * Returns the current state of the device
+     */
+    T getCurrentState()
+    {
+        return _current_state;
+    }
 
 private:
-    static T _current_state;
+    T _current_state;
 };
+
 
 #endif // STATEMANAGER_HPP
