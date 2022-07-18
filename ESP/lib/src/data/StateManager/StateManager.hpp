@@ -107,5 +107,12 @@ private:
     T _current_state;
 };
 
+extern StateManager<ProgramStates::DeviceStates::State_e> stateManager;
+extern StateManager<ProgramStates::DeviceStates::WiFiState_e> wifiStateManager;
+extern StateManager<ProgramStates::DeviceStates::WebServerState_e> webServerStateManager;
+extern StateManager<ProgramStates::DeviceStates::MDNSState_e> mdnsStateManager;
+extern StateManager<ProgramStates::DeviceStates::CameraState_e> cameraStateManager;
+extern StateManager<ProgramStates::DeviceStates::ButtonState_e> buttonStateManager;
+extern StateManager<ProgramStates::DeviceStates::StreamState_e> streamStateManager;
 
 #endif // STATEMANAGER_HPP
