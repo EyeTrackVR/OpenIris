@@ -4,13 +4,12 @@ LEDManager::LEDManager(byte pin) : _ledPin(pin), _previousMillis(0), _ledState(f
 
 LEDManager::~LEDManager() {}
 
-
 void LEDManager::begin()
 {
     pinMode(_ledPin, OUTPUT);
     onOff(false);
 
-    /* for (auto &led : _leds)
+ /* for (auto &led : _leds)
     {
         if (led > 0)
         {
@@ -18,7 +17,6 @@ void LEDManager::begin()
         }
     } */
 }
-
 
 void LEDManager::onOff(bool state) const
 {
