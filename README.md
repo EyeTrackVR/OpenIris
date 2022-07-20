@@ -1,4 +1,5 @@
-#OpenIris
+# OpenIris
+
 OpenIris is the firmware part of the [EyeTrackVR Project](https://github.com/RedHawk989/EyeTrackVR).
 
 The aim of this project is to provide a fast and performant firmware for streaming the eye data back to the PC for further processing and actual tracking.
@@ -23,7 +24,7 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 
 ### TODO
 
-- [ ] Implementation of littleFS for saving camera and ROI settings
+- [ ] Implementation of Preferences Lib for saving camera and ROI settings
 - [ ] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
 - [ ] FEC encoding with packet injection for even faster streams!
 - [ ] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker
@@ -66,7 +67,7 @@ But we're not there yet so here's how to get it running manually:
 3. [Install platformio IDE plugin for VSC](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)
 4. [Install the drivers for CH341SER from here](https://cdn.sparkfun.com/assets/learn_tutorials/8/4/4/CH341SER.EXE)
 5. Open the cloned project in VSC
-6. Set your own credentials in ESP/include/credentials.h **NOTE: special characters are not supported by the ESP**
+6. Set your own credentials in ESP/platformio.ini in the [wifi] section. **NOTE: special characters are not supported by the ESP**
 7. Connect the esp to the pc via a micro usb cable. Make sure that it can transfer data, otherwise this will **not** work
 8. Click on the Ant's head icon on the left and from the menu select a build environment and then click on **build**, wait till it finishes and then click on **upload and monitor**
 
