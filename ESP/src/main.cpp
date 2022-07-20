@@ -17,13 +17,6 @@ CameraHandler cameraHandler;
 APIServer apiServer(CONTROL_SERVER_PORT, &cameraHandler);
 StreamServer streamServer(STREAM_SERVER_PORT);
 
-//******************************************************************************
-//                      * Welcome to OpenIris! 
-//            * Please make sure you have the following:
-//              * 1. A camera connected to the ESP32
-//              * 2. Your wifi credentials saved in the platformio.ini file
-//              * 3. You have downloaded our app and installed it on your PC
-// ******************************************************************************
 void setup()
 {
   Serial.begin(115200);
