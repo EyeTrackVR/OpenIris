@@ -26,8 +26,13 @@ void setup()
 
   WiFiHandler::setupWifi(WIFI_SSID, WIFI_PASSWORD, &wifiStateManager);
   MDNSHandler::setupMDNS(MDNS_TRACKER_NAME, &mdnsStateManager);
-  apiServer.startAPIServer();
-  streamServer.startStreamServer();
+
+  if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
+  {
+    apiServer.startAPIServer();
+    streamServer.startStreamServer();
+  }
+
   ledManager.onOff(true);
 
   ota.SetupOTA(OTA_PASSWORD, OTA_SERVER_PORT);
