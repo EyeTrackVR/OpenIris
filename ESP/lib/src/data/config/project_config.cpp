@@ -35,18 +35,20 @@ void ProjectConfig::load()
     log_d("Loading project config");
     if (this->_already_loaded)
     {
-        log_d("Project config already loaded");
+        log_w("Project config already loaded");
         return;
     }
+
     bool device_success = this->read("device", this->config.device);
     bool camera_success = this->read("camera", this->config.camera);
     bool network_info_success = this->read("network_info", this->config.networks);
+    
     if (!device_success || !camera_success || !network_info_success)
     {
         log_e("Failed to load project config");
-        this->_already_loaded = false;
         return;
     }
+
     this->_already_loaded = false;
     this->notify(ObserverEvent::configLoaded);
 }
