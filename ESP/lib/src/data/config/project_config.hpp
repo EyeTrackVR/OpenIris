@@ -39,8 +39,8 @@ public:
 
     struct TrackerConfig_t
     {
-        DeviceConfig_t device{};
-        CameraConfig_t camera{};
+        DeviceConfig_t device;
+        CameraConfig_t camera;
         std::vector<WiFiConfig_t> networks;
     };
 

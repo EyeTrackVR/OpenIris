@@ -6,24 +6,32 @@ SerialManager::SerialManager() : serialManagerActive(false),
                                  serialBuffer{0},
                                  device_config_name{0},
                                  device_config_OTAPassword{0},
-                                 device_config_OTAPort(0) {}
+                                 device_config_OTAPort(0),
+                                 camera_config_vflip{0},
+                                 camera_config_href{0},
+                                 camera_config_framesize{0},
+                                 camera_config_quality{0},
+                                 wifi_config_name{0},
+                                 wifi_config_ssid{0},
+                                 wifi_config_password{0} {}
 
 SerialManager::~SerialManager() {}
 
-void SerialManager::listenToSerial(int timeout)
+void SerialManager::listenToSerial(unsigned long timeout)
 {
     log_d("Listening to serial");
     serialManagerActive = true;
     Serial.setTimeout(timeout);
 
-    static boolean recvInProgress = false;
-    static byte index = 0; // index
-    char startDelimiter = '<';
-    char endDelimiter = '>';
-    char receivedChar; // to test for received data on the line
+    static bool recvInProgress = false;
+    static uint8_t index = 0;  // index
+    char startDelimiter = '<'; //! we need to decide on a delimiter for the start of a message
+    char endDelimiter = '>';   //! we need to decide on a delimiter for the end of a message
+    char receivedChar;         // to test for received data on the line
 
-    while (serialManagerActive)
+    while ((Serial.available() > 0) && !newData)
     {
+        serialManagerActive = true;
         receivedChar = Serial.read();
         if (recvInProgress)
         {
@@ -53,11 +61,6 @@ void SerialManager::listenToSerial(int timeout)
                 recvInProgress = true;
             }
         }
-
-        if (Serial.available() > 0)
-        {
-            Serial.readBytesUntil('\n', this->serialBuffer, sizeof(this->serialBuffer));
-        }
         delay(timeout);
         serialManagerActive = false;
     }
@@ -68,36 +71,64 @@ void SerialManager::parseData()
     log_d("Parsing data");
     char *strtokIndx; // this is used by strtok() as an index
 
-    strtokIndx = strtok(tempBuffer, ",");   // get the first part - the string
+    //! Parse the data
+    //* Device Config *//
+    strtokIndx = strtok(tempBuffer, ",");   // get the first part
     strcpy(device_config_name, strtokIndx); // copy it to buffer
 
-    strtokIndx = strtok(NULL, ",");         // get the second part - the string
-    strcpy(device_config_OTAPassword, strtokIndx); // copy it to buffer
+    strtokIndx = strtok(NULL, ","); // get the second part
+    strcpy(device_config_OTAPassword, strtokIndx);
 
-    strtokIndx = strtok(NULL, ",");   // get the first part - the string
-    device_config_OTAPort = atoi(strtokIndx); // convert this part to an integer
+    strtokIndx = strtok(NULL, ",");
+    device_config_OTAPort = atoi(strtokIndx);
 
-    projectConfig.setDeviceConfig( ); // get the second part - the value
-    if (newData)
+    //* Camera Config *//
+    strtokIndx = strtok(NULL, ",");
+    camera_config_vflip = atoi(strtokIndx);
+
+    strtokIndx = strtok(NULL, ",");
+    camera_config_framesize = atoi(strtokIndx);
+
+    strtokIndx = strtok(NULL, ",");
+    camera_config_href = atoi(strtokIndx);
+
+    strtokIndx = strtok(NULL, ",");
+    camera_config_quality = atoi(strtokIndx);
+
+    //* Wifi Config *//
+    strtokIndx = strtok(tempBuffer, ",");
+    strcpy(wifi_config_name, strtokIndx);
+
+    strtokIndx = strtok(NULL, ",");
+    strcpy(wifi_config_ssid, strtokIndx);
+
+    strtokIndx = strtok(NULL, ",");
+    strcpy(wifi_config_password, strtokIndx);
+
+    /* if (newData)
     {
         log_d("New data");
         newData = false;
-        char *token = strtok(serialBuffer, ",");
+        char *token = strtok(tempBuffer, ",");
         while (token != NULL)
         {
             log_d("Token: %s", token);
             token = strtok(NULL, ",");
         }
-    }
+    } */
 }
 
-void SerialManager::moveData()
+void SerialManager::handleSerial()
 {
-    listenToSerial(30000); // test for serial input for 30 seconds
-    if (newData)           // input received
+    listenToSerial(30000L); // test for serial input for 30 seconds
+    if (newData)            // input received
     {
         strcpy(tempBuffer, serialBuffer); // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
         parseData();                      // split the data into tokens and store them in the data structure
         newData = false;                  // reset new data
     }
+
+    projectConfig.setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
+    projectConfig.setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
+    projectConfig.setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
 }
