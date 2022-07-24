@@ -1,36 +1,41 @@
 #include <Arduino.h>
-#include "pinout.h"
-#include "credentials.h"
-#include "WifiHandler.h"
-#include "MDNSManager.h"
-#include "cameraHandler.h"
-#include "LEDManager.h"
-#include "webServer/webserverHandler.h"
-#include "OTA.h"
-#include "StateManager.h"
+#include <network/WifiHandler/WifiHandler.hpp>
+#include <network/mDNS/MDNSManager.hpp>
+#include <io/camera/cameraHandler.hpp>
+#include <io/LEDManager/LEDManager.hpp>
+#include <network/stream/streamServer.hpp>
+#include <network/webserver/webserverHandler.hpp>
 
-char *MDSNTrackerName = "OpenIrisTracker";
+#include <network/OTA/OTA.hpp>
+
 int STREAM_SERVER_PORT = 80;
+int CONTROL_SERVER_PORT = 81;
 
-auto ota = OpenIris::OTA();
-auto ledManager = OpenIris::LEDManager(33);
-auto cameraHandler = OpenIris::CameraHandler();
-auto stateManager = OpenIris::StateManager();
-auto httpdHandler = OpenIris::HTTPDHandler();
+OTA ota;
+LEDManager ledManager(33);
+CameraHandler cameraHandler;
+APIServer apiServer(CONTROL_SERVER_PORT, &cameraHandler);
+StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  Serial.println();
-  ledManager.setupLED();
+  ledManager.begin();
   cameraHandler.setupCamera();
-  OpenIris::WiFiHandler::setupWifi(ssid, password);
-  OpenIris::MDNSHandler::setupMDNS();
-  httpdHandler.startStreamServer();
-  ledManager.on();
 
-  ota.SetupOTA(OTAPassword, OTAServerPort);
+  WiFiHandler::setupWifi(WIFI_SSID, WIFI_PASSWORD, &wifiStateManager);
+  MDNSHandler::setupMDNS(MDNS_TRACKER_NAME, &mdnsStateManager);
+
+  if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
+  {
+    apiServer.startAPIServer();
+    streamServer.startStreamServer();
+  }
+
+  ledManager.onOff(true);
+
+  ota.SetupOTA(OTA_PASSWORD, OTA_SERVER_PORT);
 }
 
 void loop()
