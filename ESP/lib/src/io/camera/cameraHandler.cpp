@@ -81,6 +81,18 @@ int CameraHandler::setupCamera()
   }
 }
 
+void CameraHandler::update(ObserverEvent::Event event)
+{
+  if (event == ObserverEvent::cameraConfigUpdated)
+  {
+    ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
+    this->setHFlip(cameraConfig->href);
+    this->setVFlip(cameraConfig->vflip);
+    this->setCameraResolution((framesize_t)cameraConfig->framesize);
+    camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
+  }
+}
+
 int CameraHandler::setCameraResolution(framesize_t frameSize)
 {
   if (camera_sensor->pixformat == PIXFORMAT_JPEG)

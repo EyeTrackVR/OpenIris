@@ -1,22 +1,23 @@
 #pragma once
 #include <ArduinoOTA.h>
-
+#include "data/config/project_config.hpp"
 class OTA
 {
 private:
   bool isOTAEnabled = false;
 
 public:
-  void SetupOTA(const char *OTAPassword, uint16_t OTAServerPort)
+  void SetupOTA(ProjectConfig *configManager)
   {
     log_i("Setting up OTA updates");
+    ProjectConfig::DeviceConfig_t *deviceConfig = configManager->getDeviceConfig();
 
-    if (OTAPassword == nullptr)
+    if (deviceConfig->OTAPassword == nullptr)
     {
       log_e("THE PASSWORD IS REQUIRED, [[ABORTING]]");
       return;
     }
-    ArduinoOTA.setPort(OTAServerPort);
+    ArduinoOTA.setPort(deviceConfig->OTAPort);
     isOTAEnabled = true;
 
     ArduinoOTA

@@ -1,17 +1,29 @@
 #include "MDNSManager.hpp"
 
-void MDNSHandler::setupMDNS(const char *trackerName, StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager)
+void MDNSHandler::startMDNS()
 {
-  if (MDNS.begin(trackerName))
+  ProjectConfig::DeviceConfig_t *deviceConfig = configManager->getDeviceConfig();
+
+  if (MDNS.begin(deviceConfig->name))
   {
-    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Started);
+    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Starting);
     MDNS.addService("openIrisTracker", "tcp", 80);
     MDNS.addServiceTxt("openIrisTracker", "tcp", "stream_port", String(80));
-    log_d("MDNS initialized!");
+    log_i("MDNS initialized!");
+    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Started);
   }
   else
   {
     stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Error);
     log_e("Error initializing MDNS");
+  }
+}
+
+void MDNSHandler::update(ObserverEvent::Event event)
+{
+  if (event == ObserverEvent::deviceConfigUpdated)
+  {
+    MDNS.end();
+    startMDNS();
   }
 }
