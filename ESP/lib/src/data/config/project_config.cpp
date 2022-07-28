@@ -49,7 +49,7 @@ void ProjectConfig::load()
         return;
     }
 
-    this->_already_loaded = false;
+    this->_already_loaded = true;
     this->notify(ObserverEvent::configLoaded);
 }
 

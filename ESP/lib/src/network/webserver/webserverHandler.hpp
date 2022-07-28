@@ -1,5 +1,5 @@
 #pragma once
-#include "../../io/camera/cameraHandler.hpp"
+#include "io/camera/cameraHandler.hpp"
 #define WEBSERVER_H
 #define HTTP_ANY 0b01111111
 #define HTTP_GET 0b00000001
