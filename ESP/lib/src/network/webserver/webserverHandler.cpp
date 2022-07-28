@@ -1,5 +1,10 @@
 #include "webserverHandler.hpp"
 
+/* Constructor with unique_ptr */
+/*
+APIServer::APIServer(int CONTROL_PORT, CameraHandler *cameraHandler) : server(new AsyncWebServer(CONTROL_PORT)), cameraHandler(cameraHandler) {}
+*/
+
 APIServer::APIServer(int CONTROL_PORT, CameraHandler *cameraHandler)
 {
   this->server = new AsyncWebServer(CONTROL_PORT);
