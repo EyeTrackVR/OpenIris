@@ -1,0 +1,26 @@
+{
+    "name": "OpenIris",
+    "keywords": "esp32S, openiris, openiris-esp32s, webcam, streaming server",
+    "description": "openiris library",
+    "authors": [
+        {
+            "name": "lorow",
+            "url": "https://github.com/lorow"
+        },
+        {
+            "name": "ZanzyTHEbar",
+            "url": "https://github.com/ZanzyTHEbar"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lorow/OpenIris.git"
+    },
+    "export": {
+        "include": "/lib/src"
+    },
+    "dependencies": {},
+    "version": "0.0.1",
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
