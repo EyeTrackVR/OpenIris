@@ -11,7 +11,7 @@ private:
   ProjectConfig *configManager;
 
 public:
-  MDNSHandler(StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager, Configuration *trackerConfig) : stateManager(stateManager), trackerConfig(trackerConfig) {}
+  MDNSHandler(StateManager<ProgramStates::DeviceStates::MDNSState_e> *stateManager, ProjectConfig *configManager) : stateManager(stateManager), configManager(configManager) {}
   void startMDNS();
   void update(ObserverEvent::Event event);
 };

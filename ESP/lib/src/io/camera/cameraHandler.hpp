@@ -12,6 +12,7 @@ private:
     ProjectConfig *configManager;
 
 public:
+    
     CameraHandler(ProjectConfig *configManager) : configManager(configManager) {}
     int setupCamera();
     int setCameraResolution(framesize_t frameSize);
