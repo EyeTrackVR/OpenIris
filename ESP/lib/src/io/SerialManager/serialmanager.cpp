@@ -104,18 +104,6 @@ void SerialManager::parseData()
 
     strtokIndx = strtok(NULL, ",");
     strcpy(wifi_config_password, strtokIndx);
-
-    /* if (newData)
-    {
-        log_d("New data");
-        newData = false;
-        char *token = strtok(tempBuffer, ",");
-        while (token != NULL)
-        {
-            log_d("Token: %s", token);
-            token = strtok(NULL, ",");
-        }
-    } */
 }
 
 void SerialManager::handleSerial()
@@ -125,10 +113,10 @@ void SerialManager::handleSerial()
     {
         strcpy(tempBuffer, serialBuffer); // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
         parseData();                      // split the data into tokens and store them in the data structure
+        projectConfig.setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
+        projectConfig.setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
+        projectConfig.setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
+        projectConfig.save();                                                                                                             // save the config to the EEPROM
         newData = false;                  // reset new data
     }
-
-    projectConfig.setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
-    projectConfig.setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
-    projectConfig.setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
 }

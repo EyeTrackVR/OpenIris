@@ -24,6 +24,8 @@ void setup()
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   ledManager.begin();
+  projectConfig.initStructures();
+  projectConfig.load();
   cameraHandler.setupCamera();
 
   WiFiHandler::setupWifi(&wifiStateManager, &projectConfig);
@@ -33,9 +35,6 @@ void setup()
     apiServer.startAPIServer();
     streamServer.startStreamServer();
   }
-
-  ledManager.onOff(true);
-
   ota.SetupOTA(&projectConfig);
 }
 
