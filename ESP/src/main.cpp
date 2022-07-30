@@ -16,8 +16,8 @@ OTA ota;
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&projectConfig);
 APIServer apiServer(CONTROL_SERVER_PORT, &cameraHandler);
-StreamServer streamServer(STREAM_SERVER_PORT);
 MDNSHandler mdnsHandler(&mdnsStateManager, &projectConfig);
+StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
@@ -29,6 +29,7 @@ void setup()
   cameraHandler.setupCamera();
 
   WiFiHandler::setupWifi(&wifiStateManager, &projectConfig);
+  mdnsHandler.startMDNS();
 
   if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
   {
