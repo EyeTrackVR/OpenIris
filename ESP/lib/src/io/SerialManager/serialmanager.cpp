@@ -62,7 +62,6 @@ void SerialManager::listenToSerial(unsigned long timeout)
             }
         }
     }
-    delay(timeout);
     serialManagerActive = false;
 }
 
