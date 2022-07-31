@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define SERIAL_CMD_DBG_EN 0
-#define SERIAL_CMD_BUFF_LEN 64 /* Max length for each serial Manager */
+#define SERIAL_CMD_BUFF_LEN 100 /* Max length for each serial Manager */
 
 /* Data structure to hold Manager/Handler function key-value pairs */
 typedef struct
@@ -45,7 +45,7 @@ public:
     /**
      * Execute this function inside Arduino's loop function.
      */
-    void loop(void);
+    void loop(unsigned long timeout);
 
     /**
      * Add a new Manager
@@ -112,6 +112,9 @@ public:
     /*  Return next argument found in Manager buffer */
     char *next(void);
 
+    /* variable to track state of newdata in the buffer */
+    bool newData;
+
     /*
      * Virtual methods to match Stream class
      */
@@ -120,6 +123,7 @@ public:
     int read();
     int peek();
     void flush();
+
 
 private:
     /* Setup serial port */
@@ -146,6 +150,9 @@ private:
     char *last;
     /* Number of available Managers registered by new() */
     uint8_t ManagerCount;
+
+    bool _serialManagerActive;
+    
 };
 extern SerialManager serialManager;
 #endif // SerialManager_h

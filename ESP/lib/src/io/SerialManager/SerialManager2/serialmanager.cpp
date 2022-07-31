@@ -41,7 +41,7 @@ void printHex(Stream &port, uint16_t *data, uint8_t length) // prints 16-bit dat
 }
 #endif
 
-SerialManager::SerialManager() : userErrorHandler(NULL), _serial(NULL), ManagerCount(0)
+SerialManager::SerialManager() : userErrorHandler(NULL), _serial(NULL), ManagerCount(0), _serialManagerActive(false), newData(false)
 {
     clear();
 }
@@ -55,14 +55,40 @@ void SerialManager::begin(Stream &serialPort)
 // This checks the Serial stream for characters, and assembles them into a buffer.
 // When the terminator character (defined by EOL constant) is seen, it starts parsing the
 // buffer for a prefix Manager, and calls handlers setup by addManager() method
-void SerialManager::loop(void)
+void SerialManager::loop(unsigned long timeout)
 {
+    log_d("Listening to serial");
+    _serialManagerActive = true;
+    Serial.setTimeout(timeout);
+    static bool recvInProgress = false;
+    char startDelimiter = '<'; //! we need to decide on a delimiter for the start of a message
+    char endDelimiter = '>';   //! we need to decide on a delimiter for the end of a message
     char c;
-    while (available() > 0)
+    while ((available() > 0) && !newData)
     {
         c = read();
-        bufferHandler(c);
+        if (recvInProgress)
+        {
+            if (c != endDelimiter)
+            {
+                bufferHandler(c);
+            }
+            else
+            {
+                recvInProgress = false;
+                newData = true;
+            }
+        }
+        else
+        {
+            if (c == startDelimiter)
+            {
+                recvInProgress = true;
+            }
+        }
     }
+    delay(timeout);
+    _serialManagerActive = false;
 }
 
 /* Clear buffer */
@@ -120,8 +146,7 @@ void SerialManager::bufferHandler(char c)
             // *lastChars = '\0'; /* Replace EOL with NULL terminator */
 
 #if (SERIAL_CMD_DBG_EN == 1)
-            print("Received: ");
-            println(buffer);
+            log_d("Received: %s", buffer);
 #endif
 
             if (ManagerHandler())
@@ -160,9 +185,7 @@ bool SerialManager::ManagerHandler(void)
     {
 
 #if SERIAL_CMD_DBG_EN
-        print("Token: \"");
-        print(token);
-        println("\"");
+        log_d("Token: %s", token);
 #endif
 
         for (i = 0; (i < ManagerCount); i++)
@@ -179,7 +202,7 @@ bool SerialManager::ManagerHandler(void)
             {
 
 #if SERIAL_CMD_DBG_EN
-                println("- Match Found!");
+                log_d("- Match Found!");
 #endif
                 offset = (char *)(userInput + strlen(token));
 
@@ -187,7 +210,7 @@ bool SerialManager::ManagerHandler(void)
                 if (0 == strncmp(offset, "=?", 2))
                 {
 #if SERIAL_CMD_DBG_EN
-                    println("Run test callback");
+                    log_d("Run test callback");
 #endif
                     if (NULL != *ManagerList[i].test)
                     {
@@ -198,7 +221,7 @@ bool SerialManager::ManagerHandler(void)
                 else if (('?' == *offset) && (NULL != *ManagerList[i].read))
                 {
 #if SERIAL_CMD_DBG_EN
-                    println("Run read callback");
+                    log_d("Run read callback");
 #endif
                     /* Run read callback */
                     (*ManagerList[i].read)();
@@ -206,7 +229,7 @@ bool SerialManager::ManagerHandler(void)
                 else if (('=' == *offset) && (NULL != *ManagerList[i].write))
                 {
 #if (SERIAL_CMD_DBG_EN == 1)
-                    println("Run write callback");
+                    log_d("Run write callback");
 #endif
                     /* Run write callback */
                     (*ManagerList[i].write)();
@@ -214,14 +237,14 @@ bool SerialManager::ManagerHandler(void)
                 else if (NULL != *ManagerList[i].execute)
                 {
 #if SERIAL_CMD_DBG_EN
-                    println("Run execute callback");
+                    log_d("Run execute callback");
 #endif
                     /* Run execute callback */
                     (*ManagerList[i].execute)();
                 }
                 else
                 {
-                    println("INVALID");
+                    log_e("INVALID");
                     ret = false;
                     break;
                 }
@@ -233,7 +256,7 @@ bool SerialManager::ManagerHandler(void)
 #if SERIAL_CMD_DBG_EN
             else
             {
-                println("- Not a match!");
+                log_e("- Not a match!");
             }
 #endif
         }

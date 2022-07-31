@@ -61,9 +61,9 @@ void SerialManager::listenToSerial(unsigned long timeout)
                 recvInProgress = true;
             }
         }
-        delay(timeout);
-        serialManagerActive = false;
     }
+    delay(timeout);
+    serialManagerActive = false;
 }
 
 void SerialManager::parseData()
@@ -111,12 +111,12 @@ void SerialManager::handleSerial()
     listenToSerial(30000L); // test for serial input for 30 seconds
     if (newData)            // input received
     {
-        strcpy(tempBuffer, serialBuffer); // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
-        parseData();                      // split the data into tokens and store them in the data structure
+        strcpy(tempBuffer, serialBuffer);                                                                                                 // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
+        parseData();                                                                                                                      // split the data into tokens and store them in the data structure
         projectConfig.setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
         projectConfig.setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
         projectConfig.setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
         projectConfig.save();                                                                                                             // save the config to the EEPROM
-        newData = false;                  // reset new data
+        newData = false;                                                                                                                  // reset new data
     }
 }

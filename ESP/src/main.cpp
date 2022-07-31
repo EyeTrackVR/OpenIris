@@ -6,6 +6,8 @@
 #include <network/stream/streamServer.hpp>
 #include <network/webserver/webserverHandler.hpp>
 #include <data/config/project_config.hpp>
+#include <io/SerialManager/serialmanager.hpp>
+//#include <io/SerialManager/SerialManager2/serialmanager.hpp> //! Finish this to update the serial manager
 
 #include <network/OTA/OTA.hpp>
 
@@ -37,10 +39,12 @@ void setup()
     streamServer.startStreamServer();
   }
   ota.SetupOTA(&projectConfig);
+  
 }
 
 void loop()
 {
   ota.HandleOTAUpdate();
   ledManager.displayStatus();
+  serialManager.handleSerial(); 
 }
