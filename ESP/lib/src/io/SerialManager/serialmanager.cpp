@@ -107,7 +107,7 @@ void SerialManager::parseData()
 
 void SerialManager::handleSerial()
 {
-    listenToSerial(30000L); // test for serial input for 30 seconds
+    listenToSerial(30000L); // test for serial input every 30 seconds
     if (newData)            // input received
     {
         strcpy(tempBuffer, serialBuffer);                                                                                                 // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0

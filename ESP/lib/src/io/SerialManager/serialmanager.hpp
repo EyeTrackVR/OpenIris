@@ -33,15 +33,6 @@ private:
 
     void listenToSerial(unsigned long timeout);
     void parseData();
-    enum DataTypes_e
-    {
-        DataType_Unknown,
-        DataType_Device,
-        DataType_Camera,
-        DataType_Wifi,
-        DataType_Error,
-        DataType_Debug
-    };
 
     char serialBuffer[100000]; //! Need to find the appropriate size for this - count the maximum possible size of a message
     char tempBuffer[sizeof(serialBuffer) / sizeof(serialBuffer[0])];
