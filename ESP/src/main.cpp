@@ -6,8 +6,8 @@
 #include <network/stream/streamServer.hpp>
 #include <network/webserver/webserverHandler.hpp>
 #include <data/config/project_config.hpp>
-#include <io/SerialManager/serialmanager.hpp>
-//#include <io/SerialManager/SerialManager2/serialmanager.hpp> //! Finish this to update the serial manager
+#include <io/SerialManager/serialmanager.hpp> // Basic Serial Manager
+//#include <io/SerialManager/SerialManager2/serialmanager.hpp>  // Advanced Serial MAnager //! Finish this to update the serial manager
 
 #include <network/OTA/OTA.hpp>
 
