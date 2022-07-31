@@ -34,10 +34,9 @@ private:
     void listenToSerial(unsigned long timeout);
     void parseData();
 
-    char serialBuffer[100000]; //! Need to find the appropriate size for this - count the maximum possible size of a message
+    char serialBuffer[1000]; //! Need to find the appropriate size for this - count the maximum possible size of a message
     char tempBuffer[sizeof(serialBuffer) / sizeof(serialBuffer[0])];
     bool newData;
-    
 };
 
 extern SerialManager serialManager;
