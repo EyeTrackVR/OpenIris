@@ -3,7 +3,7 @@
 #include <preferencesAPI.hpp>
 #include <vector>
 
-#include "data/Observer/Observer.h"
+#include "data/utilities/Observer.hpp"
 
 class ProjectConfig : public Config, public ISubject
 {

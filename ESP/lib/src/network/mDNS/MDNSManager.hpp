@@ -1,7 +1,7 @@
 #pragma once
 #include <ESPmDNS.h>
 #include "data/StateManager/StateManager.hpp"
-#include "data/Observer/Observer.h"
+#include "data/utilities/Observer.hpp"
 #include "data/config/project_config.hpp"
 
 class MDNSHandler : public IObserver

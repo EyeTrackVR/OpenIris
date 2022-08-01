@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <esp_camera.h>
-#include "data/Observer/Observer.h"
+#include "data/utilities/Observer.hpp"
 #include "data/config/project_config.hpp"
 
 class CameraHandler : IObserver
