@@ -119,3 +119,5 @@ void SerialManager::handleSerial()
         newData = false;                                                                                                                  // reset new data
     }
 }
+
+SerialManager serialManager;

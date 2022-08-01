@@ -1,5 +1,5 @@
-#ifndef SERIALMANAGER_HPP
-#define SERIALMANAGER_HPP
+#ifndef SERIALMANAGER2_HPP
+#define SERIALMANAGER2_HPP
 #include <Arduino.h>
 #include <string.h>
 
@@ -14,7 +14,7 @@ typedef struct
     void (*read)();
     void (*write)();
     void (*execute)();
-} serialManagerCallback;
+} serialManager2Callback;
 
 /*
  * Token delimiters (setup '=', query '?', separator ',')
@@ -28,11 +28,11 @@ const char delimiters[] = "=,?\r\n";
  */
 const char EOL[] = "\r\n";
 
-class SerialManager : public Stream
+class SerialManager2 : public Stream
 {
 public:
-    SerialManager();
-    virtual ~SerialManager();
+    SerialManager2();
+    virtual ~SerialManager2();
 
     /**
      * Start connection to serial port
@@ -141,7 +141,7 @@ private:
     /* Serial Port handler */
     Stream *_serial;
     /* Actual definition for Manager/handler array */
-    serialManagerCallback *ManagerList;
+    serialManager2Callback *ManagerList;
     /* Buffer of stored characters while waiting for terminator character */
     char buffer[SERIAL_CMD_BUFF_LEN];
     /* Pointer to buffer, used to store data in the buffer */
@@ -151,8 +151,8 @@ private:
     /* Number of available Managers registered by new() */
     uint8_t ManagerCount;
 
-    bool _serialManagerActive;
+    bool _serialManager2Active;
     
 };
-extern SerialManager serialManager;
-#endif // SerialManager_h
+extern SerialManager2 serialManager2;
+#endif // SerialManager2_h

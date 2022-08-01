@@ -41,12 +41,12 @@ void printHex(Stream &port, uint16_t *data, uint8_t length) // prints 16-bit dat
 }
 #endif
 
-SerialManager::SerialManager() : userErrorHandler(NULL), _serial(NULL), ManagerCount(0), _serialManagerActive(false), newData(false)
+SerialManager2::SerialManager2() : userErrorHandler(NULL), _serial(NULL), ManagerCount(0), _serialManager2Active(false), newData(false)
 {
     clear();
 }
 
-void SerialManager::begin(Stream &serialPort)
+void SerialManager2::begin(Stream &serialPort)
 {
     /* Save Serial Port configurations */
     _serial = &serialPort;
@@ -55,10 +55,10 @@ void SerialManager::begin(Stream &serialPort)
 // This checks the Serial stream for characters, and assembles them into a buffer.
 // When the terminator character (defined by EOL constant) is seen, it starts parsing the
 // buffer for a prefix Manager, and calls handlers setup by addManager() method
-void SerialManager::loop(unsigned long timeout)
+void SerialManager2::loop(unsigned long timeout)
 {
     log_d("Listening to serial");
-    _serialManagerActive = true;
+    _serialManager2Active = true;
     Serial.setTimeout(timeout);
     static bool recvInProgress = false;
     char startDelimiter = '<'; //! we need to decide on a delimiter for the start of a message
@@ -88,11 +88,11 @@ void SerialManager::loop(unsigned long timeout)
         }
     }
     delay(timeout);
-    _serialManagerActive = false;
+    _serialManager2Active = false;
 }
 
 /* Clear buffer */
-void SerialManager::clear(void)
+void SerialManager2::clear(void)
 {
     memset(buffer, 0, SERIAL_CMD_BUFF_LEN);
     pBuff = buffer;
@@ -103,7 +103,7 @@ void SerialManager::clear(void)
  * NOTE: Will execute user defined callback (defined using addDefault method),
  * if no user defined callback it will send the ERROR message (sendERROR method).
  */
-void SerialManager::error(void)
+void SerialManager2::error(void)
 {
     if (NULL != userErrorHandler)
     {
@@ -115,12 +115,12 @@ void SerialManager::error(void)
 
 // Retrieve the next token ("word" or "argument") from the Manager buffer.
 // returns a NULL if no more tokens exist.
-char *SerialManager::next(void)
+char *SerialManager2::next(void)
 {
     return strtok_r(NULL, delimiters, &last);
 }
 
-void SerialManager::bufferHandler(char c)
+void SerialManager2::bufferHandler(char c)
 {
     int len;
     char *lastChars = NULL;
@@ -162,7 +162,7 @@ void SerialManager::bufferHandler(char c)
 }
 
 /* Return true if match was found */
-bool SerialManager::ManagerHandler(void)
+bool SerialManager2::ManagerHandler(void)
 {
     int i;
     bool ret = false;
@@ -268,7 +268,7 @@ bool SerialManager::ManagerHandler(void)
 // Adds a "Manager" and a handler function to the list of available Managers.
 // This is used for matching a found token in the buffer, and gives the pointer
 // to the handler function to deal with it.
-void SerialManager::addManager(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
+void SerialManager2::addManager(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
 {
 
 #if SERIAL_CMD_DBG_EN
@@ -278,7 +278,7 @@ void SerialManager::addManager(char *cmd, void (*test)(), void (*read)(), void (
     println(cmd);
 #endif
 
-    ManagerList = (serialManagerCallback *)realloc(ManagerList, (ManagerCount + 1) * sizeof(serialManagerCallback));
+    ManagerList = (serialManager2Callback *)realloc(ManagerList, (ManagerCount + 1) * sizeof(serialManager2Callback));
     strncpy(ManagerList[ManagerCount].Manager, cmd, SERIAL_CMD_BUFF_LEN);
     ManagerList[ManagerCount].test = test;
     ManagerList[ManagerCount].read = read;
@@ -288,12 +288,12 @@ void SerialManager::addManager(char *cmd, void (*test)(), void (*read)(), void (
 }
 
 /* Optional user-defined function to call when an error occurs, default is NULL */
-void SerialManager::addError(void (*callback)())
+void SerialManager2::addError(void (*callback)())
 {
     userErrorHandler = callback;
 }
 
-int SerialManager::available()
+int SerialManager2::available()
 {
     int bytes = 0;
     if (NULL != _serial)
@@ -303,7 +303,7 @@ int SerialManager::available()
     return bytes;
 }
 
-int SerialManager::read()
+int SerialManager2::read()
 {
     int bytes = 0;
     if (NULL != _serial)
@@ -313,7 +313,7 @@ int SerialManager::read()
     return bytes;
 }
 
-int SerialManager::peek()
+int SerialManager2::peek()
 {
     int bytes = 0;
     if (NULL != _serial)
@@ -323,7 +323,7 @@ int SerialManager::peek()
     return bytes;
 }
 
-void SerialManager::flush()
+void SerialManager2::flush()
 {
     if (NULL != _serial)
     {
@@ -331,10 +331,10 @@ void SerialManager::flush()
     }
 }
 
-size_t SerialManager::write(uint8_t x)
+size_t SerialManager2::write(uint8_t x)
 {
     (void)x;
     return 0;
 }
 
-SerialManager serialManager;
+SerialManager2 serialManager2;
