@@ -28,6 +28,7 @@ public:
             WiFiState_Connected,
             WiFiState_Disconnected,
             WiFiState_Disconnecting,
+            WiFiState_ADHOC,
             WiFiState_Error
         };
 

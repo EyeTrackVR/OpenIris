@@ -19,11 +19,12 @@ uint8_t CONTROL_SERVER_PORT = 81;
 // This is done to make sure that the memory is freed when the program ends and we are not left with dangling pointers to memory that is no longer in use
 // Make unique is a templated function that takes a class and returns a unique pointer to that class -
 // it is used to create a unique pointer to a class and ensure exception safety
-std::unique_ptr<OTA> ota = std::make_unique<OTA>();
+std::unique_ptr<ProjectConfig> deviceConfig = std::make_unique<ProjectConfig>();
+OTA ota(&*deviceConfig);
 std::unique_ptr<LEDManager> ledManager = std::make_unique<LEDManager>(33);
-std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&projectConfig); //! Create a shared pointer to the camera handler
+std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);            //! Create a shared pointer to the camera handler
 std::unique_ptr<APIServer> apiServer = std::make_unique<APIServer>(CONTROL_SERVER_PORT, &*cameraHandler); //! Dereference the shared pointer to get the address of the camera handler
-std::unique_ptr<MDNSHandler> mdnsHandler = std::make_unique<MDNSHandler>(&mdnsStateManager, &projectConfig);
+std::unique_ptr<MDNSHandler> mdnsHandler = std::make_unique<MDNSHandler>(&mdnsStateManager, &*deviceConfig);
 std::unique_ptr<StreamServer> streamServer = std::make_unique<StreamServer>(STREAM_SERVER_PORT);
 
 void setup()
@@ -35,7 +36,7 @@ void setup()
   projectConfig.load();
   cameraHandler->setupCamera();
 
-  WiFiHandler::setupWifi(&wifiStateManager, &projectConfig);
+  wifiHandler.setupWifi();
   mdnsHandler->startMDNS();
 
   if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
@@ -43,12 +44,12 @@ void setup()
     apiServer->startAPIServer();
     streamServer->startStreamServer();
   }
-  ota->SetupOTA(&projectConfig);
+  ota.SetupOTA();
 }
 
 void loop()
 {
-  ota->HandleOTAUpdate();
+  ota.HandleOTAUpdate();
   ledManager->displayStatus();
   serialManager.handleSerial();
 }
