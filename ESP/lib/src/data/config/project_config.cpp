@@ -1,8 +1,8 @@
 #include "project_config.hpp"
 
-ProjectConfig::ProjectConfig() : Config("config", NULL), _already_loaded(false)
+ProjectConfig::ProjectConfig() : Config("config"), _already_loaded(false)
 {
-    Config::begin();
+    begin();
 }
 
 ProjectConfig::~ProjectConfig() {}

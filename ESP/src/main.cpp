@@ -39,11 +39,28 @@ void setup()
   wifiHandler.setupWifi();
   mdnsHandler->startMDNS();
 
-  if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected || wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC)
+  switch (wifiStateManager.getCurrentState())
   {
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnected:
+    break;
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnecting:
+    break;
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected:
     apiServer->startAPIServer();
     streamServer->startStreamServer();
+    log_d("[SETUP]: Starting Stream Server");
+    break;
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting:
+    break;
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error:
+    break;
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC:
+    apiServer->startAPIServer();
+    streamServer->startStreamServer();
+    log_d("[SETUP]: Starting Stream Server");
+    break;
   }
+  
   ota.SetupOTA();
 }
 
