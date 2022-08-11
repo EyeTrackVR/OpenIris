@@ -22,7 +22,7 @@ uint8_t CONTROL_SERVER_PORT = 81;
 std::unique_ptr<ProjectConfig> deviceConfig = std::make_unique<ProjectConfig>();
 OTA ota(&*deviceConfig);
 std::unique_ptr<LEDManager> ledManager = std::make_unique<LEDManager>(33);
-std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);            //! Create a shared pointer to the camera handler
+std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);           //! Create a shared pointer to the camera handler
 std::unique_ptr<APIServer> apiServer = std::make_unique<APIServer>(CONTROL_SERVER_PORT, &*cameraHandler); //! Dereference the shared pointer to get the address of the camera handler
 std::unique_ptr<MDNSHandler> mdnsHandler = std::make_unique<MDNSHandler>(&mdnsStateManager, &*deviceConfig);
 std::unique_ptr<StreamServer> streamServer = std::make_unique<StreamServer>(STREAM_SERVER_PORT);
@@ -42,25 +42,32 @@ void setup()
   switch (wifiStateManager.getCurrentState())
   {
   case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnected:
+  {
     break;
+  }
   case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnecting:
+  {
     break;
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected:
-    apiServer->startAPIServer();
-    streamServer->startStreamServer();
-    log_d("[SETUP]: Starting Stream Server");
-    break;
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting:
-    break;
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error:
-    break;
+  }
   case ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC:
+  {
+  }
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected:
+  {
     apiServer->startAPIServer();
     streamServer->startStreamServer();
     log_d("[SETUP]: Starting Stream Server");
     break;
   }
-  
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting:
+  {
+    break;
+  }
+  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error:
+  {
+    break;
+  }
+  }
   ota.SetupOTA();
 }
 
