@@ -39,7 +39,7 @@ void setup()
   wifiHandler.setupWifi();
   mdnsHandler->startMDNS();
 
-  if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected)
+  if (wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected || wifiStateManager.getCurrentState() == ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC)
   {
     apiServer->startAPIServer();
     streamServer->startStreamServer();
