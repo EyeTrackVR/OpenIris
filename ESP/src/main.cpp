@@ -32,8 +32,8 @@ void setup()
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   ledManager->begin();
-  projectConfig.initStructures();
-  projectConfig.load();
+  deviceConfig->initStructures();
+  deviceConfig->load();
   cameraHandler->setupCamera();
 
   wifiHandler.setupWifi();

@@ -1,6 +1,9 @@
 #include "project_config.hpp"
 
-ProjectConfig::ProjectConfig() : Config("config", "nvs"), _already_loaded(false) {}
+ProjectConfig::ProjectConfig() : Config("config", NULL), _already_loaded(false)
+{
+    Config::begin();
+}
 
 ProjectConfig::~ProjectConfig() {}
 
@@ -42,7 +45,7 @@ void ProjectConfig::load()
     bool device_success = this->read("device", this->config.device);
     bool camera_success = this->read("camera", this->config.camera);
     bool network_info_success = this->read("network_info", this->config.networks);
-    
+
     if (!device_success || !camera_success || !network_info_success)
     {
         log_e("Failed to load project config");

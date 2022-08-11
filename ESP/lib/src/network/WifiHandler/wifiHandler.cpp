@@ -59,9 +59,9 @@ void WiFiHandler::setUpADHOC()
   WiFi.mode(WIFI_AP);
 
   // You can remove the password parameter if you want the AP to be open.
-  log_i("Wifi Connection Failed. \r\nStarting AP. \r\nAP IP address: ");
+  Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
   IPAddress IP = WiFi.softAPIP();
-  log_i("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
+  Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 
   WiFi.softAP(WIFI_SSID, WIFI_PASSWORD, ADHOC_CHANNEL, 0, 3); // AP mode with password
 
