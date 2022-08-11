@@ -21,6 +21,7 @@ uint8_t CONTROL_SERVER_PORT = 81;
 // it is used to create a unique pointer to a class and ensure exception safety
 std::unique_ptr<ProjectConfig> deviceConfig = std::make_unique<ProjectConfig>();
 OTA ota(&*deviceConfig);
+std::unique_ptr<WiFiHandler> wifiHandler = std::make_unique<WiFiHandler>(&*deviceConfig, &stateManager);
 std::unique_ptr<LEDManager> ledManager = std::make_unique<LEDManager>(33);
 std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);           //! Create a shared pointer to the camera handler
 std::unique_ptr<APIServer> apiServer = std::make_unique<APIServer>(CONTROL_SERVER_PORT, &*cameraHandler); //! Dereference the shared pointer to get the address of the camera handler
@@ -36,7 +37,7 @@ void setup()
   deviceConfig->load();
   cameraHandler->setupCamera();
 
-  wifiHandler.setupWifi();
+  wifiHandler->setupWifi();
   mdnsHandler->startMDNS();
 
   switch (wifiStateManager.getCurrentState())

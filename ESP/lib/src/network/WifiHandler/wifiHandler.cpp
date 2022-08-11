@@ -1,9 +1,9 @@
 #include "WifiHandler.hpp"
 #include <vector>
 
-WiFiHandler::WiFiHandler() : conf(new wifi_config_t),
-                             wifiStateManager{std::make_shared<StateManager<ProgramStates::DeviceStates::WiFiState_e>>()},
-                             configManager{std::make_shared<ProjectConfig>()} {}
+WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager) : conf(new wifi_config_t),
+                                                                                                                               configManager(configManager),
+                                                                                                                               stateManager(stateManager) {}
 
 WiFiHandler::~WiFiHandler() {}
 
@@ -15,7 +15,7 @@ void WiFiHandler::setupWifi()
     return;
   }
   log_i("Initializing connection to wifi");
-  wifiStateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting));
+  stateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting));
 
   std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
   int connection_timeout = 3000;
@@ -41,14 +41,14 @@ void WiFiHandler::setupWifi()
     else
     {
       log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
-      wifiStateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
+      stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
       return;
     }
   }
 
   // we've tried all saved networks, none worked, let's error out
   log_e("Could not connect to any of the save networks, check your Wifi credentials");
-  wifiStateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
+  stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
 }
 
 void WiFiHandler::setUpADHOC()
@@ -66,7 +66,7 @@ void WiFiHandler::setUpADHOC()
   WiFi.softAP(WIFI_SSID, WIFI_PASSWORD, ADHOC_CHANNEL, 0, 3); // AP mode with password
 
   WiFi.setTxPower(WIFI_POWER_11dBm);
-  wifiStateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC));
+  stateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC));
 }
 
 // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
@@ -91,5 +91,3 @@ void WiFiHandler::setWiFiConf(const char *value, uint8_t *location)
   }
 #endif
 }
-
-WiFiHandler wifiHandler;
