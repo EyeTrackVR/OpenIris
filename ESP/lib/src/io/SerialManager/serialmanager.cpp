@@ -1,19 +1,20 @@
 #include "serialmanager.hpp"
 
-SerialManager::SerialManager() : serialManagerActive(false),
-                                 newData(false),
-                                 tempBuffer{0},
-                                 serialBuffer{0},
-                                 device_config_name{0},
-                                 device_config_OTAPassword{0},
-                                 device_config_OTAPort(0),
-                                 camera_config_vflip{0},
-                                 camera_config_href{0},
-                                 camera_config_framesize{0},
-                                 camera_config_quality{0},
-                                 wifi_config_name{0},
-                                 wifi_config_ssid{0},
-                                 wifi_config_password{0} {}
+SerialManager::SerialManager(ProjectConfig *projectConfig) : projectConfig(projectConfig),
+                                                              serialManagerActive(false),
+                                                              newData(false),
+                                                              tempBuffer{0},
+                                                              serialBuffer{0},
+                                                              device_config_name{0},
+                                                              device_config_OTAPassword{0},
+                                                              device_config_OTAPort(0),
+                                                              camera_config_vflip{0},
+                                                              camera_config_href{0},
+                                                              camera_config_framesize{0},
+                                                              camera_config_quality{0},
+                                                              wifi_config_name{0},
+                                                              wifi_config_ssid{0},
+                                                              wifi_config_password{0} {}
 
 SerialManager::~SerialManager() {}
 
@@ -112,12 +113,10 @@ void SerialManager::handleSerial()
     {
         strcpy(tempBuffer, serialBuffer);                                                                                                 // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
         parseData();                                                                                                                      // split the data into tokens and store them in the data structure
-        projectConfig.setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
-        projectConfig.setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
-        projectConfig.setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
-        projectConfig.save();                                                                                                             // save the config to the EEPROM
+        projectConfig->setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
+        projectConfig->setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
+        projectConfig->setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, true);                                      // set the values in the project config
+        projectConfig->save();                                                                                                             // save the config to the EEPROM
         newData = false;                                                                                                                  // reset new data
     }
 }
-
-SerialManager serialManager;

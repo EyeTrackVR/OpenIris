@@ -1,4 +1,6 @@
 #pragma once
+#ifndef PROJECT_CONFIG_HPP
+#define PROJECT_CONFIG_HPP
 #include <Arduino.h>
 #include <preferencesAPI.hpp>
 #include <vector>
@@ -13,7 +15,7 @@ public:
     void load();
     void save();
     void reset();
-    void initStructures();
+    void initConfig();
 
     struct DeviceConfig_t
     {
@@ -58,4 +60,4 @@ private:
     bool _already_loaded;
 };
 
-extern ProjectConfig projectConfig;
+#endif // PROJECT_CONFIG_HPP

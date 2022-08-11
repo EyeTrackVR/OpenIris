@@ -1,9 +1,8 @@
 #include "project_config.hpp"
 
-ProjectConfig::ProjectConfig() : Config("config"), _already_loaded(false)
-{
-    begin();
-}
+Preferences preferences;
+
+ProjectConfig::ProjectConfig() : Config(&preferences ,"config"), _already_loaded(false) {}
 
 ProjectConfig::~ProjectConfig() {}
 
@@ -11,8 +10,9 @@ ProjectConfig::~ProjectConfig() {}
  *@brief Initializes the structures with blank data to prevent empty memory sectors and nullptr errors.
  *@brief This is to be called in setup() before loading the config.
  */
-void ProjectConfig::initStructures()
+void ProjectConfig::initConfig()
 {
+    begin();
     this->config.device = {
         "",
         "",
@@ -129,5 +129,3 @@ void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, con
     }
     log_d("Updating wifi config");
 }
-
-ProjectConfig projectConfig;

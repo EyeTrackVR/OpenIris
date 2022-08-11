@@ -58,15 +58,15 @@ void WiFiHandler::setUpADHOC()
   log_i("[INFO]: Configuring access point...\n");
   WiFi.mode(WIFI_AP);
 
-  // You can remove the password parameter if you want the AP to be open.
   Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
   IPAddress IP = WiFi.softAPIP();
   Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 
+  // You can remove the password parameter if you want the AP to be open.
   WiFi.softAP(WIFI_SSID, WIFI_PASSWORD, ADHOC_CHANNEL, 0, 3); // AP mode with password
 
   WiFi.setTxPower(WIFI_POWER_11dBm);
-  stateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC));
+  stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC);
 }
 
 // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.

@@ -21,6 +21,7 @@ uint8_t CONTROL_SERVER_PORT = 81;
 // it is used to create a unique pointer to a class and ensure exception safety
 std::unique_ptr<ProjectConfig> deviceConfig = std::make_unique<ProjectConfig>();
 OTA ota(&*deviceConfig);
+std::unique_ptr<SerialManager> serialManager = std::make_unique<SerialManager>(&*deviceConfig);
 std::unique_ptr<WiFiHandler> wifiHandler = std::make_unique<WiFiHandler>(&*deviceConfig, &wifiStateManager);
 std::unique_ptr<LEDManager> ledManager = std::make_unique<LEDManager>(33);
 std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);           //! Create a shared pointer to the camera handler
@@ -33,7 +34,7 @@ void setup()
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   ledManager->begin();
-  deviceConfig->initStructures();
+  deviceConfig->initConfig();
   deviceConfig->load();
   cameraHandler->setupCamera();
 
@@ -76,5 +77,5 @@ void loop()
 {
   ota.HandleOTAUpdate();
   ledManager->displayStatus();
-  serialManager.handleSerial();
+  serialManager->handleSerial();
 }

@@ -1,4 +1,6 @@
 #pragma once
+#ifndef SERIAL_MANAGER_HPP
+#define SERIAL_MANAGER_HPP
 #include <Arduino.h>
 
 #include "data/config/project_config.hpp"
@@ -6,7 +8,7 @@
 class SerialManager
 {
 public:
-    SerialManager();
+    SerialManager(ProjectConfig *projectConfig);
     virtual ~SerialManager();
 
     void handleSerial();
@@ -37,6 +39,7 @@ private:
     char serialBuffer[1000]; //! Need to find the appropriate size for this - count the maximum possible size of a message
     char tempBuffer[sizeof(serialBuffer) / sizeof(serialBuffer[0])];
     bool newData;
+    ProjectConfig *projectConfig;
 };
 
-extern SerialManager serialManager;
+#endif // SERIAL_MANAGER_HPP
