@@ -9,7 +9,7 @@ WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::setupWifi()
 {
-  if (ENABLE_ADHOC)
+  if (ENABLE_ADHOC || stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
   {
     this->setUpADHOC();
     return;
@@ -51,7 +51,7 @@ void WiFiHandler::setupWifi()
   stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
 }
 
-void WiFiHandler::setUpADHOC()
+void WiFiHandler::adhoc(const char *ssid, const char *password)
 {
   log_i("[INFO]: Setting Access Point...\n");
 
@@ -63,10 +63,39 @@ void WiFiHandler::setUpADHOC()
   Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 
   // You can remove the password parameter if you want the AP to be open.
-  WiFi.softAP(WIFI_SSID, WIFI_PASSWORD, ADHOC_CHANNEL, 0, 3); // AP mode with password
+  WiFi.softAP(ssid, password, ADHOC_CHANNEL, 0, 3); // AP mode with password
 
   WiFi.setTxPower(WIFI_POWER_11dBm);
   stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC);
+}
+
+void WiFiHandler::setUpADHOC()
+{
+  unsigned int ap_ssid_length = sizeof(conf->ap.ssid);
+  unsigned int ap_password_length = sizeof(conf->ap.password);
+
+  char ap_ssid[ap_ssid_length + 1];
+  char ap_password[ap_ssid_length + 1];
+  memcpy(ap_ssid, conf->ap.ssid, ap_ssid_length);
+  memcpy(ap_password, conf->ap.password, ap_password_length);
+
+  ap_ssid[ap_ssid_length] = '\0';         // Null-terminate the string
+  ap_password[ap_password_length] = '\0'; // Null-terminate the string
+  if (ap_ssid[0] == '\0' || NULL)
+  {
+    log_i("[INFO]: No SSID or password has been set.\n");
+    log_i("[INFO]: USing the default value.\r\n");
+    strcpy(ap_ssid, WIFI_SSID);
+  }
+
+  if (ap_password[0] == '\0' || NULL)
+  {
+    log_i("[INFO]: No Password has been set.\n");
+    log_i("[INFO]: Using the default value.\r\n");
+    strcpy(ap_password, WIFI_PASSWORD);
+  }
+
+  this->adhoc(ap_ssid, ap_password);
 }
 
 // we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
@@ -76,18 +105,19 @@ void WiFiHandler::setUpADHOC()
  * @param value - value to store - string.
  * @param location - location to store the value. byte array - conf
  */
-void WiFiHandler::setWiFiConf(const char *value, uint8_t *location)
+void WiFiHandler::setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf)
 {
+  assert(conf != nullptr);
 #if defined(ESP32)
   if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
   {
-    esp_wifi_get_config(WIFI_IF_STA, &*conf);
+    esp_wifi_get_config(WIFI_IF_STA, conf);
 
     memset(location, 0, sizeof(location));
     for (int i = 0; i < sizeof(value) / sizeof(value[0]) && i < sizeof(location); i++)
       location[i] = value[i];
 
-    esp_wifi_set_config(WIFI_IF_STA, &*conf);
+    esp_wifi_set_config(WIFI_IF_STA, conf);
   }
 #endif
 }

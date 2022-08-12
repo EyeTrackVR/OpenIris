@@ -20,11 +20,13 @@ public:
   virtual ~WiFiHandler();
   void setupWifi();
   void setUpADHOC();
-  void setWiFiConf(const char *value, uint8_t *location);
+  void adhoc(const char *ssid, const char *password);
+  void setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf);
   std::unique_ptr<wifi_config_t> conf;
 
 private:
   ProjectConfig *configManager;
   StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager;
+  typedef ProgramStates::DeviceStates::WiFiState_e WiFiState_e;
 };
 #endif // WIFIHANDLER_HPP
