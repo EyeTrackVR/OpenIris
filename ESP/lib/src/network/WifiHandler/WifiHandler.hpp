@@ -20,7 +20,7 @@ public:
   virtual ~WiFiHandler();
   void setupWifi();
   void setUpADHOC();
-  void adhoc(const char *ssid, const char *password);
+  void adhoc(const char *ssid, const char *password, uint8_t channel);
   void setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf);
   std::unique_ptr<wifi_config_t> conf;
 
