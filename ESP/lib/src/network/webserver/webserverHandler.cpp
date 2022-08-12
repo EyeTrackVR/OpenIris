@@ -1,7 +1,6 @@
 #include "webserverHandler.hpp"
 
 /* Constructor with unique_ptr */
-
 APIServer::APIServer(int CONTROL_PORT, CameraHandler *cameraHandler, WiFiHandler *network) : network(network),
                                                                                              server(new AsyncWebServer(CONTROL_PORT)),
                                                                                              cameraHandler(cameraHandler) {}
@@ -13,7 +12,7 @@ void APIServer::startAPIServer()
       HTTP_GET,
       std::bind(&APIServer::command_handler, this, std::placeholders::_1)); */
 
-  //! use lambdas instead of std::bind to avoid the overhead.
+  //! i have changed this to use lambdas instead of std::bind to avoid the overhead. Lambdas are always more preferable.
   this->server->on(
       "/control",
       HTTP_GET, [&](AsyncWebServerRequest *request)
@@ -24,6 +23,7 @@ void APIServer::startAPIServer()
   this->server->begin();
 }
 
+//! To do - change this to use proper Hash Map to remove overhead of conditionals.
 void APIServer::command_handler(AsyncWebServerRequest *request)
 {
   if (request->hasParam("framesize"))
