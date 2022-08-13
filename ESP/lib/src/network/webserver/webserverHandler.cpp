@@ -58,7 +58,6 @@ void APIServer::command_handler(AsyncWebServerRequest *request)
   for (int i = 0; i < params; i++)
   {
     AsyncWebParameter *param = request->getParam(i);
-    // HTTP POST Relay Value
     {
       switch (command_map[param->name().c_str()])
       {
@@ -92,7 +91,7 @@ void APIServer::command_handler(AsyncWebServerRequest *request)
         break;
 #endif // ENABLE_ADHOC
       default:
-        log_d("Command not found");
+        log_e("Command not found");
         break;
       }
     }
