@@ -22,6 +22,12 @@ public:
         const char *name;
         const char *OTAPassword;
         int OTAPort;
+        bool data_json;
+        bool config_json;
+        bool settings_json;
+        String data_json_string;
+        String config_json_string;
+        String settings_json_string;
     };
 
     struct CameraConfig_t

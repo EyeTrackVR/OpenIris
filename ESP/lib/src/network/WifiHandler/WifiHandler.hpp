@@ -23,8 +23,8 @@ public:
   void adhoc(const char *ssid, const char *password, uint8_t channel);
   void setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf);
   std::unique_ptr<wifi_config_t> conf;
-private:
   ProjectConfig *configManager;
+private:
   StateManager<WiFiState_e> *stateManager;
 };
 #endif // WIFIHANDLER_HPP
