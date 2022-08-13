@@ -43,29 +43,29 @@ void setup()
 
   switch (wifiStateManager.getCurrentState())
   {
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnected:
+  case WiFiState_e::WiFiState_Disconnected:
   {
     break;
   }
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Disconnecting:
+  case WiFiState_e::WiFiState_Disconnecting:
   {
     break;
   }
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC:
+  case WiFiState_e::WiFiState_ADHOC:
   {
   }
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected:
+  case WiFiState_e::WiFiState_Connected:
   {
     apiServer->startAPIServer();
     streamServer->startStreamServer();
     log_d("[SETUP]: Starting Stream Server");
     break;
   }
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting:
+  case WiFiState_e::WiFiState_Connecting:
   {
     break;
   }
-  case ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error:
+  case WiFiState_e::WiFiState_Error:
   {
     break;
   }

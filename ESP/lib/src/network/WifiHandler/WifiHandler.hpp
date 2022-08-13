@@ -16,17 +16,15 @@ extern "C"
 class WiFiHandler
 {
 public:
-  WiFiHandler(ProjectConfig *configManager, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager);
+  WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager);
   virtual ~WiFiHandler();
   void setupWifi();
   void setUpADHOC();
   void adhoc(const char *ssid, const char *password, uint8_t channel);
   void setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf);
   std::unique_ptr<wifi_config_t> conf;
-
 private:
   ProjectConfig *configManager;
-  StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager;
-  typedef ProgramStates::DeviceStates::WiFiState_e WiFiState_e;
+  StateManager<WiFiState_e> *stateManager;
 };
 #endif // WIFIHANDLER_HPP

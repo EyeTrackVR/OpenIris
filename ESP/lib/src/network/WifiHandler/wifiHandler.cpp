@@ -1,7 +1,7 @@
 #include "WifiHandler.hpp"
 #include <vector>
 
-WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager) : conf(new wifi_config_t),
+WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager) : conf(new wifi_config_t),
                                                                                                                                configManager(configManager),
                                                                                                                                stateManager(stateManager) {}
 
@@ -15,7 +15,7 @@ void WiFiHandler::setupWifi()
     return;
   }
   log_i("Initializing connection to wifi");
-  stateManager->setState((ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting));
+  stateManager->setState(WiFiState_e::WiFiState_Connecting);
 
   std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
   int connection_timeout = 3000;
@@ -41,14 +41,14 @@ void WiFiHandler::setupWifi()
     else
     {
       log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
-      stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connected);
+      stateManager->setState(WiFiState_e::WiFiState_Connected);
       return;
     }
   }
 
   // we've tried all saved networks, none worked, let's error out
   log_e("Could not connect to any of the save networks, check your Wifi credentials");
-  stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Error);
+  stateManager->setState(WiFiState_e::WiFiState_Error);
 }
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
@@ -66,7 +66,7 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
   WiFi.softAP(ssid, password, channel, 0, 3); // AP mode with password
 
   WiFi.setTxPower(WIFI_POWER_11dBm);
-  stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_ADHOC);
+  stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 }
 
 void WiFiHandler::setUpADHOC()

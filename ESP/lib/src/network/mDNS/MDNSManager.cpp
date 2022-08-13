@@ -6,15 +6,15 @@ void MDNSHandler::startMDNS()
 
   if (MDNS.begin(deviceConfig->name))
   {
-    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Starting);
+    stateManager->setState(MDNSState_e::MDNSState_Starting);
     MDNS.addService("openIrisTracker", "tcp", 80);
     MDNS.addServiceTxt("openIrisTracker", "tcp", "stream_port", String(80));
     log_i("MDNS initialized!");
-    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Started);
+    stateManager->setState(MDNSState_e::MDNSState_Started);
   }
   else
   {
-    stateManager->setState(ProgramStates::DeviceStates::MDNSState_e::MDNSState_Error);
+    stateManager->setState(MDNSState_e::MDNSState_Error);
     log_e("Error initializing MDNS");
   }
 }

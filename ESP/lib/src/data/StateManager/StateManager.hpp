@@ -108,12 +108,21 @@ private:
     T _current_state;
 };
 
-extern StateManager<ProgramStates::DeviceStates::State_e> stateManager;
-extern StateManager<ProgramStates::DeviceStates::WiFiState_e> wifiStateManager;
-extern StateManager<ProgramStates::DeviceStates::WebServerState_e> webServerStateManager;
-extern StateManager<ProgramStates::DeviceStates::MDNSState_e> mdnsStateManager;
-extern StateManager<ProgramStates::DeviceStates::CameraState_e> cameraStateManager;
-extern StateManager<ProgramStates::DeviceStates::ButtonState_e> buttonStateManager;
-extern StateManager<ProgramStates::DeviceStates::StreamState_e> streamStateManager;
+typedef ProgramStates::DeviceStates::State_e State_e;
+typedef ProgramStates::DeviceStates::WiFiState_e WiFiState_e;
+typedef ProgramStates::DeviceStates::WebServerState_e WebServerState_e;
+typedef ProgramStates::DeviceStates::MDNSState_e MDNSState_e;
+typedef ProgramStates::DeviceStates::CameraState_e CameraState_e;
+typedef ProgramStates::DeviceStates::ButtonState_e ButtonState_e;
+typedef ProgramStates::DeviceStates::StreamState_e StreamState_e;
+
+extern StateManager<State_e> stateManager;
+extern StateManager<WiFiState_e> wifiStateManager;
+extern StateManager<WebServerState_e> webServerStateManager;
+extern StateManager<MDNSState_e> mdnsStateManager;
+extern StateManager<CameraState_e> cameraStateManager;
+extern StateManager<ButtonState_e> buttonStateManager;
+extern StateManager<StreamState_e> streamStateManager;
+
 
 #endif // STATEMANAGER_HPP
