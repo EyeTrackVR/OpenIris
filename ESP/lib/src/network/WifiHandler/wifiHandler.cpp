@@ -18,23 +18,18 @@ void WiFiHandler::setupWifi()
   stateManager->setState(WiFiState_e::WiFiState_Connecting);
 
   std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
-  int connection_timeout = 3000;
+  int connection_timeout = 30000; // 30 seconds
+
+  int count = 0;
+  unsigned long currentMillis = millis();
+  unsigned long _previousMillis = currentMillis;
 
   for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
   {
     log_i("Trying to connect to the %s network", networkIterator->ssid);
 
-    int timeSpentConnecting = 0;
     WiFi.begin(networkIterator->ssid, networkIterator->password);
-    int wifi_status = WiFi.status();
-
-    while (timeSpentConnecting < connection_timeout || wifi_status != WL_CONNECTED)
-    {
-      wifi_status = WiFi.status();
-      log_i(".");
-      timeSpentConnecting += 300;
-      delay(300);
-    }
+    count++;
 
     if (!WiFi.isConnected())
       log_i("\n\rCould not connect to %s, trying another network\n\r", networkIterator->ssid);
@@ -44,11 +39,27 @@ void WiFiHandler::setupWifi()
       stateManager->setState(WiFiState_e::WiFiState_Connected);
       return;
     }
-  }
 
-  // we've tried all saved networks, none worked, let's error out
-  log_e("Could not connect to any of the save networks, check your Wifi credentials");
-  stateManager->setState(WiFiState_e::WiFiState_Error);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+      currentMillis = millis();
+      Serial.print(".");
+      delay(300);
+      if (((currentMillis - _previousMillis) >= connection_timeout) && count >= networks->size())
+      {
+        log_i("[INFO]: WiFi connection timed out.\n");
+        // we've tried all saved networks, none worked, let's error out
+        log_e("Could not connect to any of the save networks, check your Wifi credentials");
+        stateManager->setState(WiFiState_e::WiFiState_Error);
+        this->setUpADHOC();
+        log_w("Setting up adhoc");
+        log_w("Please set your WiFi credentials and reboot the device");
+        stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+        return;
+      }
+    }
+  }
 }
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
@@ -71,34 +82,25 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 
 void WiFiHandler::setUpADHOC()
 {
-  unsigned int ap_ssid_length = sizeof(conf->ap.ssid);
-  unsigned int ap_password_length = sizeof(conf->ap.password);
-
-  char ap_ssid[ap_ssid_length + 1];
-  char ap_password[ap_ssid_length + 1];
-  memcpy(ap_ssid, conf->ap.ssid, ap_ssid_length);
-  memcpy(ap_password, conf->ap.password, ap_password_length);
-
-  ap_ssid[ap_ssid_length] = '\0';         // Null-terminate the string
-  ap_password[ap_password_length] = '\0'; // Null-terminate the string
-  if (ap_ssid[0] == '\0' || NULL)
+  size_t ssidLen = strlen((char *)conf->ap.ssid);
+  size_t passwordLen = strlen((char *)conf->ap.password);
+  char ap_ssid[ssidLen + 1];
+  char ap_password[passwordLen + 1];
+  auto ret = esp_wifi_get_config(WIFI_IF_STA, &*conf);
+  if (ret == ESP_OK)
   {
-    log_i("[INFO]: No SSID or password has been set.\n");
-    log_i("[INFO]: USing the default value.\r\n");
+    memcpy(ap_ssid, conf->ap.ssid, ssidLen);
+    memcpy(ap_password, conf->ap.password, passwordLen);
+
+    ap_ssid[ssidLen] = '\0';         // Null-terminate the string
+    ap_password[passwordLen] = '\0'; // Null-terminate the string
+    return;
+  }
+  
+  if (ssidLen == 0)
+  {
     strcpy(ap_ssid, WIFI_SSID);
-  }
-
-  if (ap_password[0] == '\0' || NULL)
-  {
-    log_i("[INFO]: No Password has been set.\n");
-    log_i("[INFO]: Using the default value.\r\n");
     strcpy(ap_password, WIFI_PASSWORD);
-  }
-
-  if (conf->ap.channel == 0 || NULL)
-  {
-    log_i("[INFO]: No channel has been set.\n");
-    log_i("[INFO]: Using the default value.\r\n");
     conf->ap.channel = ADHOC_CHANNEL;
   }
 

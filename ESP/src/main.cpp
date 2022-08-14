@@ -24,7 +24,7 @@ OTA ota(&*deviceConfig);
 std::unique_ptr<SerialManager> serialManager = std::make_unique<SerialManager>(&*deviceConfig);
 std::unique_ptr<WiFiHandler> wifiHandler = std::make_unique<WiFiHandler>(&*deviceConfig, &wifiStateManager);
 std::unique_ptr<LEDManager> ledManager = std::make_unique<LEDManager>(33);
-std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);           //! Create a shared pointer to the camera handler
+std::shared_ptr<CameraHandler> cameraHandler = std::make_shared<CameraHandler>(&*deviceConfig);                          //! Create a shared pointer to the camera handler
 std::unique_ptr<APIServer> apiServer = std::make_unique<APIServer>(CONTROL_SERVER_PORT, &*cameraHandler, &*wifiHandler); //! Dereference the shared pointer to get the address of the camera handler
 std::unique_ptr<MDNSHandler> mdnsHandler = std::make_unique<MDNSHandler>(&mdnsStateManager, &*deviceConfig);
 std::unique_ptr<StreamServer> streamServer = std::make_unique<StreamServer>(STREAM_SERVER_PORT);
@@ -77,5 +77,5 @@ void loop()
 {
   ota.HandleOTAUpdate();
   ledManager->displayStatus();
-  serialManager->handleSerial();
+  // serialManager->handleSerial();
 }
