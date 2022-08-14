@@ -2,8 +2,8 @@
 #include <vector>
 
 WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager) : conf(new wifi_config_t),
-                                                                                                                               configManager(configManager),
-                                                                                                                               stateManager(stateManager) {}
+                                                                                                  configManager(configManager),
+                                                                                                  stateManager(stateManager) {}
 
 WiFiHandler::~WiFiHandler() {}
 

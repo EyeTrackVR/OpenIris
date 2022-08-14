@@ -182,6 +182,7 @@ void APIServer::rebootDevice()
   delay(20000);
   ESP.restart();
 }
+
 void APIServer::factoryReset()
 {
   network->configManager->reset();
