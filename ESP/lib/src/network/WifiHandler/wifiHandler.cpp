@@ -49,12 +49,10 @@ void WiFiHandler::setupWifi()
 			{
 				log_i("[INFO]: WiFi connection timed out.\n");
 				// we've tried all saved networks, none worked, let's error out
-				log_e("Could not connect to any of the save networks, check your Wifi credentials");
+				log_e("Could not connect to any of the saved networks, check your Wifi credentials");
 				stateManager->setState(WiFiState_e::WiFiState_Error);
 				this->iniSTA();
-				log_w("Setting up adhoc");
-				log_w("Please set your WiFi credentials and reboot the device");
-				stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+				log_i("[INFO]: Attempting to connect to hardcoded network from ini file");
 				return;
 			}
 		}
@@ -143,9 +141,9 @@ void WiFiHandler::iniSTA()
 			// we've tried all saved networks, none worked, let's error out
 			log_e("Could not connect to any of the save networks, check your Wifi credentials");
 			stateManager->setState(WiFiState_e::WiFiState_Error);
-			this->iniSTA();
-			log_w("Setting up adhoc");
-			log_w("Please set your WiFi credentials and reboot the device");
+			this->setUpADHOC();
+			log_w("Setting up adhoc mode");
+			log_w("Please use adhoc mode and the app to set your WiFi credentials and reboot the device");
 			stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 			return;
 		}
