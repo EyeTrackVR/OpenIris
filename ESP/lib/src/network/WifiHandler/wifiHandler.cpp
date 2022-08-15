@@ -71,7 +71,7 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 
 	// You can remove the password parameter if you want the AP to be open.
-	WiFi.softAP(ssid, password, channel, 0, 3); // AP mode with password
+	WiFi.softAP(ssid, password, channel); // AP mode with password
 
 	WiFi.setTxPower(WIFI_POWER_11dBm);
 	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
