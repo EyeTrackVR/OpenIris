@@ -77,5 +77,6 @@ void loop()
 {
   ota.HandleOTAUpdate();
   ledManager->displayStatus();
+  apiServer->triggerWifiConfigWrite();
   // serialManager->handleSerial();
 }

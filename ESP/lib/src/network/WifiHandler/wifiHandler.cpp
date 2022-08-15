@@ -1,132 +1,153 @@
 #include "WifiHandler.hpp"
 #include <vector>
 
-WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager) : conf(new wifi_config_t),
-                                                                                                  configManager(configManager),
-                                                                                                  stateManager(stateManager) {}
+WiFiHandler::WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager) : configManager(configManager),
+																								  stateManager(stateManager) {}
 
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::setupWifi()
 {
-  if (ENABLE_ADHOC || stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
-  {
-    this->setUpADHOC();
-    return;
-  }
-  log_i("Initializing connection to wifi");
-  stateManager->setState(WiFiState_e::WiFiState_Connecting);
+	if (ENABLE_ADHOC || stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+	{
+		this->setUpADHOC();
+		return;
+	}
+	log_i("Initializing connection to wifi");
+	stateManager->setState(WiFiState_e::WiFiState_Connecting);
 
-  std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
-  int connection_timeout = 30000; // 30 seconds
+	std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
+	int connection_timeout = 30000; // 30 seconds
 
-  int count = 0;
-  unsigned long currentMillis = millis();
-  unsigned long _previousMillis = currentMillis;
+	int count = 0;
+	unsigned long currentMillis = millis();
+	unsigned long _previousMillis = currentMillis;
 
-  for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
-  {
-    log_i("Trying to connect to the %s network", networkIterator->ssid);
+	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
+	{
+		log_i("Trying to connect to the %s network", networkIterator->ssid);
 
-    WiFi.begin(networkIterator->ssid, networkIterator->password);
-    count++;
+		WiFi.begin(networkIterator->ssid.c_str(), networkIterator->password.c_str());
+		count++;
 
-    if (!WiFi.isConnected())
-      log_i("\n\rCould not connect to %s, trying another network\n\r", networkIterator->ssid);
-    else
-    {
-      log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
-      stateManager->setState(WiFiState_e::WiFiState_Connected);
-      return;
-    }
+		if (!WiFi.isConnected())
+			log_i("\n\rCould not connect to %s, trying another network\n\r", networkIterator->ssid);
+		else
+		{
+			log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
+			stateManager->setState(WiFiState_e::WiFiState_Connected);
+			return;
+		}
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-      stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
-      currentMillis = millis();
-      Serial.print(".");
-      delay(300);
-      if (((currentMillis - _previousMillis) >= connection_timeout) && count >= networks->size())
-      {
-        log_i("[INFO]: WiFi connection timed out.\n");
-        // we've tried all saved networks, none worked, let's error out
-        log_e("Could not connect to any of the save networks, check your Wifi credentials");
-        stateManager->setState(WiFiState_e::WiFiState_Error);
-        this->setUpADHOC();
-        log_w("Setting up adhoc");
-        log_w("Please set your WiFi credentials and reboot the device");
-        stateManager->setState(WiFiState_e::WiFiState_ADHOC);
-        return;
-      }
-    }
-  }
+		while (WiFi.status() != WL_CONNECTED)
+		{
+			stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+			currentMillis = millis();
+			Serial.print(".");
+			delay(300);
+			if (((currentMillis - _previousMillis) >= connection_timeout) && count >= networks->size())
+			{
+				log_i("[INFO]: WiFi connection timed out.\n");
+				// we've tried all saved networks, none worked, let's error out
+				log_e("Could not connect to any of the save networks, check your Wifi credentials");
+				stateManager->setState(WiFiState_e::WiFiState_Error);
+				this->iniSTA();
+				log_w("Setting up adhoc");
+				log_w("Please set your WiFi credentials and reboot the device");
+				stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+				return;
+			}
+		}
+	}
 }
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 {
-  log_i("[INFO]: Setting Access Point...\n");
+	log_i("[INFO]: Setting Access Point...\n");
 
-  log_i("[INFO]: Configuring access point...\n");
-  WiFi.mode(WIFI_AP);
+	log_i("[INFO]: Configuring access point...\n");
+	WiFi.mode(WIFI_AP);
 
-  Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
-  IPAddress IP = WiFi.softAPIP();
-  Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
+	Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
+	IPAddress IP = WiFi.softAPIP();
+	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 
-  // You can remove the password parameter if you want the AP to be open.
-  WiFi.softAP(ssid, password, channel, 0, 3); // AP mode with password
+	// You can remove the password parameter if you want the AP to be open.
+	WiFi.softAP(ssid, password, channel, 0, 3); // AP mode with password
 
-  WiFi.setTxPower(WIFI_POWER_11dBm);
-  stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+	WiFi.setTxPower(WIFI_POWER_11dBm);
+	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 }
 
+/*
+* *
+*/
 void WiFiHandler::setUpADHOC()
 {
-  size_t ssidLen = strlen((char *)conf->ap.ssid);
-  size_t passwordLen = strlen((char *)conf->ap.password);
-  char ap_ssid[ssidLen + 1];
-  char ap_password[passwordLen + 1];
-  auto ret = esp_wifi_get_config(WIFI_IF_STA, &*conf);
-  if (ret == ESP_OK)
-  {
-    memcpy(ap_ssid, conf->ap.ssid, ssidLen);
-    memcpy(ap_password, conf->ap.password, passwordLen);
+	log_i("[INFO]: Setting Access Point...\n");
+	size_t ssidLen = strlen(configManager->getAPWifiConfig()->ssid.c_str());
+	size_t passwordLen = strlen(configManager->getAPWifiConfig()->password.c_str());
+	char ssid[ssidLen + 1];
+	char password[passwordLen + 1];
+	uint8_t channel = configManager->getAPWifiConfig()->channel;
+	if (ssidLen > 0 || passwordLen > 0)
+	{
+		strcpy(ssid, configManager->getAPWifiConfig()->ssid.c_str());
+		strcpy(password, configManager->getAPWifiConfig()->password.c_str());
+		channel = configManager->getAPWifiConfig()->channel;
+	}
+	else
+	{
+		strcpy(ssid, WIFI_AP_SSID);
+		strcpy(password, WIFI_AP_PASSWORD);
+		channel = ADHOC_CHANNEL;
+	}
 
-    ap_ssid[ssidLen] = '\0';         // Null-terminate the string
-    ap_password[passwordLen] = '\0'; // Null-terminate the string
-    return;
-  }
-  
-  if (ssidLen == 0)
-  {
-    strcpy(ap_ssid, WIFI_SSID);
-    strcpy(ap_password, WIFI_PASSWORD);
-    conf->ap.channel = ADHOC_CHANNEL;
-  }
+	this->adhoc(ssid, password, channel);
 
-  this->adhoc(ap_ssid, ap_password, conf->ap.channel);
+	log_i("[INFO]: Configuring access point...\n");
+	log_d("[DEBUG]: ssid: %s\n", ssid);
+	log_d("[DEBUG]: password: %s\n", password);
+	log_d("[DEBUG]: channel: %d\n", channel);
 }
 
-// we can't assign wifiManager.resetSettings(); to reset, somehow it gets called straight away.
-/**
- * @brief Resets the wifi settings to the chosen settings.
- *
- * @param value - value to store - string.
- * @param location - location to store the value. byte array - conf
- */
-void WiFiHandler::setWiFiConf(const char *value, uint8_t *location, wifi_config_t *conf)
+void WiFiHandler::iniSTA()
 {
-  assert(conf != nullptr);
-#if defined(ESP32)
-  if (WiFiGenericClass::getMode() != WIFI_MODE_NULL)
-  {
-    esp_wifi_get_config(WIFI_IF_STA, conf);
+	log_i("[INFO]: Setting up station...\n");
+	int connection_timeout = 30000; // 30 seconds
+	unsigned long currentMillis = millis();
+	unsigned long _previousMillis = currentMillis;
 
-    memset(location, 0, sizeof(location));
-    for (int i = 0; i < sizeof(value) / sizeof(value[0]) && i < sizeof(location); i++)
-      location[i] = value[i];
+	log_i("Trying to connect to the %s network", WIFI_SSID);
 
-    esp_wifi_set_config(WIFI_IF_STA, conf);
-  }
-#endif
+	WiFi.begin(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+
+	if (!WiFi.isConnected())
+		log_i("\n\rCould not connect to %s, please try another network\n\r", WIFI_SSID);
+	else
+	{
+		log_i("\n\rSuccessfully connected to %s\n\r", WIFI_SSID);
+		stateManager->setState(WiFiState_e::WiFiState_Connected);
+		return;
+	}
+
+	while (WiFi.status() != WL_CONNECTED)
+	{
+		stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+		currentMillis = millis();
+		Serial.print(".");
+		delay(300);
+		if ((currentMillis - _previousMillis) >= connection_timeout)
+		{
+			log_i("[INFO]: WiFi connection timed out.\n");
+			// we've tried all saved networks, none worked, let's error out
+			log_e("Could not connect to any of the save networks, check your Wifi credentials");
+			stateManager->setState(WiFiState_e::WiFiState_Error);
+			this->iniSTA();
+			log_w("Setting up adhoc");
+			log_w("Please set your WiFi credentials and reboot the device");
+			stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+			return;
+		}
+	}
 }

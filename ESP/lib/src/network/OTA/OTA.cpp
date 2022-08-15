@@ -9,7 +9,7 @@ void OTA::SetupOTA()
     log_e("Setting up OTA updates");
     auto localConfig = _deviceConfig->getDeviceConfig();
 
-    if (strcmp(localConfig->OTAPassword, "") == 0)
+    if (strcmp(localConfig->OTAPassword.c_str(), "") == 0)
     {
         log_e("THE PASSWORD IS REQUIRED, [[ABORTING]]");
         return;

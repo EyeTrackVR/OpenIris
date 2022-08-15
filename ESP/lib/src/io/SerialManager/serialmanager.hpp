@@ -30,6 +30,7 @@ public:
     char wifi_config_name[32];
     char wifi_config_ssid[100];
     char wifi_config_password[100];
+    uint8_t wifi_config_channel;
 
 private:
 

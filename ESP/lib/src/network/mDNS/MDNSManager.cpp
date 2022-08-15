@@ -4,7 +4,7 @@ void MDNSHandler::startMDNS()
 {
   ProjectConfig::DeviceConfig_t *deviceConfig = configManager->getDeviceConfig();
 
-  if (MDNS.begin(deviceConfig->name))
+  if (MDNS.begin(deviceConfig->name.c_str()))
   {
     stateManager->setState(MDNSState_e::MDNSState_Starting);
     MDNS.addService("openIrisTracker", "tcp", 80);

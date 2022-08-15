@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <preferencesAPI.hpp>
 #include <vector>
+#include <string>
 
 #include "data/utilities/Observer.hpp"
 
@@ -19,8 +20,8 @@ public:
 
     struct DeviceConfig_t
     {
-        const char *name;
-        const char *OTAPassword;
+        std::string name;
+        std::string OTAPassword;
         int OTAPort;
         bool data_json;
         bool config_json;
@@ -40,9 +41,17 @@ public:
 
     struct WiFiConfig_t
     {
-        const char *name;
-        const char *ssid;
-        const char *password;
+        std::string name;
+        std::string ssid;
+        std::string password;
+        uint8_t channel;
+    };
+
+    struct AP_WiFiConfig_t
+    {
+        std::string ssid;
+        std::string password;
+        uint8_t channel;
     };
 
     struct TrackerConfig_t
@@ -50,16 +59,19 @@ public:
         DeviceConfig_t device;
         CameraConfig_t camera;
         std::vector<WiFiConfig_t> networks;
+        AP_WiFiConfig_t ap_network;
     };
 
     DeviceConfig_t *getDeviceConfig() { return &this->config.device; }
     CameraConfig_t *getCameraConfig() { return &this->config.camera; }
     std::vector<WiFiConfig_t> *getWifiConfigs() { return &this->config.networks; }
+    AP_WiFiConfig_t *getAPWifiConfig() { return &this->config.ap_network; }
 
     void setDeviceConfig(const char *name, const char *OTAPassword, int *OTAPort, bool shouldNotify);
     void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify);
-    void setWifiConfig(const char *networkName, const char *ssid, const char *password, bool shouldNotify);
-    
+    void setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool shouldNotify);
+    void setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool shouldNotify);
+
 private:
     const char *configFileName;
     TrackerConfig_t config;

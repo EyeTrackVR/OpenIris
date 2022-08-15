@@ -2,7 +2,7 @@
 
 Preferences preferences;
 
-ProjectConfig::ProjectConfig() : Config(&preferences ,"config"), _already_loaded(false) {}
+ProjectConfig::ProjectConfig() : Config(&preferences, "config"), _already_loaded(false) {}
 
 ProjectConfig::~ProjectConfig() {}
 
@@ -18,18 +18,27 @@ void ProjectConfig::initConfig()
         "",
         0,
     };
+
     this->config.camera = {
         0,
         0,
         0,
         0,
     };
+
     this->config.networks = {
         {
             "",
             "",
             "",
+            0,
         },
+    };
+
+    this->config.ap_network = {
+        "",
+        "",
+        0,
     };
 }
 
@@ -42,13 +51,41 @@ void ProjectConfig::load()
         return;
     }
 
-    bool device_success = this->read("device", this->config.device);
-    bool camera_success = this->read("camera", this->config.camera);
-    bool network_info_success = this->read("network_info", this->config.networks);
+    bool device_name_success = this->read("device_name", this->config.device.name);
+    bool device_otapassword_success = this->read("ota_pass", this->config.device.OTAPassword);
+    bool device_otaport_success = this->read("ota_port", this->config.device.OTAPort);
+
+    bool device_success = device_name_success && device_otapassword_success && device_otaport_success;
+
+    bool camera_vflip_success = this->read("camera_vflip", this->config.camera.vflip);
+    bool camera_framesize_success = this->read("cameraFrmsz", this->config.camera.framesize);
+    bool camera_href_success = this->read("camera_href", this->config.camera.href);
+    bool camera_quality_success = this->read("camera_quality", this->config.camera.quality);
+
+    bool camera_success = camera_vflip_success && camera_framesize_success && camera_href_success && camera_quality_success;
+
+    bool network_info_success;
+    for (int i = 0; i < this->config.networks.size(); i++)
+    {
+        char buff[25];
+        snprintf(buff, sizeof(buff), "%d_name", i);
+        bool networks_name_success = this->read(buff, this->config.networks[i].name);
+        snprintf(buff, sizeof(buff), "%d_ssid", i);
+        bool networks_ssid_success = this->read(buff, this->config.networks[i].ssid);
+        snprintf(buff, sizeof(buff), "%d_password", i);
+        bool networks_password_success = this->read(buff, this->config.networks[i].password);
+        snprintf(buff, sizeof(buff), "%d_channel", i);
+        bool networks_channel_success = this->read(buff, this->config.networks[i].channel);
+
+        network_info_success = networks_name_success && networks_ssid_success && networks_password_success && networks_channel_success;
+    }
 
     if (!device_success || !camera_success || !network_info_success)
     {
-        log_e("Failed to load project config");
+        log_e("Failed to load project config - Generating config and restarting");
+        save();
+        delay(1000);
+        ESP.restart();
         return;
     }
 
@@ -59,9 +96,28 @@ void ProjectConfig::load()
 void ProjectConfig::save()
 {
     log_d("Saving project config");
-    this->write("device", this->config.device);
-    this->write("camera", this->config.camera);
-    this->write("network_info", this->config.networks);
+
+    this->write("device_name", this->config.device.name);
+    this->write("ota_pass", this->config.device.OTAPassword);
+    this->write("ota_port", this->config.device.OTAPort);
+
+    this->write("camera_vflip", this->config.camera.vflip);
+    this->write("cameraFrmsz", this->config.camera.framesize);
+    this->write("camera_href", this->config.camera.href);
+    this->write("camera_quality", this->config.camera.quality);
+
+    for (int i = 0; i < this->config.networks.size(); i++)
+    {
+        char buff[25];
+        snprintf(buff, sizeof(buff), "%d_name", i);
+        this->write(buff, this->config.networks[i].name);
+        snprintf(buff, sizeof(buff), "%d_ssid", i);
+        this->write(buff, this->config.networks[i].ssid);
+        snprintf(buff, sizeof(buff), "%d_password", i);
+        this->write(buff, this->config.networks[i].password);
+        snprintf(buff, sizeof(buff), "%d_channel", i);
+        this->write(buff, this->config.networks[i].channel);
+    }
 }
 
 void ProjectConfig::reset()
@@ -79,8 +135,8 @@ void ProjectConfig::setDeviceConfig(const char *name, const char *OTAPassword, i
 {
     log_d("Updating device config");
     this->config.device = {
-        name,
-        OTAPassword,
+        (char *)name,
+        (char *)OTAPassword,
         *OTAPort,
     };
     if (shouldNotify)
@@ -105,13 +161,13 @@ void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t 
     }
 }
 
-void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, const char *password, bool shouldNotify)
+void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool shouldNotify)
 {
     WiFiConfig_t *networkToUpdate = nullptr;
 
     for (int i = 0; i < this->config.networks.size(); i++)
     {
-        if (strcmp(this->config.networks[i].name, networkName) == 0)
+        if (strcmp(this->config.networks[i].name.c_str(), networkName) == 0)
             networkToUpdate = &this->config.networks[i];
     }
 
@@ -119,13 +175,29 @@ void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, con
     {
         this->config.networks = {
             {
-                networkName,
-                ssid,
-                password,
+                (char *)networkName,
+                (char *)ssid,
+                (char *)password,
+                *channel,
             },
         };
         if (shouldNotify)
             this->notify(ObserverEvent::networksConfigUpdated);
     }
     log_d("Updating wifi config");
+}
+
+void ProjectConfig::setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool shouldNotify)
+{
+    this->config.ap_network = {
+        (char *)ssid,
+        (char *)password,
+        *channel,
+    };
+
+    log_d("Updating access point config");
+    if (shouldNotify)
+    {
+        this->notify(ObserverEvent::networksConfigUpdated);
+    }
 }

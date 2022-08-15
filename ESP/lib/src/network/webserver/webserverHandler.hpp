@@ -21,7 +21,6 @@
 #include "io/camera/cameraHandler.hpp"
 #include "network/WifiHandler/WifiHandler.hpp"
 
-
 class APIServer
 {
 private:
@@ -62,11 +61,29 @@ private:
     /* static const char *MIMETYPE_JPG; */
     /* static const char *MIMETYPE_ICO; */
     static const char *MIMETYPE_JSON;
+    static bool ssid_write;
+    static bool pass_write;
+    static bool channel_write;
+
+    struct LocalWifiConfig
+    {
+        std::string ssid;
+        std::string pass;
+        uint8_t channel;
+    };
+
+    struct WifiConfig
+    {
+        std::vector<LocalWifiConfig> local_WifiConfig;
+    };
+
+    WifiConfig wifiConfig;
 
 public:
     APIServer(int CONTROL_PORT, CameraHandler *cameraHandler, WiFiHandler *network);
     void begin();
     void startAPIServer();
+    void triggerWifiConfigWrite();
     void findParam(AsyncWebServerRequest *request, const char *param, String &value);
 
     class API_Utilities
