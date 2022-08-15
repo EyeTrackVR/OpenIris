@@ -14,9 +14,15 @@ void ProjectConfig::initConfig()
 {
     begin();
     this->config.device = {
+        "EyeTrackVR",
+        "",
+        3232,
+        false,
+        false,
+        false,
         "",
         "",
-        0,
+        ""
     };
 
     this->config.camera = {
