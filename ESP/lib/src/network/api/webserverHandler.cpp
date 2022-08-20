@@ -25,7 +25,7 @@ void APIServer::begin()
 	char buffer[1000];
 	snprintf(buffer, sizeof(buffer), "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$", this->api_url.c_str());
 	log_d("API URL: %s", buffer);
-	server->on("/control", 0b01111111, [&](AsyncWebServerRequest *request)
+	server->on(buffer, 0b01111111, [&](AsyncWebServerRequest *request)
 			   { handleRequest(request); });
 
 	server->begin();
@@ -35,11 +35,11 @@ void APIServer::setupServer()
 {
 	// Set case NULL_METHOD routes
 	routes.emplace("wifi", &APIServer::setWiFi);
-	routes.emplace("reset_config", &APIServer::factoryReset);
-	routes.emplace("reboot_device", &APIServer::rebootDevice);
-	routes.emplace("set_json", &APIServer::handleJson);
-	routes.emplace("set_camera", &APIServer::setCamera);
-	routes.emplace("delete_route", &APIServer::deleteRoute);
+	routes.emplace("resetConfig", &APIServer::factoryReset);
+	routes.emplace("rebootDevice", &APIServer::rebootDevice);
+	routes.emplace("setJson", &APIServer::handleJson);
+	routes.emplace("setCamera", &APIServer::setCamera);
+	routes.emplace("deleteRoute", &APIServer::deleteRoute);
 
 	routeHandler("builtin", routes); // add new map to the route map
 }

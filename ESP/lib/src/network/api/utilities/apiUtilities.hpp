@@ -41,7 +41,6 @@ protected:
 	void writeFile(fs::FS &fs, std::string path, std::string message); */
 	std::string shaEncoder(std::string data);
 	std::unordered_map<int, std::string> _networkMethodsMap = {
-		{0, "NULL"},
 		{0b00000001, "GET"},
 		{0b00000010, "POST"},
 		{0b00001000, "PUT"},
@@ -52,7 +51,6 @@ protected:
 
 	enum RequestMethods
 	{
-		NULL_METHOD,
 		GET,
 		POST,
 		PUT,
@@ -62,7 +60,6 @@ protected:
 	};
 
 	std::unordered_map<int, RequestMethods> _networkMethodsMap_enum = {
-		{0, NULL_METHOD},
 		{0b00000001, GET},
 		{0b00000010, POST},
 		{0b00001000, PUT},
