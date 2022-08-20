@@ -25,7 +25,7 @@ void APIServer::begin()
 	char buffer[1000];
 	snprintf(buffer, sizeof(buffer), "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$", this->api_url.c_str());
 	log_d("API URL: %s", buffer);
-	server->on(buffer, 0b01111111, [&](AsyncWebServerRequest *request)
+	server->on("/control", 0b01111111, [&](AsyncWebServerRequest *request)
 			   { handleRequest(request); });
 
 	server->begin();
