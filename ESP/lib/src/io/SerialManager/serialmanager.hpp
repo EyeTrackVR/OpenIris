@@ -16,28 +16,28 @@
 class SerialManager
 {
 public:
-    SerialManager(ProjectConfig *projectConfig);
-    virtual ~SerialManager();
+	SerialManager(ProjectConfig *projectConfig);
+	virtual ~SerialManager();
 
-    void begin();
-    void handleSerial();
+	void begin();
+	void handleSerial();
 
-    friend void readStr(const char *inStr);
+	friend void readStr(const char *inStr);
 
 protected:
-    ProjectConfig *projectConfig;
-    std::unique_ptr<serialStr> serReader;
+	ProjectConfig *projectConfig;
+	std::unique_ptr<serialStr> serReader;
 
-    enum Serial_Commands
-    {
-        NO_INPUT,
-        DEVICE_CONFIG,
-        CAMERA_CONFIG,
-        WIFI_CONFIG
-    };
+	enum Serial_Commands
+	{
+		NO_INPUT,
+		DEVICE_CONFIG,
+		CAMERA_CONFIG,
+		WIFI_CONFIG
+	};
 
-    static std::unordered_map<std::string, Serial_Commands> command_map;
-    StaticJsonDocument<1024> jsonDoc;
+	static std::unordered_map<std::string, Serial_Commands> command_map;
+	StaticJsonDocument<1024> jsonDoc;
 };
 
 #endif // SERIAL_MANAGER_HPP

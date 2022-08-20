@@ -10,25 +10,25 @@
 class WiFiHandler
 {
 public:
-  WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager,
-              std::string ssid,
-              std::string password,
-              uint8_t channel);
-  virtual ~WiFiHandler();
-  void setupWifi();
+	WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager,
+				std::string ssid,
+				std::string password,
+				uint8_t channel);
+	virtual ~WiFiHandler();
+	void setupWifi();
 
-  ProjectConfig *configManager;
-  StateManager<WiFiState_e> *stateManager;
+	ProjectConfig *configManager;
+	StateManager<WiFiState_e> *stateManager;
 
-  bool _enable_adhoc;
+	bool _enable_adhoc;
 
 private:
-  void setUpADHOC();
-  void adhoc(const char *ssid, const char *password, uint8_t channel);
-  void iniSTA();
+	void setUpADHOC();
+	void adhoc(const char *ssid, const char *password, uint8_t channel);
+	void iniSTA();
 
-  std::string ssid;
-  std::string password;
-  uint8_t channel;
+	std::string ssid;
+	std::string password;
+	uint8_t channel;
 };
 #endif // WIFIHANDLER_HPP
