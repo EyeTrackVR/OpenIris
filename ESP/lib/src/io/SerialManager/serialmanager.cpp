@@ -1,126 +1,83 @@
 #include "serialmanager.hpp"
 
+std::unordered_map<std::string, SerialManager::Serial_Commands> SerialManager::command_map = {
+    {"", NO_INPUT},
+    {"device_config", DEVICE_CONFIG},
+    {"camera_config", CAMERA_CONFIG},
+    {"wifi_config", WIFI_CONFIG}};
+
+void readStr(const char *inStr);
+
 SerialManager::SerialManager(ProjectConfig *projectConfig) : projectConfig(projectConfig),
-                                                             serialManagerActive(false),
-                                                             newData(false),
-                                                             tempBuffer{0},
-                                                             serialBuffer{0},
-                                                             device_config_name{0},
-                                                             device_config_OTAPassword{0},
-                                                             device_config_OTAPort(0),
-                                                             camera_config_vflip{0},
-                                                             camera_config_href{0},
-                                                             camera_config_framesize{0},
-                                                             camera_config_quality{0},
-                                                             wifi_config_name{0},
-                                                             wifi_config_ssid{0},
-                                                             wifi_config_password{0},
-                                                             wifi_config_channel(0) {}
+                                                             serReader(std::make_unique<serialStr>())
+{
+}
 
 SerialManager::~SerialManager() {}
 
-void SerialManager::listenToSerial(unsigned long timeout)
+void SerialManager::begin()
 {
-    log_d("Listening to serial");
-    serialManagerActive = true;
-    Serial.setTimeout(timeout);
-
-    static bool recvInProgress = false;
-    static uint8_t index = 0;  // index
-    char startDelimiter = '<'; //! we need to decide on a delimiter for the start of a message
-    char endDelimiter = '>';   //! we need to decide on a delimiter for the end of a message
-    char receivedChar;         // to test for received data on the line
-
-    while ((Serial.available() > 0) && !newData)
-    {
-        serialManagerActive = true;
-        receivedChar = Serial.read();
-        if (recvInProgress)
-        {
-            if (receivedChar != endDelimiter)
-            {
-                serialBuffer[index] = receivedChar;
-                index++;
-                if (index >= sizeof(serialBuffer))
-                {
-                    log_e("Serial buffer overflow");
-                    index = 0;
-                    recvInProgress = false;
-                }
-            }
-            else
-            {
-                recvInProgress = false;
-                serialBuffer[index] = '\0';
-                index = 0;
-                newData = true;
-            }
-        }
-        else
-        {
-            if (receivedChar == startDelimiter)
-            {
-                recvInProgress = true;
-            }
-        }
-    }
-    serialManagerActive = false;
+    serReader->setCallback(readStr);
 }
 
-void SerialManager::parseData()
+void readStr(const char *inStr)
 {
-    log_d("Parsing data");
-    char *strtokIndx; // this is used by strtok() as an index
+    Serial.print("command : ");
+    Serial.println(inStr);
+    std::string raw = inStr;
+    std::vector<std::string> command;
+    Helpers::split(raw, ":", command); //! gives us the command and the value - "command:value"
+    std::vector<std::string> command_value;
+    Helpers::split(command[1], ",", command_value); //! gives us the command and the value - "command:value"
 
-    //! Parse the data
-    //* Device Config *//
-    strtokIndx = strtok(tempBuffer, ",");   // get the first part
-    strcpy(device_config_name, strtokIndx); // copy it to buffer
+    //! The following line uses strdup to return a char* to lwrCase
+    char *lwr_case = strdup(command[0].c_str());
+    lwrCase(lwr_case); //! converts the command to lowercase
 
-    strtokIndx = strtok(NULL, ","); // get the second part
-    strcpy(device_config_OTAPassword, strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    device_config_OTAPort = atoi(strtokIndx);
-
-    //* Camera Config *//
-    strtokIndx = strtok(NULL, ",");
-    camera_config_vflip = atoi(strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    camera_config_framesize = atoi(strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    camera_config_href = atoi(strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    camera_config_quality = atoi(strtokIndx);
-
-    //* Wifi Config *//
-    strtokIndx = strtok(tempBuffer, ",");
-    strcpy(wifi_config_name, strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    strcpy(wifi_config_ssid, strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    strcpy(wifi_config_password, strtokIndx);
-
-    strtokIndx = strtok(NULL, ",");
-    wifi_config_channel = atoi(strtokIndx);
+    switch (SerialManager::command_map[lwr_case])
+    {
+    case SerialManager::NO_INPUT:
+        break;
+    case SerialManager::DEVICE_CONFIG:
+        break;
+    case SerialManager::CAMERA_CONFIG:
+        break;
+    case SerialManager::WIFI_CONFIG:
+        break;
+    }
 }
 
 void SerialManager::handleSerial()
 {
-    listenToSerial(30000L); // test for serial input every 30 seconds
-    if (newData)            // input received
+    if (Serial.available() > 0)
     {
-        strcpy(tempBuffer, serialBuffer);                                                                                                 // this temporary copy is necessary to protect the original data because strtok() used in parseData() replaces the commas with \0
-        parseData();                                                                                                                      // split the data into tokens and store them in the data structure
-        projectConfig->setDeviceConfig(device_config_name, device_config_OTAPassword, &device_config_OTAPort, true);                       // set the values in the project config
-        projectConfig->setCameraConfig(&camera_config_vflip, &camera_config_framesize, &camera_config_href, &camera_config_quality, true); // set the values in the project config
-        projectConfig->setWifiConfig(wifi_config_name, wifi_config_ssid, wifi_config_password, &wifi_config_channel, true);                  // set the values in the project config
-        projectConfig->save();                                                                                                             // save the config to the EEPROM
-        newData = false;                                                                                                                  // reset new data
+        delay(10);
+        std::string raw = Serial.readStringUntil('#').c_str();
+        // String s = "{\"a\":\"b\"}";
+
+        while (Serial.available() > 0)
+        {
+            Serial.read();
+        }
+        log_d("Received Serial Data: %s", raw.c_str());
+
+        DeserializationError error = deserializeJson(jsonDoc, raw);
+        if (error)
+        {
+            log_e("deserializeJson() failed: %s", error.c_str());
+            return;
+        }
+
+        const char *device_config_name = jsonDoc["device_config_name"];
+        const char *device_config_OTAPassword = jsonDoc["device_config_OTAPassword"];
+        const char *device_config_OTAPort = jsonDoc["device_config_OTAPort"];
+        const char *camera_config_vflip = jsonDoc["camera_config_vflip"];
+        const char *camera_config_href = jsonDoc["camera_config_href"];
+        const char *camera_config_framesize = jsonDoc["camera_config_framesize"];
+        const char *camera_config_quality = jsonDoc["camera_config_quality"];
+        const char *wifi_config_name = jsonDoc["wifi_config_name"];
+        const char *wifi_config_ssid = jsonDoc["wifi_config_ssid"];
+        const char *wifi_config_password = jsonDoc["wifi_config_password"];
+        const char *wifi_config_channel = jsonDoc["wifi_config_channel"];
     }
 }

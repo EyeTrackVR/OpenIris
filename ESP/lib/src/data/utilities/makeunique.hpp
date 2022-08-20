@@ -1,12 +1,10 @@
 #pragma once
+#ifndef MAKE_UNIQUE_HPP
+#define MAKE_UNIQUE_HPP
 #include <memory>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
-namespace Utilities
-{
-
-}
 
 /**
  * @brief override the STD namespace to add make_unique function
@@ -54,3 +52,5 @@ namespace std
     typename _Unique_if<T>::_Known_bound
     make_unique(Args &&...) = delete;
 }
+
+#endif // !MAKE_UNIQUE_HPP

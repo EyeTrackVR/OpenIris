@@ -1,4 +1,6 @@
 #pragma once
+#ifndef OBSERVER_HPP
+#define OBSERVER_HPP
 #include <set>
 
 namespace ObserverEvent
@@ -45,3 +47,5 @@ public:
     }
   }
 };
+
+#endif // !OBSERVER_HPP

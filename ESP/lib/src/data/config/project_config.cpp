@@ -22,8 +22,7 @@ void ProjectConfig::initConfig()
         false,
         "",
         "",
-        ""
-    };
+        ""};
 
     this->config.camera = {
         0,
@@ -38,6 +37,7 @@ void ProjectConfig::initConfig()
             "",
             "",
             0,
+            false,
         },
     };
 
@@ -45,6 +45,7 @@ void ProjectConfig::initConfig()
         "",
         "",
         0,
+        false,
     };
 }
 
@@ -82,8 +83,9 @@ void ProjectConfig::load()
         bool networks_password_success = this->read(buff, this->config.networks[i].password);
         snprintf(buff, sizeof(buff), "%d_channel", i);
         bool networks_channel_success = this->read(buff, this->config.networks[i].channel);
+        bool networks_adhoc_success = this->read(buff, this->config.networks[i].adhoc);
 
-        network_info_success = networks_name_success && networks_ssid_success && networks_password_success && networks_channel_success;
+        network_info_success = networks_name_success && networks_ssid_success && networks_password_success && networks_channel_success && networks_adhoc_success;
     }
 
     if (!device_success || !camera_success || !network_info_success)
@@ -123,7 +125,13 @@ void ProjectConfig::save()
         this->write(buff, this->config.networks[i].password);
         snprintf(buff, sizeof(buff), "%d_channel", i);
         this->write(buff, this->config.networks[i].channel);
+        this->write(buff, this->config.networks[i].adhoc);
+
     }
+
+    log_i("Project config saved and system is rebooting");
+    delay(20000);
+    ESP.restart();
 }
 
 void ProjectConfig::reset()
@@ -167,7 +175,7 @@ void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t 
     }
 }
 
-void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool shouldNotify)
+void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify)
 {
     WiFiConfig_t *networkToUpdate = nullptr;
 
@@ -185,6 +193,7 @@ void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, con
                 (char *)ssid,
                 (char *)password,
                 *channel,
+                adhoc,
             },
         };
         if (shouldNotify)
@@ -193,12 +202,13 @@ void ProjectConfig::setWifiConfig(const char *networkName, const char *ssid, con
     log_d("Updating wifi config");
 }
 
-void ProjectConfig::setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool shouldNotify)
+void ProjectConfig::setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify)
 {
     this->config.ap_network = {
         (char *)ssid,
         (char *)password,
         *channel,
+        adhoc,
     };
 
     log_d("Updating access point config");

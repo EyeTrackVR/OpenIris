@@ -70,6 +70,7 @@ private:
         std::string ssid;
         std::string pass;
         uint8_t channel;
+        bool adhoc;
     };
 
     struct WifiConfig

@@ -45,6 +45,7 @@ public:
         std::string ssid;
         std::string password;
         uint8_t channel;
+        bool adhoc;
     };
 
     struct AP_WiFiConfig_t
@@ -52,6 +53,7 @@ public:
         std::string ssid;
         std::string password;
         uint8_t channel;
+        bool adhoc;
     };
 
     struct TrackerConfig_t
@@ -69,8 +71,8 @@ public:
 
     void setDeviceConfig(const char *name, const char *OTAPassword, int *OTAPort, bool shouldNotify);
     void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify);
-    void setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool shouldNotify);
-    void setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool shouldNotify);
+    void setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify);
+    void setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify);
 
 private:
     const char *configFileName;

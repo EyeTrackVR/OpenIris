@@ -8,7 +8,9 @@ void MDNSHandler::startMDNS()
   {
     stateManager->setState(MDNSState_e::MDNSState_Starting);
     MDNS.addService("openIrisTracker", "tcp", 80);
-    MDNS.addServiceTxt("openIrisTracker", "tcp", "stream_port", String(80));
+    char port[20];
+    //!Add service needs leading _ on ESP32 implementation for some reason (according to the docs)
+    MDNS.addServiceTxt("_openIrisTracker", "_tcp", "_stream_port", (const char*)Helpers::itoa(80, port, 10)); //! convert int to const char* using a very efficient implemenation of itoa
     log_i("MDNS initialized!");
     stateManager->setState(MDNSState_e::MDNSState_Started);
   }

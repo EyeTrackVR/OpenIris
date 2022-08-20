@@ -166,9 +166,9 @@ void APIServer::triggerWifiConfigWrite()
 		pass_write = false;
 		channel_write = false;
 		if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
-			network->configManager->setWifiConfig(wifiConfig.local_WifiConfig[0].ssid.c_str(), wifiConfig.local_WifiConfig[0].ssid.c_str(), wifiConfig.local_WifiConfig[0].pass.c_str(), &wifiConfig.local_WifiConfig[0].channel, true);
+			network->configManager->setWifiConfig(wifiConfig.local_WifiConfig[0].ssid.c_str(), wifiConfig.local_WifiConfig[0].ssid.c_str(), wifiConfig.local_WifiConfig[0].pass.c_str(), &wifiConfig.local_WifiConfig[0].channel, wifiConfig.local_WifiConfig[0].adhoc, true);
 		else
-			network->configManager->setWifiConfig(wifiConfig.local_WifiConfig[1].ssid.c_str(), wifiConfig.local_WifiConfig[1].ssid.c_str(), wifiConfig.local_WifiConfig[1].pass.c_str(), &wifiConfig.local_WifiConfig[1].channel, true);
+			network->configManager->setWifiConfig(wifiConfig.local_WifiConfig[1].ssid.c_str(), wifiConfig.local_WifiConfig[1].ssid.c_str(), wifiConfig.local_WifiConfig[1].pass.c_str(), &wifiConfig.local_WifiConfig[1].channel, wifiConfig.local_WifiConfig[1].adhoc, true);
 		network->configManager->save();
 	}
 }

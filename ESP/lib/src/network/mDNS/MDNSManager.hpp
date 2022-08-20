@@ -2,6 +2,7 @@
 #include <ESPmDNS.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/utilities/Observer.hpp"
+#include "data/utilities/helpers.hpp"
 #include "data/config/project_config.hpp"
 
 class MDNSHandler : public IObserver
