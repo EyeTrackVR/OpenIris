@@ -20,8 +20,9 @@
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
+//#include <SPIFFS.h>
 #include "mbedtls/md.h"
-#include "data/utilities/network_utilities.hpp"
+#include "network/wifihandler/WifiHandler.hpp"
 #include "data/StateManager/StateManager.hpp"
 #include "io/camera/cameraHandler.hpp"
 
@@ -35,10 +36,12 @@ public:
 				  std::string api_url);
 	virtual ~API_Utilities();
 
+	static void printASCII();
+	//static bool initSPIFFS();
 protected:
 	void notFound(AsyncWebServerRequest *request) const;
-	/* String readFile(fs::FS &fs, std::string path);
-	void writeFile(fs::FS &fs, std::string path, std::string message); */
+	//static std::string readFile(fs::FS &fs, std::string path);
+	// void writeFile(fs::FS &fs, std::string path, std::string message);
 	std::string shaEncoder(std::string data);
 	std::unordered_map<int, std::string> _networkMethodsMap = {
 		{0b00000001, "GET"},

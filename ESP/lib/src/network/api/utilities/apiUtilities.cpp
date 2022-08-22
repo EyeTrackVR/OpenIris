@@ -72,8 +72,19 @@ void API_Utilities::notFound(AsyncWebServerRequest *request) const
 	}
 }
 
+/* bool API_Utilities::initSPIFFS()
+{
+	if (!SPIFFS.begin(false))
+	{
+		log_e("An error has occurred while mounting SPIFFS");
+		return false;
+	}
+	log_i("SPIFFS mounted successfully");
+	return true;
+} */
+
 // Read File from SPIFFS
-/* String API_Utilities::readFile(fs::FS &fs, std::string path)
+/* std::string API_Utilities::readFile(fs::FS &fs, std::string path)
 {
 	log_i("Reading file: %s\r\n", path.c_str());
 
@@ -81,20 +92,84 @@ void API_Utilities::notFound(AsyncWebServerRequest *request) const
 	if (!file || file.isDirectory())
 	{
 		log_e("[INFO]: Failed to open file for reading");
-		return String();
+		return std::string();
 	}
 
-	String fileContent;
+	std::string fileContent;
 	while (file.available())
 	{
-		fileContent = file.readStringUntil('\n');
+		fileContent = file.readStringUntil('#').c_str();
 		break;
 	}
 	return fileContent;
+} */
+
+void API_Utilities::printASCII()
+{
+	Serial.println(F("                                                      : === WELCOME === TO === : "));
+	Serial.println(F(" <===========================================================================================================================> "));
+	Serial.println(F("                                        ██████╗ ██████╗ ███████╗███╗   ██╗██╗██████╗ ██╗███████╗   "));
+	Serial.println(F("                                       ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██║██╔══██╗██║██╔════╝   "));
+	Serial.println(F("                                       ██║   ██║██████╔╝█████╗  ██╔██╗ ██║██║██████╔╝██║███████╗   "));
+	Serial.println(F("                                       ██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║██║██╔══██╗██║╚════██║   "));
+	Serial.println(F("                                       ╚██████╔╝██║     ███████╗██║ ╚████║██║██║  ██║██║███████║   "));
+	Serial.println(F("                                        ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝   "));
+	Serial.println(F("                                                                                                          "));
+	Serial.println(F("                                                             ██████████████                               "));
+	Serial.println(F("                                                       ██▓▓▓▓▓▓▒▒▒▒▒▒▒▒░░▒▒▓▓▓▓██                         "));
+	Serial.println(F("                                                   ████▓▓░░░░▒▒░░░░░░▒▒░░░░░░▒▒░░████                     "));
+	Serial.println(F("                                               ██▓▓▒▒▓▓▓▓▒▒▒▒░░░░░░▒▒░░▒▒░░░░░░▒▒░░▒▒▓▓▓▓                 "));
+	Serial.println(F("                                             ██▓▓▒▒▒▒▒▒▒▒░░▒▒░░░░░░░░░░░░▒▒░░░░▒▒░░░░▒▒░░██               "));
+	Serial.println(F("                                           ██▓▓▓▓░░░░▒▒░░░░▒▒▒▒░░░░░░░░░░▒▒░░  ░░░░░░░░▒▒░░██             "));
+	Serial.println(F("                                         ██▓▓▓▓▓▓▓▓▓▓░░░░░░▒▒░░░░░░░░░░░░░░      ░░░░░░░░░░░░██           "));
+	Serial.println(F("                                       ██▓▓▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒░░░░░░░░░░░░  ░░            ▒▒▒▒██         "));
+	Serial.println(F("                                       ██▓▓▒▒▒▒▒▒▒▒░░░░▒▒░░░░░░░░░░░░░░░░░░                ░░░░██         "));
+	Serial.println(F("                                     ▓▓▓▓▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒░░░░░░░░░░░░░░░░░░▓▓▓▓▓▓▓▓▓▓    ░░  ▒▒▓▓       "));
+	Serial.println(F("                                     ██▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▒▒▒▒▒▒▒▒▓▓▓▓▓▓    ░░██       "));
+	Serial.println(F("                                   ▓▓▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░    ▓▓▒▒▒▒▒▒▒▒░░░░▒▒▒▒▓▓▒▒  ░░▒▒▓▓     "));
+	Serial.println(F("                                   ██▓▓▒▒░░░░░░▒▒▒▒▒▒░░░░░░░░░░░░░░░░▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▓▓▓▓  ░░██     "));
+	Serial.println(F("                                   ██▓▓▓▓▒▒▒▒▒▒▒▒░░░░▒▒░░░░░░░░░░░░  ▒▒▒▒▒▒▒▒▒▒▒▒████▓▓░░░░▒▒▓▓  ░░██     "));
+	Serial.println(F("                                 ██▓▓▒▒▒▒▒▒▓▓▒▒▓▓░░░░░░░░░░░░░░░░░░▓▓▒▒▒▒░░▒▒▒▒████  ▒▒██░░▒▒▓▓▓▓  ░░██   "));
+	Serial.println(F("                                 ██▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░▓▓░░▒▒▒▒▒▒██████▒▒  ▓▓▓▓░░▓▓▓▓  ░░██   "));
+	Serial.println(F("                                 ██▓▓▒▒▒▒░░▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░▓▓▒▒░░▒▒░░████████▓▓  ██▓▓▒▒▓▓  ░░██   "));
+	Serial.println(F("                                 ██▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░░░░▒▒░░░░░░░░░░▒▒░░▒▒░░▒▒██████████▒▒██▒▒▒▒▓▓  ░░██   "));
+	Serial.println(F("                                 ██▓▓▒▒▒▒▒▒░░░░░░░░▒▒▒▒░░░░░░░░░░░░▒▒▒▒░░░░▒▒██▒▒██████  ██▒▒▒▒▓▓  ░░██   "));
+	Serial.println(F("                                 ██▒▒▒▒▒▒░░▓▓▓▓▓▓▒▒░░░░░░░░░░░░░░░░▒▒░░  ▒▒░░██  ▒▒████▒▒██▒▒▒▒▓▓  ░░██   "));
+	Serial.println(F("                                 ██▓▓▓▓▓▓▓▓░░▒▒▒▒░░▒▒░░░░░░░░░░░░░░▒▒▒▒░░░░░░▒▒██  ██████▒▒▒▒▒▒▓▓░░░░██   "));
+	Serial.println(F("                               ██▓▓██▓▓▒▒▒▒▓▓░░░░▒▒░░░░░░░░░░░░░░░░░░▒▒▒▒░░▒▒░░▒▒██████▒▒▒▒▒▒▓▓  ░░██     "));
+	Serial.println(F("                               ██▓▓██▒▒▒▒▒▒▒▒▓▓▓▓▒▒░░░░░░░░░░░░░░░░░░▒▒░░▒▒░░▒▒░░▒▒░░▒▒▒▒▒▒▒▒▓▓░░░░██     "));
+	Serial.println(F("                             ██▒▒▓▓██▓▓▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░▒▒░░▒▒░░░░░░▒▒▒▒▒▒▒▒▓▓  ░░░░██     "));
+	Serial.println(F("                             ██▒▒▒▒▓▓██▓▓▓▓▒▒▒▒▒▒▒▒░░░░░░░░▒▒░░░░░░░░░░░░▒▒▒▒▒▒░░▒▒▒▒▒▒▓▓▓▓  ░░░░██       "));
+	Serial.println(F("                           ▓▓▓▓▒▒▒▒▓▓██▓▓▒▒▒▒▒▒░░░░▒▒▒▒░░▒▒░░░░░░░░░░░░░░░░░░▒▒▒▒▓▓▓▓▓▓░░░░░░░░▒▒██       "));
+	Serial.println(F("                           ██▒▒▒▒▓▓▒▒▓▓██▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ░░  ░░░░██         "));
+	Serial.println(F("                         ██▒▒▒▒▓▓░░▒▒▒▒██▓▓▓▓▓▓▒▒▒▒▒▒▒▒▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▒░░▒▒██         "));
+	Serial.println(F("                         ██▒▒▒▒▓▓▒▒░░▓▓▒▒██▓▓▒▒▒▒▒▒▒▒░░▓▓▒▒▓▓▒▒░░░░▒▒░░░░░░░░░░░░░░░░░░░░░░▓▓██           "));
+	Serial.println(F("                         ██▒▒▒▒▒▒░░▒▒▒▒▒▒▓▓██▓▓▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▓▓░░░░░░░░░░▒▒░░░░▒▒░░▒▒▒▒██             "));
+	Serial.println(F("                         ██▒▒▒▒░░▒▒░░▒▒████  ██▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓▓▒▒▒▒▒▒▓▓▒▒██               "));
+	Serial.println(F("                         ██▒▒▓▓░░▒▒░░▓▓        ████▓▓▒▒▓▓▒▒▒▒▒▒░░▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒██▓▓                 "));
+	Serial.println(F("                         ██▒▒▒▒▒▒▒▒  ██            ████▓▓▒▒▓▓▓▓▓▓▒▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒████                     "));
+	Serial.println(F("                           ██▒▒▒▒▒▒▒▒░░██              ██████▓▓▒▒▒▒▒▒▒▒▓▓▓▓██████                         "));
+	Serial.println(F("                           ██▒▒▒▒▒▒▒▒░░  ████                ██████████████                               "));
+	Serial.println(F("                             ██▒▒▒▒▒▒▒▒░░  ░░████                                                         "));
+	Serial.println(F("                               ████▒▒▒▒▒▒░░░░  ░░████                                                     "));
+	Serial.println(F("                                   ████▒▒▒▒▒▒░░░░  ░░██                                                   "));
+	Serial.println(F("                                       ████▒▒▒▒▒▒░░  ░░██                                                 "));
+	Serial.println(F("                                           ██▓▓▒▒▒▒░░  ▒▒▓▓                                               "));
+	Serial.println(F("                                               ████▒▒░░  ▒▒██                                             "));
+	Serial.println(F("                                                   ▓▓▒▒░░░░██                                             "));
+	Serial.println(F("                                                     ██░░  ██                                             "));
+	Serial.println(F("                                               ▓▓██  ██░░░░██                                             "));
+	Serial.println(F("                                             ██░░██  ██░░░░██                                             "));
+	Serial.println(F("                                           ██░░██    ██░░▒▒██                                             "));
+	Serial.println(F("                                           ██░░▒▒████░░▒▒██                                               "));
+	Serial.println(F("                                             ▓▓▒▒▒▒▒▒▒▒▓▓                                                 "));
+	Serial.println(F("                                               ████████                                                   "));
+	Serial.println(F("                                                                                                          "));
+	Serial.println(F(" <============================================================================================================================> "));
 }
 
 // Write file to SPIFFS
-void API_Utilities::writeFile(fs::FS &fs, std::string path, std::string message)
+/* void API_Utilities::writeFile(fs::FS &fs, std::string path, std::string message)
 {
 	log_i("[Writing File]: Writing file: %s\r\n", path);
 	Network_Utilities::my_delay(0.1L);

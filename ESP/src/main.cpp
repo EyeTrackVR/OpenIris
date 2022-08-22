@@ -15,11 +15,6 @@
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
-//! Create smart pointers to the various classes that will be used in the program to make sure that they are deleted when the program ends
-//! This is done to make sure that the memory is freed when the program ends and we are not left with dangling pointers to memory that is no longer in use
-//! Make unique is a templated function that takes a class and returns a unique pointer to that class -
-//! it is used to create a unique pointer to a class and ensure exception safety
-
 ProjectConfig deviceConfig;
 OTA ota(&deviceConfig);
 LEDManager ledManager(33);
@@ -34,6 +29,9 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
+	Serial.println("\n");
+	API_Utilities::printASCII();
+
 	ledManager.begin();
 	deviceConfig.initConfig();
 	deviceConfig.load();

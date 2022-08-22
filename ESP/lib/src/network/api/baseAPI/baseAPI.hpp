@@ -2,6 +2,7 @@
 #define BASEAPI_HPP
 #include "network/wifihandler/wifiHandler.hpp"
 #include "network/api/utilities/apiUtilities.hpp"
+#include "data/utilities/network_utilities.hpp"
 
 class BaseAPI : public API_Utilities
 {
