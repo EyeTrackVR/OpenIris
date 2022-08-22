@@ -16,10 +16,11 @@ public:
 	virtual ~APIServer();
 	void begin();
 	void setupServer();
-
 	void findParam(AsyncWebServerRequest *request, const char *param, String &value);
-	void updateCommandHandlers();
-	std::vector<std::string> routeHandler(std::string index, route_t route);
+	void addRouteMap(std::string index, route_t route, std::vector<std::string> &indexes);
 	void handleRequest(AsyncWebServerRequest *request);
+
+public:
+	std::vector<std::string> indexes;
 };
 #endif // WEBSERVERHANDLER_HPP

@@ -41,7 +41,9 @@ void APIServer::setupServer()
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("deleteRoute", &APIServer::deleteRoute);
 
-	routeHandler("builtin", routes); // add new map to the route map
+	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map
+	indexes.reserve(routes.size()); // this is done to avoid reallocation of memory and copying of data
+	addRouteMap("builtin", routes, indexes); // add new route map to the route_map
 }
 
 void APIServer::findParam(AsyncWebServerRequest *request, const char *param, String &value)
@@ -57,59 +59,65 @@ void APIServer::findParam(AsyncWebServerRequest *request, const char *param, Str
  *
  * @param index
  * @param funct
- * @return \c vector<string> a list of the indexes of the command handlers
+ * @param indexes \c std::vector<std::string> a list of the routes of the command handlers
+ *
+ * @return void
+ *
  */
-std::vector<std::string> APIServer::routeHandler(std::string index, route_t route)
+void APIServer::addRouteMap(std::string index, route_t route, std::vector<std::string> &indexes)
 {
 	route_map.emplace(index, route);
-	std::vector<std::string> indexes;
-	indexes.reserve(route.size());
 
 	for (const auto &key : route)
 	{
-		indexes.push_back(key.first);
+		indexes.emplace_back(key.first); // add the route to the list of routes - use emplace_back to avoid copying
 	}
-
-	return indexes;
 }
 
 void APIServer::handleRequest(AsyncWebServerRequest *request)
 {
-	// Get the route
-	log_i("Request: %s", request->url().c_str());
-	int params = request->params();
-	auto it_map = route_map.find(request->pathArg(0).c_str());
-	log_i("Request: %s", request->pathArg(0).c_str());
-	auto it_method = it_map->second.find(request->pathArg(1).c_str());
-	log_i("Request: %s", request->pathArg(1).c_str());
-
-	for (int i = 0; i < params; i++)
+	try
 	{
-		AsyncWebParameter *param = request->getParam(i);
+		// Get the route
+		log_i("Request URL: %s", request->url().c_str());
+		int params = request->params();
+		auto it_map = route_map.find(request->pathArg(0).c_str());
+		log_i("Request First Arg: %s", request->pathArg(0).c_str());
+		auto it_method = it_map->second.find(request->pathArg(1).c_str());
+		log_i("Request Second Arg: %s", request->pathArg(1).c_str());
+
+		for (int i = 0; i < params; i++)
 		{
+			AsyncWebParameter *param = request->getParam(i);
 			{
-				if (it_map != route_map.end())
 				{
-					if (it_method != it_map->second.end())
+					if (it_map != route_map.end())
 					{
-						(*this.*(it_method->second))(request);
+						if (it_method != it_map->second.end())
+						{
+							(*this.*(it_method->second))(request);
+						}
+						else
+						{
+							request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
+							request->redirect("/");
+							return;
+						}
 					}
 					else
 					{
-						request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
+						request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
 						request->redirect("/");
 						return;
 					}
 				}
-				else
-				{
-					request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
-					request->redirect("/");
-					return;
-				}
+				log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 			}
-			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
+		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Command executed\"}");
 	}
-	request->send(200, MIMETYPE_JSON, "{\"msg\":\"Command executed\"}");
+	catch (const std::exception &e)
+	{
+		log_e("Error: %s", e.what());
+	}
 }
