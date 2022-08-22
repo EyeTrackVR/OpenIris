@@ -36,7 +36,7 @@ void split(std::string str, std::string splitBy, std::vector<std::string> &token
 {
     /* Store the original string in the array, so we can loop the rest
      * of the algorithm. */
-    tokens.push_back(str);
+    tokens.emplace_back(str);
 
     // Store the split index in a 'size_t' (unsigned integer) type.
     size_t splitAt;
@@ -63,7 +63,7 @@ void split(std::string str, std::string splitBy, std::vector<std::string> &token
         tokens.back() = frag.substr(0, splitAt);
         /* Push everything from the right side of the split to the next empty
          * index in the vector. */
-        tokens.push_back(frag.substr(splitAt + splitLen, frag.size() - (splitAt + splitLen)));
+        tokens.emplace_back(frag.substr(splitAt + splitLen, frag.size() - (splitAt + splitLen)));
     }
 }
 

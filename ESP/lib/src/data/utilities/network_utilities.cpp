@@ -6,7 +6,6 @@ void Network_Utilities::SetupWifiScan()
     WiFi.mode(WIFI_STA);
     WiFi.disconnect(); // Disconnect from the access point if connected before
     delay(100);
-
     Serial.println("Setup done");
 }
 
@@ -16,7 +15,6 @@ bool Network_Utilities::LoopWifiScan()
     log_i("[INFO]: Beginning WiFi Scanner");
     int networks = WiFi.scanNetworks();
     log_i("[INFO]: scan done");
-    
     log_i("%d networks found", networks);
     for (int i = networks; i--;)
     {
@@ -25,7 +23,6 @@ bool Network_Utilities::LoopWifiScan()
         log_i("%d: %s (%d) %s\n", i - 1, WiFi.SSID(i), WiFi.RSSI(i), (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
         my_delay(0.02L); // delay 20ms
     }
-
     // Wait a bit before scanning again
     delay(5000);
     return (networks > 0);
@@ -35,13 +32,11 @@ bool Network_Utilities::LoopWifiScan()
 int Network_Utilities::getStrength(int points) // TODO: add to JSON doc
 {
     int32_t rssi = 0, averageRSSI = 0;
-
     for (int i = 0; i < points; i++)
     {
         rssi += WiFi.RSSI();
         delay(20);
     }
-
     averageRSSI = rssi / points;
     return averageRSSI;
 }

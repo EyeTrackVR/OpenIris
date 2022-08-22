@@ -65,32 +65,22 @@ void WiFiHandler::setupWifi()
 				return;
 			}
 		}
-		if (!WiFi.isConnected())
-			log_i("\n\rCould not connect to %s, trying another network\n\r", networkIterator->ssid);
-		else
-		{
-			log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
-			stateManager->setState(WiFiState_e::WiFiState_Connected);
-			return;
-		}
+		log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
+		stateManager->setState(WiFiState_e::WiFiState_Connected);
 	}
 }
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 {
 	log_i("[INFO]: Setting Access Point...\n");
-
 	log_i("[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
-
 	Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
 	IPAddress IP = WiFi.softAPIP();
 	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
-
 	// You can remove the password parameter if you want the AP to be open.
 	WiFi.softAP(ssid, password, channel); // AP mode with password
 	WiFi.setTxPower(WIFI_POWER_11dBm);
-
 	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 }
 
@@ -117,9 +107,7 @@ void WiFiHandler::setUpADHOC()
 		strcpy(password, "12345678");
 		channel = 1;
 	}
-
 	this->adhoc(ssid, password, channel);
-
 	log_i("[INFO]: Configuring access point...\n");
 	log_d("[DEBUG]: ssid: %s\n", ssid);
 	log_d("[DEBUG]: password: %s\n", password);
@@ -132,9 +120,7 @@ void WiFiHandler::iniSTA()
 	int connection_timeout = 30000; // 30 seconds
 	unsigned long currentMillis = millis();
 	unsigned long _previousMillis = currentMillis;
-
 	log_i("Trying to connect to the %s network", this->ssid.c_str());
-
 	//  check size of networks
 	if (this->ssid.size() == 0)
 	{
@@ -144,7 +130,6 @@ void WiFiHandler::iniSTA()
 		return;
 	}
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
-
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
@@ -164,13 +149,6 @@ void WiFiHandler::iniSTA()
 			return;
 		}
 	}
-
-	if (!WiFi.isConnected())
-		log_i("\n\rCould not connect to %s, please try another network\n\r", this->ssid.c_str());
-	else
-	{
-		log_i("\n\rSuccessfully connected to %s\n\r", this->ssid.c_str());
-		stateManager->setState(WiFiState_e::WiFiState_Connected);
-		return;
-	}
+	log_i("\n\rSuccessfully connected to %s\n\r", this->ssid.c_str());
+	stateManager->setState(WiFiState_e::WiFiState_Connected);
 }
