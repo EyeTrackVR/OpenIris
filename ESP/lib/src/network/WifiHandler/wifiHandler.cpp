@@ -28,7 +28,7 @@ void WiFiHandler::setupWifi()
 	std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
 
 	// check size of networks
-	if (networks->size() == 0)
+	if (networks->empty())
 	{
 		log_e("No networks found in config");
 		this->iniSTA();
@@ -41,7 +41,7 @@ void WiFiHandler::setupWifi()
 	int count = 0;
 	unsigned long currentMillis = millis();
 	unsigned long _previousMillis = currentMillis;
-
+	int progress = 0;
 	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
 		log_i("Trying to connect to the %s network", networkIterator->ssid);
@@ -49,18 +49,19 @@ void WiFiHandler::setupWifi()
 		count++;
 
 		while (WiFi.status() != WL_CONNECTED)
-		{
+		{	
+			progress++;
 			stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
 			currentMillis = millis();
-			Serial.print(".");
-			delay(300);
+			Helpers::update_progress_bar(progress, 100);
+			delay(301);
 			if (((currentMillis - _previousMillis) >= connection_timeout) && count >= networks->size())
 			{
-				log_i("[INFO]: WiFi connection timed out.\n");
+				log_i("\n[INFO]: WiFi connection timed out.\n");
 				// we've tried all saved networks, none worked, let's error out
-				log_e("Could not connect to any of the saved networks, check your Wifi credentials");
+				log_e("\nCould not connect to any of the saved networks, check your Wifi credentials");
 				stateManager->setState(WiFiState_e::WiFiState_Disconnected);
-				log_i("[INFO]: Attempting to connect to hardcoded network");
+				log_i("\n[INFO]: Attempting to connect to hardcoded network");
 				this->iniSTA();
 				return;
 			}
@@ -72,8 +73,8 @@ void WiFiHandler::setupWifi()
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 {
-	log_i("[INFO]: Setting Access Point...\n");
-	log_i("[INFO]: Configuring access point...\n");
+	log_i("\n[INFO]: Setting Access Point...\n");
+	log_i("\n[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
 	Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
 	IPAddress IP = WiFi.softAPIP();
@@ -89,7 +90,7 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
  */
 void WiFiHandler::setUpADHOC()
 {
-	log_i("[INFO]: Setting Access Point...\n");
+	log_i("\n[INFO]: Setting Access Point...\n");
 	size_t ssidLen = strlen(configManager->getAPWifiConfig()->ssid.c_str());
 	size_t passwordLen = strlen(configManager->getAPWifiConfig()->password.c_str());
 	char ssid[ssidLen + 1];
@@ -108,18 +109,19 @@ void WiFiHandler::setUpADHOC()
 		channel = 1;
 	}
 	this->adhoc(ssid, password, channel);
-	log_i("[INFO]: Configuring access point...\n");
-	log_d("[DEBUG]: ssid: %s\n", ssid);
-	log_d("[DEBUG]: password: %s\n", password);
-	log_d("[DEBUG]: channel: %d\n", channel);
+	log_i("\n[INFO]: Configuring access point...\n");
+	log_d("\n[DEBUG]: ssid: %s\n", ssid);
+	log_d("\n[DEBUG]: password: %s\n", password);
+	log_d("\n[DEBUG]: channel: %d\n", channel);
 }
 
 void WiFiHandler::iniSTA()
 {
-	log_i("[INFO]: Setting up station...\n");
+	log_i("\n[INFO]: Setting up station...\n");
 	int connection_timeout = 30000; // 30 seconds
 	unsigned long currentMillis = millis();
 	unsigned long _previousMillis = currentMillis;
+	int progress = 0;
 	log_i("Trying to connect to the %s network", this->ssid.c_str());
 	//  check size of networks
 	if (this->ssid.size() == 0)
@@ -129,16 +131,17 @@ void WiFiHandler::iniSTA()
 		stateManager->setState(WiFiState_e::WiFiState_Error);
 		return;
 	}
+
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
 		currentMillis = millis();
-		Serial.print(".");
-		delay(300);
+		Helpers::update_progress_bar(progress, 100);
+		delay(301);
 		if ((currentMillis - _previousMillis) >= connection_timeout)
 		{
-			log_i("[INFO]: WiFi connection timed out.\n");
+			log_i("\n[INFO]: WiFi connection timed out.\n");
 			// we've tried all saved networks, none worked, let's error out
 			log_e("Could not connect to any of the save networks, check your Wifi credentials");
 			stateManager->setState(WiFiState_e::WiFiState_Error);

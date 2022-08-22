@@ -6,7 +6,7 @@
 #include <WiFi.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
-#include "data/utilities/makeunique.hpp"
+#include "data/utilities/helpers.hpp"
 
 class WiFiHandler
 {
