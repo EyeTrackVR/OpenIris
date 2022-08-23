@@ -19,14 +19,14 @@ bool API_Utilities::channel_write = false;
 //*********************************************************************************************
 
 API_Utilities::API_Utilities(int CONTROL_PORT,
-							 WiFiHandler *network,
-							 CameraHandler *camera,
-							 StateManager<WiFiState_e> *stateManager,
-							 std::string api_url) : server(new AsyncWebServer(CONTROL_PORT)),
-													stateManager(stateManager),
-													network(network),
-													camera(camera),
-													api_url(api_url) {}
+			     WiFiHandler *network,
+			     CameraHandler *camera,
+			     StateManager<WiFiState_e> *stateManager,
+			     std::string api_url) : server(new AsyncWebServer(CONTROL_PORT)),
+						    stateManager(stateManager),
+						    network(network),
+						    camera(camera),
+						    api_url(api_url) {}
 API_Utilities::~API_Utilities() {}
 std::string API_Utilities::shaEncoder(std::string data)
 {
