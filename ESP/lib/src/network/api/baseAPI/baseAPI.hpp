@@ -7,6 +7,7 @@
 class BaseAPI : public API_Utilities
 {
 protected:
+
 	struct LocalWifiConfig
 	{
 		std::string ssid;
@@ -56,10 +57,17 @@ protected:
 	void deleteRoute(AsyncWebServerRequest *request);
 
 	/* Camera Handler */
+	void sendBMP(AsyncWebServerRequest *request);
+	void sendJpg(AsyncWebServerRequest *request);
+	void streamJpg(AsyncWebServerRequest *request);
+	void getCameraStatus(AsyncWebServerRequest *request);
+	void setCameraVar(AsyncWebServerRequest *request);
+
+	/* Camera Handler */
 	void setCamera(AsyncWebServerRequest *request);
 
-	using call_back_function_t = void (BaseAPI::*)(AsyncWebServerRequest *);
-	typedef call_back_function_t (*call_back_function_ptr)(AsyncWebServerRequest *);
+	//using call_back_function_t = void (BaseAPI::*)(AsyncWebServerRequest *);
+	//typedef call_back_function_t (*call_back_function_ptr)(AsyncWebServerRequest *);
 
 	/* Route Command types */
 	using route_method = void (BaseAPI::*)(AsyncWebServerRequest *);

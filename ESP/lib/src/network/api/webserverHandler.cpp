@@ -41,8 +41,11 @@ void APIServer::setupServer()
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("deleteRoute", &APIServer::deleteRoute);
 
+	// Camera Routes
+	
+
 	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map
-	indexes.reserve(routes.size()); // this is done to avoid reallocation of memory and copying of data
+	indexes.reserve(routes.size());			 // this is done to avoid reallocation of memory and copying of data
 	addRouteMap("builtin", routes, indexes); // add new route map to the route_map
 }
 

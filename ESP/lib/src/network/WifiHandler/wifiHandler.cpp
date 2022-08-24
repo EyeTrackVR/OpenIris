@@ -127,8 +127,8 @@ void WiFiHandler::iniSTA()
 	if (this->ssid.size() == 0)
 	{
 		log_e("No networks passed into the constructor");
-		this->setUpADHOC();
 		stateManager->setState(WiFiState_e::WiFiState_Error);
+		this->setUpADHOC();
 		return;
 	}
 

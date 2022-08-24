@@ -119,3 +119,25 @@ int CameraHandler::setHFlip(int direction)
 {
 	return camera_sensor->set_hmirror(camera_sensor, direction);
 }
+
+//! either hardware(1) or software(0)
+// TODO: Add to API
+void CameraHandler::resetCamera(bool type)
+{
+	if (type == 1)
+	{
+		// power cycle the camera module (handy if camera stops responding)
+		digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
+		delay(300);
+		digitalWrite(PWDN_GPIO_NUM, LOW);
+		delay(300);
+		setupCamera();
+	}
+	else
+	{
+		// reset via software (handy if you wish to change resolution or image type etc. - see test procedure)
+		esp_camera_deinit();
+		delay(50);
+		setupCamera();
+	}
+}

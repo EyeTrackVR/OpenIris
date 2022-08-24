@@ -61,7 +61,6 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 			fb = NULL;
 			_jpg_buf = NULL;
 		}
-
 		else if (_jpg_buf)
 		{
 			free(_jpg_buf);
@@ -84,6 +83,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 
 int StreamServer::startStreamServer()
 {
+	WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //! Turn-off the 'brownout detector'
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.max_uri_handlers = 1;
 	config.server_port = this->STREAM_SERVER_PORT;

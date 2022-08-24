@@ -19,4 +19,5 @@ public:
 	int setHFlip(int direction);
 	int setVieWindow(int offsetX, int offsetY, int outputX, int outputY);
 	void update(ObserverEvent::Event event);
+	void resetCamera(bool type = 0);
 };
