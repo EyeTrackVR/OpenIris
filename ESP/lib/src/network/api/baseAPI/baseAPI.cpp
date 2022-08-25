@@ -345,6 +345,7 @@ void BaseAPI::getCameraStatus(AsyncWebServerRequest *request)
 }
 
 //! TODO: Optimize this!!
+//! Change this to a hashmap and a switch-case to remove the string comparisons and if statements
 void BaseAPI::setCameraVar(AsyncWebServerRequest *request)
 {
 	if (!request->hasArg("var") || !request->hasArg("val"))

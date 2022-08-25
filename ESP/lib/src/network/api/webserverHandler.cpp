@@ -33,7 +33,6 @@ void APIServer::begin()
 
 void APIServer::setupServer()
 {
-	// Set case NULL_METHOD routes
 	routes.emplace("wifi", &APIServer::setWiFi);
 	routes.emplace("resetConfig", &APIServer::factoryReset);
 	routes.emplace("rebootDevice", &APIServer::rebootDevice);

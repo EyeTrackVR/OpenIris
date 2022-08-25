@@ -28,6 +28,7 @@ API_Utilities::API_Utilities(int CONTROL_PORT,
 						    camera(camera),
 						    api_url(api_url) {}
 API_Utilities::~API_Utilities() {}
+
 std::string API_Utilities::shaEncoder(std::string data)
 {
 	const char *data_c = data.c_str();
@@ -71,38 +72,6 @@ void API_Utilities::notFound(AsyncWebServerRequest *request) const
 		request->send(404, "text/plain", "Request Not found using unknown method");
 	}
 }
-
-/* bool API_Utilities::initSPIFFS()
-{
-	if (!SPIFFS.begin(false))
-	{
-		log_e("An error has occurred while mounting SPIFFS");
-		return false;
-	}
-	log_i("SPIFFS mounted successfully");
-	return true;
-} */
-
-// Read File from SPIFFS
-/* std::string API_Utilities::readFile(fs::FS &fs, std::string path)
-{
-	log_i("Reading file: %s\r\n", path.c_str());
-
-	File file = fs.open(path.c_str());
-	if (!file || file.isDirectory())
-	{
-		log_e("[INFO]: Failed to open file for reading");
-		return std::string();
-	}
-
-	std::string fileContent;
-	while (file.available())
-	{
-		fileContent = file.readStringUntil('#').c_str();
-		break;
-	}
-	return fileContent;
-} */
 
 void API_Utilities::printASCII()
 {
@@ -167,6 +136,38 @@ void API_Utilities::printASCII()
 	Serial.println(F("                                                                                                          "));
 	Serial.println(F(" <============================================================================================================================> "));
 }
+
+/* bool API_Utilities::initSPIFFS()
+{
+	if (!SPIFFS.begin(false))
+	{
+		log_e("An error has occurred while mounting SPIFFS");
+		return false;
+	}
+	log_i("SPIFFS mounted successfully");
+	return true;
+} */
+
+// Read File from SPIFFS
+/* std::string API_Utilities::readFile(fs::FS &fs, std::string path)
+{
+	log_i("Reading file: %s\r\n", path.c_str());
+
+	File file = fs.open(path.c_str());
+	if (!file || file.isDirectory())
+	{
+		log_e("[INFO]: Failed to open file for reading");
+		return std::string();
+	}
+
+	std::string fileContent;
+	while (file.available())
+	{
+		fileContent = file.readStringUntil('#').c_str();
+		break;
+	}
+	return fileContent;
+} */
 
 // Write file to SPIFFS
 /* void API_Utilities::writeFile(fs::FS &fs, std::string path, std::string message)
