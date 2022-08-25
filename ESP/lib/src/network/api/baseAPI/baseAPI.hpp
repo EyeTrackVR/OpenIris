@@ -56,22 +56,13 @@ protected:
 	void rebootDevice(AsyncWebServerRequest *request);
 	void deleteRoute(AsyncWebServerRequest *request);
 
-	/* Camera Handler */
-	void sendBMP(AsyncWebServerRequest *request);
-	void sendJpg(AsyncWebServerRequest *request);
-	void streamJpg(AsyncWebServerRequest *request);
+	/* Camera Handlers */
 	void getCameraStatus(AsyncWebServerRequest *request);
 	void setCameraVar(AsyncWebServerRequest *request);
-
-	/* Camera Handler */
 	void setCamera(AsyncWebServerRequest *request);
-
-	//using call_back_function_t = void (BaseAPI::*)(AsyncWebServerRequest *);
-	//typedef call_back_function_t (*call_back_function_ptr)(AsyncWebServerRequest *);
 
 	/* Route Command types */
 	using route_method = void (BaseAPI::*)(AsyncWebServerRequest *);
-	// typedef void (*callback)(AsyncWebServerRequest *);
 	typedef std::unordered_map<std::string, route_method> route_t;
 	typedef std::unordered_map<std::string, route_t> route_map_t;
 
@@ -84,6 +75,7 @@ public:
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *stateManager,
 			std::string api_url);
+			
 	virtual ~BaseAPI();
 	virtual void begin();
 	virtual void setupServer();
