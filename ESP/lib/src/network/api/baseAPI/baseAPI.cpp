@@ -1,14 +1,6 @@
 #include "baseAPI.hpp"
 
-BaseAPI::BaseAPI(int CONTROL_PORT,
-				 WiFiHandler *network,
-				 CameraHandler *camera,
-				 StateManager<WiFiState_e> *stateManager,
-				 std::string api_url) : API_Utilities(CONTROL_PORT,
-													  network,
-													  camera,
-													  stateManager,
-													  api_url) {}
+BaseAPI::BaseAPI() {}
 
 BaseAPI::~BaseAPI() {}
 

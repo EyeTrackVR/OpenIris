@@ -4,15 +4,18 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(int CONTROL_PORT,
+APIServer::APIServer(byte control_port,
 					 WiFiHandler *network,
 					 CameraHandler *camera,
 					 StateManager<WiFiState_e> *stateManager,
-					 std::string api_url) : BaseAPI(CONTROL_PORT,
-													network,
-													camera,
-													stateManager,
-													api_url) {}
+					 std::string api_url)
+{
+	this->_control_port = control_port;
+	this->network = network;
+	this->camera = camera;
+	this->stateManager = stateManager;
+	this->api_url = api_url;
+}
 
 APIServer::~APIServer() {}
 
@@ -41,7 +44,6 @@ void APIServer::setupServer()
 	routes.emplace("deleteRoute", &APIServer::deleteRoute);
 
 	// Camera Routes
-	
 
 	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map
 	indexes.reserve(routes.size());			 // this is done to avoid reallocation of memory and copying of data

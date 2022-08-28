@@ -29,11 +29,7 @@
 class API_Utilities
 {
 public:
-	API_Utilities(int CONTROL_PORT,
-				  WiFiHandler *network,
-				  CameraHandler *camera,
-				  StateManager<WiFiState_e> *stateManager,
-				  std::string api_url);
+	API_Utilities();
 	virtual ~API_Utilities();
 
 	static void printASCII();
@@ -80,6 +76,7 @@ protected:
 
 protected:
 	std::string api_url;
+	byte _control_port;
 
 	static bool ssid_write;
 	static bool pass_write;

@@ -70,11 +70,7 @@ protected:
 	route_map_t route_map;
 
 public:
-	BaseAPI(int CONTROL_PORT,
-			WiFiHandler *network,
-			CameraHandler *camera,
-			StateManager<WiFiState_e> *stateManager,
-			std::string api_url);
+	BaseAPI();
 			
 	virtual ~BaseAPI();
 	virtual void begin();
