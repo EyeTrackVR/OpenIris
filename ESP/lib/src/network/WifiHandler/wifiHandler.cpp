@@ -42,6 +42,9 @@ void WiFiHandler::setupWifi()
 	unsigned long currentMillis = millis();
 	unsigned long _previousMillis = currentMillis;
 	int progress = 0;
+
+	WiFi.mode(WIFI_STA);
+	WiFi.setSleep(WIFI_PS_NONE);
 	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
 		log_i("Trying to connect to the %s network", networkIterator->ssid);
@@ -76,6 +79,7 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 	log_i("\n[INFO]: Setting Access Point...\n");
 	log_i("\n[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
+	WiFi.setSleep(WIFI_PS_NONE);
 	Serial.printf("\r\nStarting AP. \r\nAP IP address: ");
 	IPAddress IP = WiFi.softAPIP();
 	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
@@ -131,6 +135,9 @@ void WiFiHandler::iniSTA()
 		this->setUpADHOC();
 		return;
 	}
+
+	WiFi.mode(WIFI_STA);
+	WiFi.setSleep(WIFI_PS_NONE);
 
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
 	while (WiFi.status() != WL_CONNECTED)
