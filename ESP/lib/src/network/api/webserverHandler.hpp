@@ -7,7 +7,7 @@
 class APIServer : public BaseAPI
 {
 public:
-	APIServer(byte control_port,
+	APIServer(int CONTROL_PORT,
 			  WiFiHandler *network,
 			  CameraHandler *camera,
 			  StateManager<WiFiState_e> *stateManager,

@@ -2,13 +2,13 @@
 #ifndef PROJECT_CONFIG_HPP
 #define PROJECT_CONFIG_HPP
 #include <Arduino.h>
-#include <preferencesAPI.hpp>
+#include <Preferences.h>
 #include <vector>
 #include <string>
 
 #include "data/utilities/Observer.hpp"
 
-class ProjectConfig : public Config, public ISubject
+class ProjectConfig : public Preferences, public ISubject
 {
 public:
 	ProjectConfig();

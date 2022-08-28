@@ -76,6 +76,7 @@ void WiFiHandler::setupWifi()
 
 void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 {
+	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 	log_i("\n[INFO]: Setting Access Point...\n");
 	log_i("\n[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
@@ -86,7 +87,6 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 	// You can remove the password parameter if you want the AP to be open.
 	WiFi.softAP(ssid, password, channel); // AP mode with password
 	WiFi.setTxPower(WIFI_POWER_11dBm);
-	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 }
 
 /*
@@ -155,7 +155,6 @@ void WiFiHandler::iniSTA()
 			this->setUpADHOC();
 			log_w("Setting up adhoc mode");
 			log_w("Please use adhoc mode and the app to set your WiFi credentials and reboot the device");
-			stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 			return;
 		}
 	}

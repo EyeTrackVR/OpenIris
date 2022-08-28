@@ -53,6 +53,12 @@ void setup()
 		break;
 	}
 	case WiFiState_e::WiFiState_ADHOC:
+	{
+		streamServer.startStreamServer();
+		apiServer.begin();
+		log_d("[SETUP]: Starting Stream Server");
+		break;
+	}
 	case WiFiState_e::WiFiState_Connected:
 	{
 		streamServer.startStreamServer();

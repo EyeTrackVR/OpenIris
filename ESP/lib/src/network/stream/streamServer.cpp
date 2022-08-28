@@ -15,7 +15,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 	size_t _jpg_buf_len = 0;
 	uint8_t *_jpg_buf = NULL;
 
-	char *part_buf[128];
+	char *part_buf[256];
 
 	static int64_t last_frame = 0;
 	if (!last_frame)
@@ -89,6 +89,7 @@ int StreamServer::startStreamServer()
 	config.max_uri_handlers = 1;
 	config.server_port = this->STREAM_SERVER_PORT;
 	config.ctrl_port = this->STREAM_SERVER_PORT;
+	config.stack_size = 20480;
 
 	httpd_uri_t stream_page = {
 		.uri = "/",
