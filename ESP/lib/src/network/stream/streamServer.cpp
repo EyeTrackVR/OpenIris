@@ -88,6 +88,7 @@ int StreamServer::startStreamServer()
 	config.max_uri_handlers = 1;
 	config.server_port = this->STREAM_SERVER_PORT;
 	config.ctrl_port = this->STREAM_SERVER_PORT;
+	config.stack_size = 20480;
 
 	httpd_uri_t stream_page = {
 		.uri = "/",

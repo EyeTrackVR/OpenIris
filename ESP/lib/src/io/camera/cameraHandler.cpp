@@ -6,6 +6,7 @@ int CameraHandler::setupCamera()
 
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
+	config.grab_mode = CAMERA_GRAB_LATEST;
 	config.pin_d0 = Y2_GPIO_NUM;
 	config.pin_d1 = Y3_GPIO_NUM;
 	config.pin_d2 = Y4_GPIO_NUM;
@@ -22,7 +23,7 @@ int CameraHandler::setupCamera()
 	config.pin_sscb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
-	config.xclk_freq_hz = 20000000; // 10000000 stable,
+	config.xclk_freq_hz = 16500000; // 10000000 stable,
 									// 16500000 optimal,
 									// 20000000 max fps
 	config.pixel_format = PIXFORMAT_JPEG;
