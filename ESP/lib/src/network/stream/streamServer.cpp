@@ -15,7 +15,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 	size_t _jpg_buf_len = 0;
 	uint8_t *_jpg_buf = NULL;
 
-	char *part_buf[128];
+	char *part_buf[256];
 
 	static int64_t last_frame = 0;
 	if (!last_frame)

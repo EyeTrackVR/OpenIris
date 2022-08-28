@@ -1,6 +1,14 @@
 #include "baseAPI.hpp"
 
-BaseAPI::BaseAPI() {}
+BaseAPI::BaseAPI(int CONTROL_PORT,
+				 WiFiHandler *network,
+				 CameraHandler *camera,
+				 StateManager<WiFiState_e> *stateManager,
+				 std::string api_url) : API_Utilities(CONTROL_PORT,
+													  network,
+													  camera,
+													  stateManager,
+													  api_url) {}
 
 BaseAPI::~BaseAPI() {}
 
@@ -106,7 +114,7 @@ void BaseAPI::triggerWifiConfigWrite()
 	}
 }
 
-//! TODO: Add JSON handling to the POST request
+//! TODO: ADD JSON handlers for the POST requests
 void BaseAPI::handleJson(AsyncWebServerRequest *request)
 {
 	std::string type = request->pathArg(0).c_str();
