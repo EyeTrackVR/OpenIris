@@ -120,8 +120,8 @@ void APIServer::handleRequest(AsyncWebServerRequest *request)
 		}
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Command executed\"}");
 	}
-	catch (const std::exception &e)
+	catch (...) // catch all exceptions
 	{
-		log_e("Error: %s", e.what());
+		request->send(400, MIMETYPE_JSON, "{\"msg\":\"An Error has occurred\"}");
 	}
 }

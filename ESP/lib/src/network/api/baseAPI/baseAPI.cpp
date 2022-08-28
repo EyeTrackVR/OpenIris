@@ -106,6 +106,7 @@ void BaseAPI::triggerWifiConfigWrite()
 	}
 }
 
+//! TODO: Add JSON handling to the POST request
 void BaseAPI::handleJson(AsyncWebServerRequest *request)
 {
 	std::string type = request->pathArg(0).c_str();
