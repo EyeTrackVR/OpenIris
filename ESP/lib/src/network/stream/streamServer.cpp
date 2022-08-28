@@ -84,10 +84,12 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 
 int StreamServer::startStreamServer()
 {
-  httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-  config.max_uri_handlers = 1;
-  config.server_port = this->STREAM_SERVER_PORT;
-  config.ctrl_port = this->STREAM_SERVER_PORT;
+	WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //! Turn-off the 'brownout detector'
+	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+	config.max_uri_handlers = 1;
+	config.server_port = this->STREAM_SERVER_PORT;
+	config.ctrl_port = this->STREAM_SERVER_PORT;
+	config.stack_size = 20480;
 
   httpd_uri_t stream_page = {
       .uri = "/",
