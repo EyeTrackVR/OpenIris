@@ -4,6 +4,8 @@ void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager
 {
   log_d("Initializing connection to wifi");
 
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(WIFI_PS_NONE);
   WiFi.begin(ssid, password);
 
   log_d("connecting");
