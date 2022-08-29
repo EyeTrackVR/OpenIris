@@ -65,10 +65,8 @@ void ProjectConfig::load()
 		ESP.restart();
 		return;
 	}
-	else
-	{
-		log_d("Project config found - Config length: %d", configLen);
-	}
+	
+	log_d("Project config found - Config length: %d", configLen);
 
 	char buff[configLen];
 	getBytes("config", buff, configLen);
