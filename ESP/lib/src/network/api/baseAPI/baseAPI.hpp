@@ -74,7 +74,7 @@ public:
 			WiFiHandler *network,
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *stateManager,
-			std::string api_url);
+			const std::string &api_url);
 			
 	virtual ~BaseAPI();
 	virtual void begin();

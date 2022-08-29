@@ -65,11 +65,11 @@ void ProjectConfig::load()
 		ESP.restart();
 		return;
 	}
-	
+
 	log_d("Project config found - Config length: %d", configLen);
 
 	char buff[configLen];
-	getBytes("config", buff, configLen);
+	getBytes("projectConf", buff, configLen);
 
 	for (int i = 0; i < configLen; i++)
 		Serial.printf("%02X ", buff[i]);
@@ -83,7 +83,7 @@ void ProjectConfig::save()
 	log_d("Saving project config");
 
 	TrackerConfig_t *tracker_config = (TrackerConfig_t *)&this->config;
-	putBytes("config", tracker_config, 3 * sizeof(TrackerConfig_t));
+	putBytes("projectConf", tracker_config, 3 * sizeof(TrackerConfig_t));
 
 	log_i("Project config saved and system is rebooting");
 	delay(20000);

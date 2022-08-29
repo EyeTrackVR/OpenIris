@@ -8,11 +8,11 @@ APIServer::APIServer(int CONTROL_PORT,
 					 WiFiHandler *network,
 					 CameraHandler *camera,
 					 StateManager<WiFiState_e> *stateManager,
-					 std::string api_url) : BaseAPI(CONTROL_PORT,
-													network,
-													camera,
-													stateManager,
-													api_url) {}
+					 const std::string &api_url) : BaseAPI(CONTROL_PORT,
+														   network,
+														   camera,
+														   stateManager,
+														   api_url) {}
 
 APIServer::~APIServer() {}
 
@@ -47,11 +47,11 @@ void APIServer::setupServer()
 	addRouteMap("builtin", routes, indexes); // add new route map to the route_map
 }
 
-void APIServer::findParam(AsyncWebServerRequest *request, const char *param, String &value)
+void APIServer::findParam(AsyncWebServerRequest *request, const char *param, std::string &value)
 {
 	if (request->hasParam(param))
 	{
-		value = request->getParam(param)->value();
+		value = request->getParam(param)->value().c_str();
 	}
 }
 
@@ -65,7 +65,7 @@ void APIServer::findParam(AsyncWebServerRequest *request, const char *param, Str
  * @return void
  *
  */
-void APIServer::addRouteMap(std::string index, route_t route, std::vector<std::string> &indexes)
+void APIServer::addRouteMap(const std::string &index, route_t route, std::vector<std::string> &indexes)
 {
 	route_map.emplace(index, route);
 

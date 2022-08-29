@@ -12,8 +12,8 @@ class WiFiHandler
 {
 public:
 	WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager,
-				std::string ssid,
-				std::string password,
+				const std::string &ssid,
+				const std::string &password,
 				uint8_t channel);
 	virtual ~WiFiHandler();
 	void setupWifi();

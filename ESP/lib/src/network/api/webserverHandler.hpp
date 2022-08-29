@@ -11,13 +11,13 @@ public:
 			  WiFiHandler *network,
 			  CameraHandler *camera,
 			  StateManager<WiFiState_e> *stateManager,
-			  std::string api_url);
+			  const std::string &api_url);
 
 	virtual ~APIServer();
 	void begin();
 	void setupServer();
-	void findParam(AsyncWebServerRequest *request, const char *param, String &value);
-	void addRouteMap(std::string index, route_t route, std::vector<std::string> &indexes);
+	void findParam(AsyncWebServerRequest *request, const char *param, std::string &value);
+	void addRouteMap(const std::string &index, route_t route, std::vector<std::string> &indexes);
 	void handleRequest(AsyncWebServerRequest *request);
 
 public:

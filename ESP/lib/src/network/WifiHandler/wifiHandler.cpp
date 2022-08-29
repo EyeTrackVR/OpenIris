@@ -3,8 +3,8 @@
 
 WiFiHandler::WiFiHandler(ProjectConfig *configManager,
 						 StateManager<WiFiState_e> *stateManager,
-						 std::string ssid,
-						 std::string password,
+						 const std::string &ssid,
+						 const std::string &password,
 						 uint8_t channel) : configManager(configManager),
 											stateManager(stateManager),
 											ssid(ssid),
@@ -52,7 +52,7 @@ void WiFiHandler::setupWifi()
 		count++;
 
 		while (WiFi.status() != WL_CONNECTED)
-		{	
+		{
 			progress++;
 			stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
 			currentMillis = millis();
