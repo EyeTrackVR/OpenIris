@@ -79,7 +79,6 @@ void APIServer::handleRequest(AsyncWebServerRequest *request)
 {
 	try
 	{
-		size_t params = request->params();
 		// Get the route
 		log_i("Request URL: %s", request->url().c_str());
 		log_i("Request: %s", request->pathArg(0).c_str());
@@ -88,55 +87,25 @@ void APIServer::handleRequest(AsyncWebServerRequest *request)
 		auto it_map = route_map.find(request->pathArg(0).c_str());
 		auto it_method = it_map->second.find(request->pathArg(1).c_str());
 
-		log_d("Params: %d", params);
-		if (params > 0)
+		if (it_map != route_map.end())
 		{
-			log_d("We have params!");
-			for (size_t i = 0; i < params; i++)
+			if (it_method != it_map->second.end())
 			{
-				log_d("We are executing the for loop");
-				AsyncWebParameter *param = request->getParam(i);
-				if (it_map != route_map.end())
-				{
-					if (it_method != it_map->second.end())
-					{
-						(*this.*(it_method->second))(request);
-					}
-					else
-					{
-						request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
-						return;
-					}
-				}
-				else
-				{
-					request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
-					return;
-				}
-				log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
+				log_d("We are trying to execute the function");
+				(*this.*(it_method->second))(request);
+			}
+			else
+			{
+				log_e("Invalid Command");
+				request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
+				return;
 			}
 		}
 		else
 		{
-			log_d("No params, so we skipped the for loop");
-			if (it_map != route_map.end())
-			{
-				if (it_method != it_map->second.end())
-				{
-					log_d("We are trying to execute the function");
-					(*this.*(it_method->second))(request);
-				}
-				else
-				{
-					request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
-					return;
-				}
-			}
-			else
-			{
-				request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
-				return;
-			}
+			log_e("Invalid Map Index");
+			request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
+			return;
 		}
 	}
 	catch (...)

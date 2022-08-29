@@ -61,8 +61,8 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 	{
 	case POST:
 	{
-		int params = request->params();
-		for (int i = 0; i < params; i++)
+		size_t params = request->params();
+		for (size_t i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
 			if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
@@ -79,6 +79,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 				localWifiConfig.channel = atoi(param->value().c_str());
 				localWifiConfig.adhoc = atoi(param->value().c_str());
 			}
+			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 		ssid_write = true;
 		pass_write = true;
