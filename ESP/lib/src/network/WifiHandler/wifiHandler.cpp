@@ -28,8 +28,9 @@ void WiFiHandler::setupWifi()
 	std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
 
 	// check size of networks
-	log_i("Found %d networks", networks->size());
-
+	log_i("Found %d networks stored in the config", networks->size());
+	
+	//? Maybe this way is better? I don't know
 	/* if (networks->empty())
 	{
 		log_e("No networks found in config");
@@ -38,6 +39,7 @@ void WiFiHandler::setupWifi()
 		return;
 	} */
 
+	//* Check if there are networks in the config, if not move on to values used in ini file.
 	if (networks->size() == 0)
 	{
 		log_e("No networks found in config");
@@ -68,7 +70,7 @@ void WiFiHandler::setupWifi()
 			currentMillis = millis();
 			Helpers::update_progress_bar(progress, 100);
 			delay(301);
-			if (((currentMillis - _previousMillis) >= connection_timeout) && (count <= networks->size()))
+			if (((currentMillis - _previousMillis) >= connection_timeout) && (count >= networks->size()))
 			{
 				log_i("\n[INFO]: WiFi connection timed out.\n");
 				// we've tried all saved networks, none worked, let's error out
