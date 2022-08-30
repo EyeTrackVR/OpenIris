@@ -8,25 +8,6 @@ class BaseAPI : public API_Utilities
 {
 protected:
 
-	struct LocalWifiConfig
-	{
-		std::string ssid;
-		std::string pass;
-		uint8_t channel;
-		bool adhoc;
-	};
-
-	LocalWifiConfig localWifiConfig;
-
-	struct LocalAPWifiConfig
-	{
-		std::string ssid;
-		std::string pass;
-		uint8_t channel;
-	};
-
-	LocalWifiConfig localAPWifiConfig;
-
 	enum JSON_TYPES
 	{
 		CONFIG,
@@ -78,8 +59,6 @@ public:
 			
 	virtual ~BaseAPI();
 	virtual void begin();
-	virtual void setupServer();
-	void triggerWifiConfigWrite();
 };
 
 #endif // BASEAPI_HPP

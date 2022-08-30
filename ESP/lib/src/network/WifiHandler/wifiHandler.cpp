@@ -28,11 +28,21 @@ void WiFiHandler::setupWifi()
 	std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
 
 	// check size of networks
-	if (networks->empty())
+	log_i("Found %d networks", networks->size());
+
+	/* if (networks->empty())
 	{
 		log_e("No networks found in config");
 		this->iniSTA();
 		stateManager->setState(WiFiState_e::WiFiState_Error);
+		return;
+	} */
+
+	if (networks->size() == 0)
+	{
+		log_e("No networks found in config");
+		stateManager->setState(WiFiState_e::WiFiState_Error);
+		this->iniSTA();
 		return;
 	}
 
@@ -58,7 +68,7 @@ void WiFiHandler::setupWifi()
 			currentMillis = millis();
 			Helpers::update_progress_bar(progress, 100);
 			delay(301);
-			if (((currentMillis - _previousMillis) >= connection_timeout) && count >= networks->size())
+			if (((currentMillis - _previousMillis) >= connection_timeout) && (count <= networks->size()))
 			{
 				log_i("\n[INFO]: WiFi connection timed out.\n");
 				// we've tried all saved networks, none worked, let's error out

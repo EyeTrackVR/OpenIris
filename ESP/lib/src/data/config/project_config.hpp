@@ -11,11 +11,14 @@
 class ProjectConfig : public Preferences, public ISubject
 {
 public:
-	ProjectConfig();
+	ProjectConfig(const std::string &name = std::string());
 	virtual ~ProjectConfig();
 	void load();
 	void save();
-	void reset();
+	void wifiConfigSave();
+	void cameraConfigSave();
+	void deviceConfigSave();
+	bool reset();
 	void initConfig();
 
 	struct DeviceConfig_t
@@ -26,9 +29,9 @@ public:
 		bool data_json;
 		bool config_json;
 		bool settings_json;
-		String data_json_string;
-		String config_json_string;
-		String settings_json_string;
+		std::string data_json_string;
+		std::string config_json_string;
+		std::string settings_json_string;
 	};
 
 	struct CameraConfig_t
@@ -69,15 +72,15 @@ public:
 	std::vector<WiFiConfig_t> *getWifiConfigs() { return &this->config.networks; }
 	AP_WiFiConfig_t *getAPWifiConfig() { return &this->config.ap_network; }
 
-	void setDeviceConfig(const char *name, const char *OTAPassword, int *OTAPort, bool shouldNotify);
+	void setDeviceConfig(const std::string &name, const std::string &OTAPassword, int *OTAPort, bool shouldNotify);
 	void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify);
-	void setWifiConfig(const char *networkName, const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify);
-	void setAPWifiConfig(const char *ssid, const char *password, uint8_t *channel, bool adhoc, bool shouldNotify);
+	void setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
+	void setAPWifiConfig(const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
 
 private:
-	const char *configFileName;
 	TrackerConfig_t config;
 	bool _already_loaded;
+	std::string _name;
 };
 
 #endif // PROJECT_CONFIG_HPP

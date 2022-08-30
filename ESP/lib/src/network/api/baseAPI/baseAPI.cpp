@@ -5,16 +5,15 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 CameraHandler *camera,
 				 StateManager<WiFiState_e> *stateManager,
 				 const std::string &api_url) : API_Utilities(CONTROL_PORT,
-									     network,
-									     camera,
-								             stateManager,
-									     api_url) {}
+															 network,
+															 camera,
+															 stateManager,
+															 api_url) {}
 
 BaseAPI::~BaseAPI() {}
 
 void BaseAPI::begin()
 {
-	this->setupServer();
 	//! i have changed this to use lambdas instead of std::bind to avoid the overhead. Lambdas are always more preferable.
 	server->on("/", 0b00000001, [&](AsyncWebServerRequest *request)
 			   { request->send(200); });
@@ -35,23 +34,6 @@ void BaseAPI::begin()
 					   { notFound(request); });
 }
 
-void BaseAPI::setupServer()
-{
-	localWifiConfig = {
-		.ssid = "",
-		.pass = "",
-		.channel = 0,
-		.adhoc = false,
-	};
-
-	localAPWifiConfig = {
-		.ssid = "",
-		.pass = "",
-		.channel = 0,
-		.adhoc = false,
-	};
-}
-
 //*********************************************************************************************
 //!                                     Command Functions
 //*********************************************************************************************
@@ -62,29 +44,46 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 	case POST:
 	{
 		size_t params = request->params();
+
+		std::string ssid = std::string();
+		std::string password = std::string();
+		int channel = 0;
+		bool adhoc = false;
+
+		log_d("Number of Params: %d", params);
 		for (size_t i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
-			if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+			if (param->name() == "ssid")
 			{
-				localAPWifiConfig.ssid = param->value().c_str();
-				localAPWifiConfig.pass = param->value().c_str();
-				localAPWifiConfig.channel = atoi(param->value().c_str());
-				localAPWifiConfig.adhoc = atoi(param->value().c_str());
+				ssid = param->value().c_str();
 			}
-			else
+			else if (param->name() == "password")
 			{
-				localWifiConfig.ssid = param->value().c_str();
-				localWifiConfig.pass = param->value().c_str();
-				localWifiConfig.channel = atoi(param->value().c_str());
-				localWifiConfig.adhoc = atoi(param->value().c_str());
+				password = param->value().c_str();
+			}
+			else if (param->name() == "channel")
+			{
+				channel = atoi(param->value().c_str());
+			}
+			else if (param->name() == "adhoc")
+			{
+				adhoc = atoi(param->value().c_str());
 			}
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
-		ssid_write = true;
-		pass_write = true;
-		channel_write = true;
+
+		if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+		{
+			network->configManager->setAPWifiConfig(ssid, password, (uint8_t *)channel, adhoc, true);
+		}
+		else
+		{
+			network->configManager->setWifiConfig(ssid, ssid, password, (uint8_t *)channel, adhoc, true);
+		}
+
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
+		network->configManager->wifiConfigSave();
 		break;
 	}
 	default:
@@ -93,25 +92,6 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		request->redirect("/");
 		break;
 	}
-	}
-}
-
-/**
- * * Trigger in main loop to save config to flash
- * ? Should we force the users to update all config params before triggering a config write?
- */
-void BaseAPI::triggerWifiConfigWrite()
-{
-	if (ssid_write && pass_write && channel_write)
-	{
-		ssid_write = false;
-		pass_write = false;
-		channel_write = false;
-		if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
-			network->configManager->setAPWifiConfig(localAPWifiConfig.ssid.c_str(), localAPWifiConfig.pass.c_str(), &localAPWifiConfig.channel, localAPWifiConfig.adhoc, true);
-		else
-			network->configManager->setWifiConfig(localWifiConfig.ssid.c_str(), localWifiConfig.ssid.c_str(), localWifiConfig.pass.c_str(), &localWifiConfig.channel, localAPWifiConfig.adhoc, true);
-		network->configManager->save();
 	}
 }
 
@@ -151,27 +131,27 @@ void BaseAPI::handleJson(AsyncWebServerRequest *request)
 		{
 			network->configManager->getDeviceConfig()->data_json = true;
 			Network_Utilities::my_delay(1L);
-			String temp = network->configManager->getDeviceConfig()->data_json_string;
-			request->send(200, MIMETYPE_JSON, temp);
-			temp = "";
+			std::string temp = network->configManager->getDeviceConfig()->data_json_string;
+			request->send(200, MIMETYPE_JSON, temp.c_str());
+			temp = std::string();
 			break;
 		}
 		case SETTINGS:
 		{
 			network->configManager->getDeviceConfig()->config_json = true;
 			Network_Utilities::my_delay(1L);
-			String temp = network->configManager->getDeviceConfig()->config_json_string;
-			request->send(200, MIMETYPE_JSON, temp);
-			temp = "";
+			std::string temp = network->configManager->getDeviceConfig()->config_json_string;
+			request->send(200, MIMETYPE_JSON, temp.c_str());
+			temp = std::string();
 			break;
 		}
 		case CONFIG:
 		{
 			network->configManager->getDeviceConfig()->settings_json = true;
 			Network_Utilities::my_delay(1L);
-			String temp = network->configManager->getDeviceConfig()->settings_json_string;
-			request->send(200, MIMETYPE_JSON, temp);
-			temp = "";
+			std::string temp = network->configManager->getDeviceConfig()->settings_json_string;
+			request->send(200, MIMETYPE_JSON, temp.c_str());
+			temp = std::string();
 			break;
 		}
 		default:
@@ -278,14 +258,45 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 	{
 	case GET:
 	{
+		// create temporary variables to store the values
+		int temp_camera_framesize = 0;
+		int temp_camera_vflip = 0;
+		int temp_camera_hflip = 0;
+		int temp_camera_quality = 0;
+
 		int params = request->params();
 		for (int i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
-			camera->setCameraResolution((framesize_t)atoi(param->value().c_str()));
-			camera->setVFlip(atoi(param->value().c_str()));
-			camera->setHFlip(atoi(param->value().c_str()));
+			if (param->name() == "framesize")
+			{
+				temp_camera_framesize = param->value().toInt();
+			}
+			else if (param->name() == "vflip")
+			{
+				temp_camera_vflip = param->value().toInt();
+			}
+			else if (param->name() == "hflip")
+			{
+				temp_camera_hflip = param->value().toInt();
+			}
+			else if (param->name() == "quality")
+			{
+				temp_camera_quality = param->value().toInt();
+			}
 		}
+
+		// set the values for this instance
+		camera->setCameraResolution((framesize_t)temp_camera_framesize);
+		camera->setVFlip(temp_camera_vflip);
+		camera->setHFlip(temp_camera_hflip);
+		//! TODO: Need to add -> camera->setQuality(temp_camera_quality);
+
+		network->configManager->setCameraConfig((uint8_t *)temp_camera_vflip, (uint8_t *)temp_camera_framesize, (uint8_t *)temp_camera_hflip, (uint8_t *)temp_camera_quality, true);
+		network->configManager->cameraConfigSave();
+
+
+
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera Settings have been set.\"}");
 		break;
 	}
