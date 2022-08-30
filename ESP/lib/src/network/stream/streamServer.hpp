@@ -3,6 +3,9 @@
 #include <Arduino.h>
 #include "esp_camera.h"
 #include "esp_http_server.h"
+// Used to disable brownout detection
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 namespace StreamHelpers
 {
