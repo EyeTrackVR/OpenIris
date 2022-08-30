@@ -46,10 +46,12 @@ void setup()
 	{
 	case WiFiState_e::WiFiState_Disconnected:
 	{
+		//! TODO: Implement
 		break;
 	}
 	case WiFiState_e::WiFiState_Disconnecting:
 	{
+		//! TODO: Implement
 		break;
 	}
 	case WiFiState_e::WiFiState_ADHOC:
@@ -68,10 +70,12 @@ void setup()
 	}
 	case WiFiState_e::WiFiState_Connecting:
 	{
+		//! TODO: Implement
 		break;
 	}
 	case WiFiState_e::WiFiState_Error:
 	{
+		//! TODO: Implement
 		break;
 	}
 	}

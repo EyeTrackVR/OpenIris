@@ -44,6 +44,16 @@ public:
 
 	struct WiFiConfig_t
 	{
+		//! Constructor for WiFiConfig_t - allows us to use emplace_back
+		WiFiConfig_t(const std::string &name,
+					 const std::string &ssid,
+					 const std::string &password,
+					 uint8_t channel,
+					 bool adhoc) : name(std::move(name)),
+								   ssid(std::move(ssid)),
+								   password(std::move(password)),
+								   channel(channel),
+								   adhoc(adhoc) {}
 		std::string name;
 		std::string ssid;
 		std::string password;
