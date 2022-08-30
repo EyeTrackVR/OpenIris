@@ -5,10 +5,10 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 CameraHandler *camera,
 				 StateManager<WiFiState_e> *stateManager,
 				 const std::string &api_url) : API_Utilities(CONTROL_PORT,
-													  network,
-													  camera,
-													  stateManager,
-													  api_url) {}
+									     network,
+									     camera,
+								             stateManager,
+									     api_url) {}
 
 BaseAPI::~BaseAPI() {}
 
