@@ -81,7 +81,7 @@ void WiFiHandler::setupWifi()
 				return;
 			}
 		}
-		log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid);
+		log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid.c_str());
 		stateManager->setState(WiFiState_e::WiFiState_Connected);
 	}
 }
