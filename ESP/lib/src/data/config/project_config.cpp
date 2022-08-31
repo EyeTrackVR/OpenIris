@@ -157,15 +157,12 @@ void ProjectConfig::load()
 void ProjectConfig::setDeviceConfig(const std::string &name, const std::string &OTAPassword, int *OTAPort, bool shouldNotify)
 {
 	log_d("Updating device config");
-	this->config.device = {
-		name,
-		OTAPassword,
-		*OTAPort,
-	};
+	this->config.device.name.assign(name);
+	this->config.device.OTAPassword.assign(OTAPassword);
+	this->config.device.OTAPort = *OTAPort;
+
 	if (shouldNotify)
-	{
 		this->notify(ObserverEvent::deviceConfigUpdated);
-	}
 }
 
 void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)
@@ -209,15 +206,12 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 
 void ProjectConfig::setAPWifiConfig(const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)
 {
-	this->config.ap_network = {
-		ssid,
-		password,
-		*channel,
-	};
+	this->config.ap_network.ssid.assign(ssid);
+	this->config.ap_network.password.assign(password);
+	this->config.ap_network.channel = *channel;
+	this->config.ap_network.adhoc = adhoc;
 
 	log_d("Updating access point config");
 	if (shouldNotify)
-	{
 		this->notify(ObserverEvent::networksConfigUpdated);
-	}
 }

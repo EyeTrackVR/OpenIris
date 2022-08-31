@@ -43,15 +43,15 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 	{
 	case POST:
 	{
-		size_t params = request->params();
+		int params = request->params();
 
-		std::string ssid = std::string();
-		std::string password = std::string();
-		int channel = 0;
-		bool adhoc = false;
+		std::string ssid;
+		std::string password;
+		uint8_t channel = 0;
+		uint8_t adhoc = 0;
 
 		log_d("Number of Params: %d", params);
-		for (size_t i = 0; i < params; i++)
+		for (int i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
 			if (param->name() == "ssid")
@@ -64,22 +64,23 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			}
 			else if (param->name() == "channel")
 			{
-				channel = atoi(param->value().c_str());
+				channel = (uint8_t)atoi(param->value().c_str());
 			}
 			else if (param->name() == "adhoc")
 			{
-				adhoc = atoi(param->value().c_str());
+				adhoc = (uint8_t)atoi(param->value().c_str());
 			}
+
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 
 		if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
-			network->configManager->setAPWifiConfig(ssid, password, (uint8_t *)channel, adhoc, true);
+			network->configManager->setAPWifiConfig(ssid, password, &channel, adhoc, true);
 		}
 		else
 		{
-			network->configManager->setWifiConfig(ssid, ssid, password, (uint8_t *)channel, adhoc, true);
+			network->configManager->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
 		}
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
