@@ -37,11 +37,8 @@ public:
 	virtual ~API_Utilities();
 
 	static void printASCII();
-	//static bool initSPIFFS();
 protected:
 	void notFound(AsyncWebServerRequest *request) const;
-	//static std::string readFile(fs::FS &fs, std::string path);
-	// void writeFile(fs::FS &fs, std::string path, std::string message);
 	std::string shaEncoder(std::string data);
 	std::unordered_map<int, std::string> _networkMethodsMap = {
 		{0b00000001, "GET"},
@@ -80,10 +77,6 @@ protected:
 
 protected:
 	std::string api_url;
-
-	static bool ssid_write;
-	static bool pass_write;
-	static bool channel_write;
 
 	static const char *MIMETYPE_HTML;
 	/* static const char *MIMETYPE_CSS; */

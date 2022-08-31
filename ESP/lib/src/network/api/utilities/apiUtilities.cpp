@@ -10,24 +10,20 @@ const char *API_Utilities::MIMETYPE_HTML{"text/html"};
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char *API_Utilities::MIMETYPE_JSON{"application/json"};
 
-bool API_Utilities::ssid_write = false;
-bool API_Utilities::pass_write = false;
-bool API_Utilities::channel_write = false;
-
 //*********************************************************************************************
 //!                                     API Utilities
 //*********************************************************************************************
 
 API_Utilities::API_Utilities(int CONTROL_PORT,
-			     WiFiHandler *network,
-			     CameraHandler *camera,
-			     StateManager<WiFiState_e> *stateManager,
-			     const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
-						    stateManager(stateManager),
-						    network(network),
-						    camera(camera),
-						    api_url(api_url) {}
-							
+							 WiFiHandler *network,
+							 CameraHandler *camera,
+							 StateManager<WiFiState_e> *stateManager,
+							 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
+														   stateManager(stateManager),
+														   network(network),
+														   camera(camera),
+														   api_url(api_url) {}
+
 API_Utilities::~API_Utilities() {}
 
 std::string API_Utilities::shaEncoder(std::string data)
@@ -137,57 +133,3 @@ void API_Utilities::printASCII()
 	Serial.println(F("                                                                                                          "));
 	Serial.println(F(" <============================================================================================================================> "));
 }
-
-/* bool API_Utilities::initSPIFFS()
-{
-	if (!SPIFFS.begin(false))
-	{
-		log_e("An error has occurred while mounting SPIFFS");
-		return false;
-	}
-	log_i("SPIFFS mounted successfully");
-	return true;
-} */
-
-// Read File from SPIFFS
-/* std::string API_Utilities::readFile(fs::FS &fs, std::string path)
-{
-	log_i("Reading file: %s\r\n", path.c_str());
-
-	File file = fs.open(path.c_str());
-	if (!file || file.isDirectory())
-	{
-		log_e("[INFO]: Failed to open file for reading");
-		return std::string();
-	}
-
-	std::string fileContent;
-	while (file.available())
-	{
-		fileContent = file.readStringUntil('#').c_str();
-		break;
-	}
-	return fileContent;
-} */
-
-// Write file to SPIFFS
-/* void API_Utilities::writeFile(fs::FS &fs, std::string path, std::string message)
-{
-	log_i("[Writing File]: Writing file: %s\r\n", path);
-	Network_Utilities::my_delay(0.1L);
-
-	File file = fs.open(path.c_str(), FILE_WRITE);
-	if (!file)
-	{
-		log_i("[Writing File]: failed to open file for writing");
-		return;
-	}
-	if (file.print(message.c_str()))
-	{
-		log_i("[Writing File]: file written");
-	}
-	else
-	{
-		log_i("[Writing File]: file write failed");
-	}
-} */
