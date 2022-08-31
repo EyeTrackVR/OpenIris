@@ -28,14 +28,14 @@ void ProjectConfig::initConfig()
 		false,
 		false,
 		false,
-		std::string(),
-		std::string(),
-		std::string(),
+		"",
+		"",
+		"",
 	};
 
 	this->config.ap_network = {
-		std::string(),
-		std::string(),
+		"",
+		"",
 		0,
 	};
 }
