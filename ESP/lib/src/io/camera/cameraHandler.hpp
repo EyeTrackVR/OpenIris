@@ -13,7 +13,7 @@ private:
 
 public:
 	CameraHandler(ProjectConfig *configManager) : configManager(configManager) {}
-	int setupCamera();
+	bool setupCamera();
 	int setCameraResolution(framesize_t frameSize);
 	int setVFlip(int direction);
 	int setHFlip(int direction);

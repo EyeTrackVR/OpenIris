@@ -1,6 +1,6 @@
 #include "cameraHandler.hpp"
 
-int CameraHandler::setupCamera()
+bool CameraHandler::setupCamera()
 {
 	log_d("Setting up camera \r\n");
 
@@ -45,6 +45,17 @@ int CameraHandler::setupCamera()
 
 	esp_err_t err = esp_camera_init(&config);
 
+	if (err != ESP_OK)
+	{
+		log_e("Camera initialization failed with error: 0x%x \r\n", err);
+		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
+		//! TODO add led blinking here
+		return false;
+	}
+
+	log_d("Sucessfully initialized the camera!");
+	//! TODO add led blinking here
+
 	camera_sensor = esp_camera_sensor_get();
 	// fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
 	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel
@@ -68,18 +79,7 @@ int CameraHandler::setupCamera()
 	camera_sensor->set_colorbar(camera_sensor, 0);					 // 0 = disable , 1 = enable
 	camera_sensor->set_special_effect(camera_sensor, 2);			 // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
 
-	if (err != ESP_OK)
-	{
-		log_e("Camera initialization failed with error: 0x%x \r\n", err);
-		//! TODO add led blinking here
-		return -1;
-	}
-	else
-	{
-		log_d("Sucessfully initialized the camera!");
-		//! TODO add led blinking here
-		return 0;
-	}
+	return true;
 }
 
 void CameraHandler::update(ObserverEvent::Event event)
