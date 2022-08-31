@@ -53,7 +53,7 @@ bool CameraHandler::setupCamera()
 		return false;
 	}
 
-	log_d("Sucessfully initialized the camera!");
+	log_d("Successfully initialized the camera!");
 	//! TODO add led blinking here
 
 	camera_sensor = esp_camera_sensor_get();
