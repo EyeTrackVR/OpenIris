@@ -74,14 +74,16 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 
-		if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+		network->configManager->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
+
+		/* if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
 			network->configManager->setAPWifiConfig(ssid, password, &channel, adhoc, true);
 		}
 		else
 		{
-			network->configManager->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
-		}
+			
+		} */
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
 		network->configManager->wifiConfigSave();

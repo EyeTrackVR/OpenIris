@@ -7,6 +7,7 @@
 #include <string>
 
 #include "data/utilities/Observer.hpp"
+#include "data/utilities/helpers.hpp"
 
 class ProjectConfig : public Preferences, public ISubject
 {

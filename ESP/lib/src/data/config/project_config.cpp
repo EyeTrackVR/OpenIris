@@ -36,7 +36,7 @@ void ProjectConfig::initConfig()
 	this->config.ap_network = {
 		"",
 		"",
-		0,
+		1,
 	};
 }
 
@@ -56,12 +56,19 @@ void ProjectConfig::wifiConfigSave()
 	/* WiFi Config */
 	putInt("networkCount", this->config.networks.size());
 
+	std::string name = "name";
+	std::string ssid = "ssid";
+	std::string password = "pass";
+	std::string channel = "channel";
 	for (int i = 0; i < this->config.networks.size(); i++)
 	{
-		const std::string &name = std::to_string(i) + "name";
-		const std::string &ssid = std::to_string(i) + "ssid";
-		const std::string &password = std::to_string(i) + "pass";
-		const std::string &channel = std::to_string(i) + "channel";
+		char buffer[2];
+		std::string iter_str = Helpers::itoa(i, buffer, 10);
+
+		name.append(iter_str);
+		ssid.append(iter_str);
+		password.append(iter_str);
+		channel.append(iter_str);
 
 		putString(name.c_str(), this->config.networks[i].name.c_str());
 		putString(ssid.c_str(), this->config.networks[i].ssid.c_str());
@@ -75,7 +82,6 @@ void ProjectConfig::wifiConfigSave()
 	putUInt("apChannel", this->config.ap_network.channel);
 
 	log_i("Project config saved and system is rebooting");
-	delay(5000);
 	ESP.restart();
 }
 
@@ -120,12 +126,19 @@ void ProjectConfig::load()
 
 	/* WiFi Config */
 	int networkCount = getInt("networkCount", 0);
+	std::string name = "name";
+	std::string ssid = "ssid";
+	std::string password = "pass";
+	std::string channel = "channel";
 	for (int i = 0; i < networkCount; i++)
 	{
-		const std::string &name = std::to_string(i) + "name";
-		const std::string &ssid = std::to_string(i) + "ssid";
-		const std::string &password = std::to_string(i) + "pass";
-		const std::string &channel = std::to_string(i) + "channel";
+		char buffer[2];
+		std::string iter_str = Helpers::itoa(i, buffer, 10);
+
+		name.append(iter_str);
+		ssid.append(iter_str);
+		password.append(iter_str);
+		channel.append(iter_str);
 
 		const std::string &temp_1 = getString(name.c_str()).c_str();
 		const std::string &temp_2 = getString(ssid.c_str()).c_str();
@@ -143,7 +156,7 @@ void ProjectConfig::load()
 	/* AP Config */
 	this->config.ap_network.ssid = getString("apSSID", "easynetwork").c_str();
 	this->config.ap_network.password = getString("apPass", "12345678").c_str();
-	this->config.ap_network.channel = getUInt("apChannel", 0);
+	this->config.ap_network.channel = getUInt("apChannel", 1);
 
 	this->_already_loaded = true;
 	this->notify(ObserverEvent::configLoaded);
