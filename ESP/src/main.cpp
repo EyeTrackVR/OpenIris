@@ -20,7 +20,7 @@ OTA ota(&deviceConfig);
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig);
 // SerialManager serialManager(&deviceConfig);
-WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, 1);
+WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &wifiHandler, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 StreamServer streamServer(STREAM_SERVER_PORT);
