@@ -1,7 +1,7 @@
 
 namespace Logo
 {
-  static void printASCII()
+  inline static void printASCII()
   {
     Serial.println(F("                                                      : === WELCOME === TO === : "));
     Serial.println(F(" <===========================================================================================================================> "));
