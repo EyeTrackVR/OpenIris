@@ -147,10 +147,11 @@ void ProjectConfig::load()
 
 		//! push_back creates a copy of the object, so we need to use emplace_back
 		this->config.networks.emplace_back(
-			temp_1,
-			temp_2,
-			temp_3,
-			temp_4);
+            temp_1,
+            temp_2,
+            temp_3,
+            temp_4,
+            false); // TODO figure out if this should be a hardcoded false
 	}
 
 	/* AP Config */
@@ -194,10 +195,11 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 			if (networkToUpdate != nullptr)
 			{
 				this->config.networks.emplace_back(
-					networkName,
-					ssid,
-					password,
-					*channel);
+						networkName,
+						ssid,
+						password,
+						*channel,
+						false); // TODO figure out if this should be a hardcoded false
 			}
 			log_d("Updating wifi config");
 		}
@@ -206,10 +208,11 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 	{
 		//! push_back creates a copy of the object, so we need to use emplace_back
 		this->config.networks.emplace_back(
-			networkName,
-			ssid,
-			password,
-			*channel);
+				networkName,
+				ssid,
+				password,
+				*channel,
+				false); // TODO figure out if this should be a hardcoded false
 		networkToUpdate = &this->config.networks[0];
 	}
 

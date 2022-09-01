@@ -41,6 +41,7 @@ protected:
 	void getCameraStatus(AsyncWebServerRequest *request);
 	void setCameraVar(AsyncWebServerRequest *request);
 	void setCamera(AsyncWebServerRequest *request);
+	void restartCamera(AsyncWebServerRequest *request);
 
 	/* Route Command types */
 	using route_method = void (BaseAPI::*)(AsyncWebServerRequest *);
@@ -56,7 +57,7 @@ public:
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *stateManager,
 			const std::string &api_url);
-			
+
 	virtual ~BaseAPI();
 	virtual void begin();
 };

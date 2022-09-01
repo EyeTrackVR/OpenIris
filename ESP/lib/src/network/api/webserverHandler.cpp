@@ -39,7 +39,7 @@ void APIServer::setupServer()
 	routes.emplace("setJson", &APIServer::handleJson);
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("deleteRoute", &APIServer::deleteRoute);
-
+	routes.emplace("restartCamera", &APIServer::restartCamera);
 	// Camera Routes
 
 	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map

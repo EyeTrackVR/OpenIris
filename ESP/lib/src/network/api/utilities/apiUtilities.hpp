@@ -36,7 +36,6 @@ public:
 				  const std::string &api_url);
 	virtual ~API_Utilities();
 
-	static void printASCII();
 protected:
 	void notFound(AsyncWebServerRequest *request) const;
 	std::string shaEncoder(std::string data);

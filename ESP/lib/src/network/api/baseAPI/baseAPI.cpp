@@ -82,7 +82,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		}
 		else
 		{
-			
+
 		} */
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
@@ -445,4 +445,12 @@ void BaseAPI::setCameraVar(AsyncWebServerRequest *request)
 	AsyncWebServerResponse *response = request->beginResponse(200);
 	response->addHeader("Access-Control-Allow-Origin", "*");
 	request->send(response);
+}
+
+void BaseAPI::restartCamera(AsyncWebServerRequest *request)
+{
+	int mode = atoi(request->arg("mode").c_str());
+	camera->resetCamera((bool)mode);
+
+	request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
