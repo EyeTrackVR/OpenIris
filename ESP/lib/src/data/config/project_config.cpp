@@ -179,6 +179,19 @@ void ProjectConfig::setDeviceConfig(const std::string &name, const std::string &
 		this->notify(ObserverEvent::deviceConfigUpdated);
 }
 
+void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify)
+{
+	log_d("Updating camera config");
+	this->config.camera.vflip = *vflip;
+	this->config.camera.framesize = *framesize;
+	this->config.camera.href = *href;
+	this->config.camera.quality = *quality;
+
+	log_d("Updating Camera config");
+	if (shouldNotify)
+		this->notify(ObserverEvent::networksConfigUpdated);
+}
+
 void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)
 {
 	WiFiConfig_t *networkToUpdate = nullptr;

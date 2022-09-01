@@ -262,10 +262,10 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 	case GET:
 	{
 		// create temporary variables to store the values
-		int temp_camera_framesize = 0;
-		int temp_camera_vflip = 0;
-		int temp_camera_hflip = 0;
-		int temp_camera_quality = 0;
+		uint8_t temp_camera_framesize = 0;
+		uint8_t temp_camera_vflip = 0;
+		uint8_t temp_camera_hflip = 0;
+		uint8_t temp_camera_quality = 0;
 
 		int params = request->params();
 		for (int i = 0; i < params; i++)
@@ -273,19 +273,19 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 			AsyncWebParameter *param = request->getParam(i);
 			if (param->name() == "framesize")
 			{
-				temp_camera_framesize = param->value().toInt();
+				temp_camera_framesize = (uint8_t)param->value().toInt();
 			}
 			else if (param->name() == "vflip")
 			{
-				temp_camera_vflip = param->value().toInt();
+				temp_camera_vflip = (uint8_t)param->value().toInt();
 			}
 			else if (param->name() == "hflip")
 			{
-				temp_camera_hflip = param->value().toInt();
+				temp_camera_hflip = (uint8_t)param->value().toInt();
 			}
 			else if (param->name() == "quality")
 			{
-				temp_camera_quality = param->value().toInt();
+				temp_camera_quality = (uint8_t)param->value().toInt();
 			}
 		}
 
@@ -295,10 +295,8 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 		camera->setHFlip(temp_camera_hflip);
 		//! TODO: Need to add -> camera->setQuality(temp_camera_quality);
 
-		network->configManager->setCameraConfig((uint8_t *)temp_camera_vflip, (uint8_t *)temp_camera_framesize, (uint8_t *)temp_camera_hflip, (uint8_t *)temp_camera_quality, true);
+		network->configManager->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, true);
 		network->configManager->cameraConfigSave();
-
-
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera Settings have been set.\"}");
 		break;
