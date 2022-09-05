@@ -5,11 +5,11 @@
 //*********************************************************************************************
 
 APIServer::APIServer(int CONTROL_PORT,
-					 ProjectConfig *configManager,
+					 WiFiHandler *network,
 					 CameraHandler *camera,
 					 StateManager<WiFiState_e> *stateManager,
 					 const std::string &api_url) : BaseAPI(CONTROL_PORT,
-														   configManager,
+														   network,
 														   camera,
 														   stateManager,
 														   api_url) {}

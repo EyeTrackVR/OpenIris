@@ -12,17 +12,18 @@
 
 #include <network/OTA/OTA.hpp>
 
+int STREAM_SERVER_PORT = 80;
+int CONTROL_SERVER_PORT = 81;
+
 ProjectConfig deviceConfig;
 OTA ota(&deviceConfig);
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig);
 // SerialManager serialManager(&deviceConfig);
-
-APIServer apiServer(81, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
-StreamServer streamServer(80);
-
-WiFiHandler wifiHandler(&deviceConfig, &apiServer, &streamServer, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+APIServer apiServer(CONTROL_SERVER_PORT, &wifiHandler, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
+StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
@@ -36,9 +37,48 @@ void setup()
 	deviceConfig.load();
 	cameraHandler.setupCamera();
 
-	wifiHandler._enable_adhoc = ENABLE_ADHOC; // force ADHOC mode at compile time.
-	wifiHandler.begin(); // start wifi, apiserver, and streamserver
+	wifiHandler._enable_adhoc = ENABLE_ADHOC;
+
+	wifiHandler.setupWifi();
 	mdnsHandler.startMDNS();
+
+	switch (wifiStateManager.getCurrentState())
+	{
+	case WiFiState_e::WiFiState_Disconnected:
+	{
+		//! TODO: Implement
+		break;
+	}
+	case WiFiState_e::WiFiState_Disconnecting:
+	{
+		//! TODO: Implement
+		break;
+	}
+	case WiFiState_e::WiFiState_ADHOC:
+	{
+		streamServer.startStreamServer();
+		apiServer.begin();
+		log_d("[SETUP]: Starting Stream Server");
+		break;
+	}
+	case WiFiState_e::WiFiState_Connected:
+	{
+		streamServer.startStreamServer();
+		apiServer.begin();
+		log_d("[SETUP]: Starting Stream Server");
+		break;
+	}
+	case WiFiState_e::WiFiState_Connecting:
+	{
+		//! TODO: Implement
+		break;
+	}
+	case WiFiState_e::WiFiState_Error:
+	{
+		//! TODO: Implement
+		break;
+	}
+	}
 	ota.SetupOTA();
 }
 

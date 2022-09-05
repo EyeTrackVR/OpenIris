@@ -7,7 +7,7 @@
 class BaseAPI : public API_Utilities
 {
 protected:
-	ProjectConfig *configManager;
+
 	enum JSON_TYPES
 	{
 		CONFIG,
@@ -53,7 +53,7 @@ protected:
 
 public:
 	BaseAPI(int CONTROL_PORT,
-			ProjectConfig *configManager,
+			WiFiHandler *network,
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *stateManager,
 			const std::string &api_url);

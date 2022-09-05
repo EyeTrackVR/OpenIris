@@ -15,10 +15,12 @@ const char *API_Utilities::MIMETYPE_JSON{"application/json"};
 //*********************************************************************************************
 
 API_Utilities::API_Utilities(int CONTROL_PORT,
+							 WiFiHandler *network,
 							 CameraHandler *camera,
 							 StateManager<WiFiState_e> *stateManager,
 							 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
 														   stateManager(stateManager),
+														   network(network),
 														   camera(camera),
 														   api_url(api_url) {}
 
