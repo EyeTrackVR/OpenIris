@@ -8,8 +8,7 @@
 #include <network/api/webserverHandler.hpp>
 #include <logo/logo.hpp>
 #include <data/config/project_config.hpp>
-//#include <io/SerialManager/serialmanager.hpp> // Basic Serial Manager
-//#include <io/SerialManager/SerialManager2/serialmanager.hpp  // Advanced Serial MAnager //! Finish this to update the serial manager
+//#include <io/SerialManager/serialmanager.hpp> // Serial Manager
 
 #include <network/OTA/OTA.hpp>
 
@@ -29,7 +28,7 @@ StreamServer streamServer(STREAM_SERVER_PORT);
 void setup()
 {
 	Serial.begin(115200);
-	Serial.setDebugOutput(true);
+	Serial.setDebugOutput(DEBUG_MODE);
 	Serial.println("\n");
 	Logo::printASCII();
 
