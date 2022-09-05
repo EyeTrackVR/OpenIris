@@ -11,7 +11,8 @@
 class WiFiHandler
 {
 public:
-	WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager,
+	WiFiHandler(ProjectConfig *configManager,
+				StateManager<WiFiState_e> *stateManager,
 				const std::string &ssid,
 				const std::string &password,
 				uint8_t channel);
