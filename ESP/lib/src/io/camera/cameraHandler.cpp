@@ -129,16 +129,16 @@ void CameraHandler::resetCamera(bool type)
 	{
 		// power cycle the camera module (handy if camera stops responding)
 		digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
-		Network_Utilities::my_delay(0.3L); // a for loop with a delay of 300ms
+		Network_Utilities::my_delay(0.3); // a for loop with a delay of 300ms
 		digitalWrite(PWDN_GPIO_NUM, LOW);
-		Network_Utilities::my_delay(0.3L);
+		Network_Utilities::my_delay(0.3);
 		setupCamera();
 	}
 	else
 	{
 		// reset via software (handy if you wish to change resolution or image type etc. - see test procedure)
 		esp_camera_deinit();
-		Network_Utilities::my_delay(0.05L);
+		Network_Utilities::my_delay(0.05);
 		setupCamera();
 	}
 }

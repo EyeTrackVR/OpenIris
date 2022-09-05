@@ -133,7 +133,7 @@ void BaseAPI::handleJson(AsyncWebServerRequest *request)
 		case DATA:
 		{
 			network->configManager->getDeviceConfig()->data_json = true;
-			Network_Utilities::my_delay(1L);
+			Network_Utilities::my_delay(1);
 			std::string temp = network->configManager->getDeviceConfig()->data_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
@@ -142,7 +142,7 @@ void BaseAPI::handleJson(AsyncWebServerRequest *request)
 		case SETTINGS:
 		{
 			network->configManager->getDeviceConfig()->config_json = true;
-			Network_Utilities::my_delay(1L);
+			Network_Utilities::my_delay(1);
 			std::string temp = network->configManager->getDeviceConfig()->config_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
@@ -151,7 +151,7 @@ void BaseAPI::handleJson(AsyncWebServerRequest *request)
 		case CONFIG:
 		{
 			network->configManager->getDeviceConfig()->settings_json = true;
-			Network_Utilities::my_delay(1L);
+			Network_Utilities::my_delay(1);
 			std::string temp = network->configManager->getDeviceConfig()->settings_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
