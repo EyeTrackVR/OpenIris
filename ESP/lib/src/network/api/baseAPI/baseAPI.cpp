@@ -178,7 +178,6 @@ void BaseAPI::rebootDevice(AsyncWebServerRequest *request)
 	{
 	case GET:
 	{
-		delay(20000);
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
 		ESP.restart();
 	}

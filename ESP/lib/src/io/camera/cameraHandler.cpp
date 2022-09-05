@@ -125,20 +125,20 @@ int CameraHandler::setHFlip(int direction)
 // TODO: Add to API
 void CameraHandler::resetCamera(bool type)
 {
-	if (type == 1)
+	if (type)
 	{
 		// power cycle the camera module (handy if camera stops responding)
 		digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
-		delay(300);
+		Network_Utilities::my_delay(0.3L); // a for loop with a delay of 300ms
 		digitalWrite(PWDN_GPIO_NUM, LOW);
-		delay(300);
+		Network_Utilities::my_delay(0.3L);
 		setupCamera();
 	}
 	else
 	{
 		// reset via software (handy if you wish to change resolution or image type etc. - see test procedure)
 		esp_camera_deinit();
-		delay(50);
+		Network_Utilities::my_delay(0.05L);
 		setupCamera();
 	}
 }

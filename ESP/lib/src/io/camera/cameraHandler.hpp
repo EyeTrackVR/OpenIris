@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <esp_camera.h>
 #include "data/utilities/Observer.hpp"
+#include "data/utilities/network_utilities.hpp"
 #include "data/config/project_config.hpp"
 
 class CameraHandler : IObserver
