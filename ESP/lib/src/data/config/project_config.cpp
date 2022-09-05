@@ -147,11 +147,11 @@ void ProjectConfig::load()
 
 		//! push_back creates a copy of the object, so we need to use emplace_back
 		this->config.networks.emplace_back(
-            temp_1,
-            temp_2,
-            temp_3,
-            temp_4,
-            false); // TODO figure out if this should be a hardcoded false
+				temp_1,
+				temp_2,
+				temp_3,
+				temp_4,
+				false); // false because the networks we store in the config are the ones we want the esp to connect to, rather than host as AP
 	}
 
 	/* AP Config */
@@ -196,6 +196,7 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 {
 	WiFiConfig_t *networkToUpdate = nullptr;
 
+	// we store the ADHOC flag as false because the networks we store in the config are the ones we want the esp to connect to, rather than host as AP, and here we're just updating them
 	size_t size = this->config.networks.size();
 	if (size > 0)
 	{
@@ -212,7 +213,7 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 						ssid,
 						password,
 						*channel,
-						false); // TODO figure out if this should be a hardcoded false
+						false);
 			}
 			log_d("Updating wifi config");
 		}
@@ -225,7 +226,7 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
 				ssid,
 				password,
 				*channel,
-				false); // TODO figure out if this should be a hardcoded false
+				false);
 		networkToUpdate = &this->config.networks[0];
 	}
 

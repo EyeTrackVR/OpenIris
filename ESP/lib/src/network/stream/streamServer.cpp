@@ -83,7 +83,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 
 int StreamServer::startStreamServer()
 {
-	//WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //! Turn-off the 'brownout detector'
+	// WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //! Turn-off the 'brownout detector'
 	httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 	config.stack_size = 20480;
 	config.max_uri_handlers = 1;
@@ -104,7 +104,10 @@ int StreamServer::startStreamServer()
 	else
 	{
 		httpd_register_uri_handler(camera_stream, &stream_page);
-		log_d("Stream server initialized");
+		Serial.println("Stream server initialized");
+		Serial.print("\n\rThe stream is under: http://");
+		Serial.print(WiFi.localIP());
+		Serial.printf(":%i\n\r", this->STREAM_SERVER_PORT);
 		return 0;
 	}
 }

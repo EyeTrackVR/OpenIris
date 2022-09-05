@@ -3,6 +3,7 @@
 #define STREAM_SERVER_HPP
 #define PART_BOUNDARY "123456789000000000000987654321"
 #include <Arduino.h>
+#include <WiFi.h>
 // Used to disable brownout detection
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"

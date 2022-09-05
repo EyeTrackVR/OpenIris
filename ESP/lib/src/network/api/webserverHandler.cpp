@@ -18,7 +18,7 @@ APIServer::~APIServer() {}
 
 void APIServer::begin()
 {
-	log_d("Initializing REST API");
+	log_d("Initializing REST API Server");
 	this->setupServer();
 	BaseAPI::begin();
 
