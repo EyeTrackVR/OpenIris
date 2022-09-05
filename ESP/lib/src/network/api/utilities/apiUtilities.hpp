@@ -30,7 +30,6 @@ class API_Utilities
 {
 public:
 	API_Utilities(int CONTROL_PORT,
-				  WiFiHandler *network,
 				  CameraHandler *camera,
 				  StateManager<WiFiState_e> *stateManager,
 				  const std::string &api_url);
@@ -69,7 +68,6 @@ protected:
 
 protected:
 	AsyncWebServer *server;
-	WiFiHandler *network;
 	CameraHandler *camera;
 	StateManager<WiFiState_e> *stateManager;
 	typedef std::unordered_map<std::string, WebRequestMethodComposite> networkMethodsMap_t;

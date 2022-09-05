@@ -6,19 +6,27 @@
 #include <WiFi.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
+#include "network/api/webserverHandler.hpp"
+#include "network/stream/streamServer.hpp"
 #include "data/utilities/helpers.hpp"
 
 class WiFiHandler
 {
 public:
-	WiFiHandler(ProjectConfig *configManager, StateManager<WiFiState_e> *stateManager,
+	WiFiHandler(ProjectConfig *configManager,
+				APIServer *apiServer,
+				StreamServer *streamServer,
+				StateManager<WiFiState_e> *stateManager,
 				const std::string &ssid,
 				const std::string &password,
 				uint8_t channel);
 	virtual ~WiFiHandler();
+	void begin();
 	void setupWifi();
 
 	ProjectConfig *configManager;
+	APIServer *apiServer;
+	StreamServer *streamServer;
 	StateManager<WiFiState_e> *stateManager;
 
 	bool _enable_adhoc;

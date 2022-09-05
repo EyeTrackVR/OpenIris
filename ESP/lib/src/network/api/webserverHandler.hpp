@@ -8,7 +8,7 @@ class APIServer : public BaseAPI
 {
 public:
 	APIServer(int CONTROL_PORT,
-			  WiFiHandler *network,
+			  ProjectConfig *configManager,
 			  CameraHandler *camera,
 			  StateManager<WiFiState_e> *stateManager,
 			  const std::string &api_url);
