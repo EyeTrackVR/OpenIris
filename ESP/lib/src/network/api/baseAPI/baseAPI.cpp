@@ -1,14 +1,14 @@
 #include "baseAPI.hpp"
 
 BaseAPI::BaseAPI(int CONTROL_PORT,
-				 WiFiHandler *network,
-				 CameraHandler *camera,
-				 StateManager<WiFiState_e> *stateManager,
-				 const std::string &api_url) : API_Utilities(CONTROL_PORT,
-															 network,
-															 camera,
-															 stateManager,
-															 api_url) {}
+                 ProjectConfig *projectConfig,
+                 CameraHandler *camera,
+                 StateManager<WiFiState_e> *WiFiStateManager,
+                 const std::string &api_url) : API_Utilities(CONTROL_PORT,
+                                                             projectConfig,
+                                                             camera,
+                                                             WiFiStateManager,
+                                                             api_url) {}
 
 BaseAPI::~BaseAPI() {}
 
@@ -74,11 +74,11 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 
-		network->configManager->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
+		projectConfig->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
 
-		/* if (network->stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+		/* if (WiFitateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
-			network->configManager->setAPWifiConfig(ssid, password, &channel, adhoc, true);
+			projectConfig->setAPWifiConfig(ssid, password, &channel, adhoc, true);
 		}
 		else
 		{
@@ -86,7 +86,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		} */
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
-		network->configManager->wifiConfigSave();
+		projectConfig->wifiConfigSave();
 		break;
 	}
 	default:
@@ -132,27 +132,27 @@ void BaseAPI::handleJson(AsyncWebServerRequest *request)
 		{
 		case DATA:
 		{
-			network->configManager->getDeviceConfig()->data_json = true;
+			projectConfig->getDeviceConfig()->data_json = true;
 			Network_Utilities::my_delay(1);
-			std::string temp = network->configManager->getDeviceConfig()->data_json_string;
+			std::string temp = projectConfig->getDeviceConfig()->data_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
 			break;
 		}
 		case SETTINGS:
 		{
-			network->configManager->getDeviceConfig()->config_json = true;
+			projectConfig->getDeviceConfig()->config_json = true;
 			Network_Utilities::my_delay(1);
-			std::string temp = network->configManager->getDeviceConfig()->config_json_string;
+			std::string temp = projectConfig->getDeviceConfig()->config_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
 			break;
 		}
 		case CONFIG:
 		{
-			network->configManager->getDeviceConfig()->settings_json = true;
+			projectConfig->getDeviceConfig()->settings_json = true;
 			Network_Utilities::my_delay(1);
-			std::string temp = network->configManager->getDeviceConfig()->settings_json_string;
+			std::string temp = projectConfig->getDeviceConfig()->settings_json_string;
 			request->send(200, MIMETYPE_JSON, temp.c_str());
 			temp = std::string();
 			break;
@@ -196,7 +196,7 @@ void BaseAPI::factoryReset(AsyncWebServerRequest *request)
 	case GET:
 	{
 		log_d("Factory Reset");
-		network->configManager->reset();
+		projectConfig->reset();
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Factory Reset\"}");
 	}
 	default:
@@ -288,14 +288,8 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 			}
 		}
 
-		// set the values for this instance
-		camera->setCameraResolution((framesize_t)temp_camera_framesize);
-		camera->setVFlip(temp_camera_vflip);
-		camera->setHFlip(temp_camera_hflip);
-		//! TODO: Need to add -> camera->setQuality(temp_camera_quality);
-
-		network->configManager->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, true);
-		network->configManager->cameraConfigSave();
+		projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, true);
+		projectConfig->cameraConfigSave();
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera Settings have been set.\"}");
 		break;

@@ -21,7 +21,7 @@ LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig);
 // SerialManager serialManager(&deviceConfig);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
-APIServer apiServer(CONTROL_SERVER_PORT, &wifiHandler, &cameraHandler, &wifiStateManager, "/control");
+APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 StreamServer streamServer(STREAM_SERVER_PORT);
 
@@ -33,6 +33,10 @@ void setup()
 	Logo::printASCII();
 
 	ledManager.begin();
+
+	deviceConfig.attach(&cameraHandler);
+	deviceConfig.attach(&mdnsHandler);
+
 	deviceConfig.initConfig();
 	deviceConfig.load();
 	cameraHandler.setupCamera();

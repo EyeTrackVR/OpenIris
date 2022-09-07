@@ -5,7 +5,7 @@
 #include "data/utilities/network_utilities.hpp"
 #include "data/config/project_config.hpp"
 
-class CameraHandler : IObserver
+class CameraHandler : public IObserver
 {
 private:
 	sensor_t *camera_sensor;

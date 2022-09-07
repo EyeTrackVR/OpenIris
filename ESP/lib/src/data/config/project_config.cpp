@@ -189,7 +189,7 @@ void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t 
 
 	log_d("Updating Camera config");
 	if (shouldNotify)
-		this->notify(ObserverEvent::networksConfigUpdated);
+		this->notify(ObserverEvent::cameraConfigUpdated);
 }
 
 void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)

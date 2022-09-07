@@ -22,6 +22,7 @@
 #include <AsyncTCP.h>
 //#include <SPIFFS.h>
 #include "mbedtls/md.h"
+#include "data/config/project_config.hpp"
 #include "network/wifihandler/WifiHandler.hpp"
 #include "data/StateManager/StateManager.hpp"
 #include "io/camera/cameraHandler.hpp"
@@ -30,10 +31,10 @@ class API_Utilities
 {
 public:
 	API_Utilities(int CONTROL_PORT,
-				  WiFiHandler *network,
-				  CameraHandler *camera,
-				  StateManager<WiFiState_e> *stateManager,
-				  const std::string &api_url);
+                  ProjectConfig *projectConfig,
+                  CameraHandler *camera,
+                  StateManager<WiFiState_e> *WiFiStateManager,
+                  const std::string &api_url);
 	virtual ~API_Utilities();
 
 protected:
@@ -68,10 +69,10 @@ protected:
 	};
 
 protected:
+	ProjectConfig *projectConfig;
 	AsyncWebServer *server;
-	WiFiHandler *network;
 	CameraHandler *camera;
-	StateManager<WiFiState_e> *stateManager;
+	StateManager<WiFiState_e> *WiFiStateManager;
 	typedef std::unordered_map<std::string, WebRequestMethodComposite> networkMethodsMap_t;
 
 protected:

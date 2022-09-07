@@ -53,10 +53,10 @@ protected:
 
 public:
 	BaseAPI(int CONTROL_PORT,
-			WiFiHandler *network,
-			CameraHandler *camera,
-			StateManager<WiFiState_e> *stateManager,
-			const std::string &api_url);
+            ProjectConfig *projectConfig,
+            CameraHandler *camera,
+            StateManager<WiFiState_e> *WiFiStateManager,
+            const std::string &api_url);
 
 	virtual ~BaseAPI();
 	virtual void begin();
