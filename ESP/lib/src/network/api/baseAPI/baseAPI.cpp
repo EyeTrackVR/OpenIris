@@ -1,14 +1,24 @@
 #include "baseAPI.hpp"
 
+//! These have to be called before the constructor of the class because they are static
+//! C++ 11 does not have inline variables, sadly. So we have to do this.
+//const char *BaseAPI::MIMETYPE_HTML{"text/html"};
+// const char *BaseAPI::MIMETYPE_CSS{"text/css"};
+// const char *BaseAPI::MIMETYPE_JS{"application/javascript"};
+// const char *BaseAPI::MIMETYPE_PNG{"image/png"};
+// const char *BaseAPI::MIMETYPE_JPG{"image/jpeg"};
+// const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
+const char *BaseAPI::MIMETYPE_JSON{"application/json"};
+
 BaseAPI::BaseAPI(int CONTROL_PORT,
-                 ProjectConfig *projectConfig,
-                 CameraHandler *camera,
-                 StateManager<WiFiState_e> *WiFiStateManager,
-                 const std::string &api_url) : API_Utilities(CONTROL_PORT,
-                                                             projectConfig,
-                                                             camera,
-                                                             WiFiStateManager,
-                                                             api_url) {}
+				 ProjectConfig *projectConfig,
+				 CameraHandler *camera,
+				 StateManager<WiFiState_e> *WiFiStateManager,
+				 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
+											   projectConfig(projectConfig),
+											   camera(camera),
+											   WiFiStateManager(WiFiStateManager),
+											   api_url(api_url) {}
 
 BaseAPI::~BaseAPI() {}
 
@@ -29,9 +39,24 @@ void BaseAPI::begin()
 
 	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
-	// std::bind(&BaseAPI::API_Utilities::notFound, &api_utilities, std::placeholders::_1);
+	// std::bind(&BaseAPI::notFound, &std::placeholders::_1);
 	server->onNotFound([&](AsyncWebServerRequest *request)
 					   { notFound(request); });
+}
+
+void BaseAPI::notFound(AsyncWebServerRequest *request) const
+{
+	if (_networkMethodsMap.find(request->method()) != _networkMethodsMap.end())
+	{
+		log_i("%s: http://%s%s/\n", _networkMethodsMap.at(request->method()).c_str(), request->host().c_str(), request->url().c_str());
+		char buffer[100];
+		snprintf(buffer, sizeof(buffer), "Request %s Not found: %s", _networkMethodsMap.at(request->method()).c_str(), request->url().c_str());
+		request->send(404, "text/plain", buffer);
+	}
+	else
+	{
+		request->send(404, "text/plain", "Request Not found using unknown method");
+	}
 }
 
 //*********************************************************************************************
@@ -76,7 +101,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 		projectConfig->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
 
-		/* if (WiFitateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
+		/* if (WiFiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
 			projectConfig->setAPWifiConfig(ssid, password, &channel, adhoc, true);
 		}

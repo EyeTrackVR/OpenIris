@@ -37,10 +37,10 @@ void APIServer::setupServer()
 	routes.emplace("resetConfig", &APIServer::factoryReset);
 	routes.emplace("rebootDevice", &APIServer::rebootDevice);
 	routes.emplace("setJson", &APIServer::handleJson);
-	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("deleteRoute", &APIServer::deleteRoute);
-	routes.emplace("restartCamera", &APIServer::restartCamera);
 	// Camera Routes
+	routes.emplace("setCamera", &APIServer::setCamera);
+	routes.emplace("restartCamera", &APIServer::restartCamera);
 
 	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map
 	indexes.reserve(routes.size());			 // this is done to avoid reallocation of memory and copying of data
