@@ -2,7 +2,7 @@
 
 //! These have to be called before the constructor of the class because they are static
 //! C++ 11 does not have inline variables, sadly. So we have to do this.
-//const char *BaseAPI::MIMETYPE_HTML{"text/html"};
+// const char *BaseAPI::MIMETYPE_HTML{"text/html"};
 // const char *BaseAPI::MIMETYPE_CSS{"text/css"};
 // const char *BaseAPI::MIMETYPE_JS{"application/javascript"};
 // const char *BaseAPI::MIMETYPE_PNG{"image/png"};
