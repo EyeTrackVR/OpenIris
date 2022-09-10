@@ -1,22 +1,27 @@
 #include <Arduino.h>
-#include <data/utilities/makeunique.hpp>
 #include <network/WifiHandler/WifiHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <io/camera/cameraHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <network/stream/streamServer.hpp>
 #include <network/api/webserverHandler.hpp>
+//! TODO: Setup OTA enabled state to be controllable by API if enabled at compile time
+#if ENABLE_OTA
+#include <network/OTA/OTA.hpp>
+#endif // ENABLE_OTA
 #include <logo/logo.hpp>
 #include <data/config/project_config.hpp>
-//#include <io/SerialManager/serialmanager.hpp> // Serial Manager
 
-#include <network/OTA/OTA.hpp>
+//#include <data/utilities/makeunique.hpp>
+//#include <io/SerialManager/serialmanager.hpp> // Serial Manager
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
 ProjectConfig deviceConfig;
+#if ENABLE_OTA
 OTA ota(&deviceConfig);
+#endif // ENABLE_OTA
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig);
 // SerialManager serialManager(&deviceConfig);
@@ -27,6 +32,7 @@ StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
+
 	Serial.begin(115200);
 	Serial.setDebugOutput(DEBUG_MODE);
 	Serial.println("\n");
@@ -85,12 +91,16 @@ void setup()
 		break;
 	}
 	}
+#if ENABLE_OTA
 	ota.SetupOTA();
+#endif // ENABLE_OTA
 }
 
 void loop()
 {
+#if ENABLE_OTA
 	ota.HandleOTAUpdate();
+#endif // ENABLE_OTA
 	ledManager.displayStatus();
 	//  serialManager.handleSerial();
 }
