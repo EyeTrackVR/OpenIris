@@ -465,8 +465,8 @@ void BaseAPI::setCameraVar(AsyncWebServerRequest *request)
 
 void BaseAPI::restartCamera(AsyncWebServerRequest *request)
 {
-	int mode = atoi(request->arg("mode").c_str());
-	camera->resetCamera((bool)mode);
+	bool mode = (bool)atoi(request->arg("mode").c_str());
+	camera->resetCamera(mode);
 
 	request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
