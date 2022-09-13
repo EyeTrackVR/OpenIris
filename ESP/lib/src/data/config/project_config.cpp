@@ -74,6 +74,11 @@ void ProjectConfig::wifiConfigSave()
 		putString(ssid.c_str(), this->config.networks[i].ssid.c_str());
 		putString(password.c_str(), this->config.networks[i].password.c_str());
 		putInt(channel.c_str(), this->config.networks[i].channel);
+
+		name = "name";
+		ssid = "ssid";
+		password = "pass";
+		channel = "channel";
 	}
 
 	/* AP Config */
@@ -144,6 +149,11 @@ void ProjectConfig::load()
 		const std::string &temp_2 = getString(ssid.c_str()).c_str();
 		const std::string &temp_3 = getString(password.c_str()).c_str();
 		uint8_t temp_4 = getUInt(channel.c_str());
+
+		name = "name";
+		ssid = "ssid";
+		password = "pass";
+		channel = "channel";
 
 		//! push_back creates a copy of the object, so we need to use emplace_back
 		this->config.networks.emplace_back(
