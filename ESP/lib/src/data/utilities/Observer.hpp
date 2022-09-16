@@ -17,7 +17,7 @@ namespace ObserverEvent
 class IObserver
 {
 public:
-  void update(ObserverEvent::Event event){};
+  virtual void update(ObserverEvent::Event event) = 0;
 };
 
 class ISubject
@@ -38,12 +38,9 @@ public:
 
   void notify(ObserverEvent::Event event)
   {
-    std::set<IObserver *>::iterator iterator = observers.begin();
-
-    while (iterator != observers.end())
+    for (auto observer : this->observers)
     {
-      (*iterator)->update(event);
-      ++iterator;
+      observer->update(event);
     }
   }
 };
