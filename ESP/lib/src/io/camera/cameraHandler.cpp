@@ -1,9 +1,7 @@
 #include "cameraHandler.hpp"
 
-bool CameraHandler::setupCamera()
+void CameraHandler::setupCameraPinout()
 {
-	log_d("Setting up camera \r\n");
-
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
 	config.grab_mode = CAMERA_GRAB_LATEST;
@@ -26,36 +24,29 @@ bool CameraHandler::setupCamera()
 	config.xclk_freq_hz = 16500000; // 10000000 stable,
 									// 16500000 optimal,
 									// 20000000 max fps
-	config.pixel_format = PIXFORMAT_JPEG;
+}
 
+void CameraHandler::setupBasicResolution()
+{
+	config.pixel_format = PIXFORMAT_JPEG;
+	config.frame_size = FRAMESIZE_240X240;
 	if (psramFound())
 	{
-		log_d("Found psram, setting the 240x240 image quality");
-		config.frame_size = FRAMESIZE_240X240;
+		log_d("Found psram, setting the higher image quality");
+
 		config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
 		config.fb_count = 3;
 	}
 	else
 	{
-		log_e("Did not find psram, setting svga quality");
-		config.frame_size = FRAMESIZE_SVGA;
+		log_e("Did not find psram, setting lower image quality");
 		config.jpeg_quality = 1;
 		config.fb_count = 1;
 	}
+}
 
-	esp_err_t err = esp_camera_init(&config);
-
-	if (err != ESP_OK)
-	{
-		log_e("Camera initialization failed with error: 0x%x \r\n", err);
-		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
-		//! TODO add led blinking here
-		return false;
-	}
-
-	log_d("Successfully initialized the camera!");
-	//! TODO add led blinking here
-
+void CameraHandler::setupCameraSensor()
+{
 	camera_sensor = esp_camera_sensor_get();
 	// fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
 	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel
@@ -78,19 +69,50 @@ bool CameraHandler::setupCamera()
 	camera_sensor->set_dcw(camera_sensor, 0);						 // 0 = disable , 1 = enable
 	camera_sensor->set_colorbar(camera_sensor, 0);					 // 0 = disable , 1 = enable
 	camera_sensor->set_special_effect(camera_sensor, 2);			 // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+}
 
-	return true;
+bool CameraHandler::setupCamera()
+{
+	this->setupCameraPinout();
+	this->setupBasicResolution();
+	esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+
+	if (hasCameraBeenInitialized != ESP_OK)
+	{
+		log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
+		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
+		//! TODO add led blinking here
+		return false;
+	}
+	else
+	{
+		this->setupCameraSensor();
+		return true;
+	}
+}
+
+void CameraHandler::loadConfigData()
+{
+	ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
+	this->setHFlip(cameraConfig->href);
+	this->setVFlip(cameraConfig->vflip);
+	this->setCameraResolution((framesize_t)cameraConfig->framesize);
+	camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
 }
 
 void CameraHandler::update(ObserverEvent::Event event)
 {
-	if (event == ObserverEvent::cameraConfigUpdated)
+	switch (event)
 	{
-		ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
-		this->setHFlip(cameraConfig->href);
-		this->setVFlip(cameraConfig->vflip);
-		this->setCameraResolution((framesize_t)cameraConfig->framesize);
-		camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
+	case ObserverEvent::Event::configLoaded:
+		this->setupCamera();
+		this->loadConfigData();
+		break;
+	case ObserverEvent::Event::cameraConfigUpdated:
+		this->loadConfigData();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -122,7 +144,6 @@ int CameraHandler::setHFlip(int direction)
 }
 
 //! either hardware(1) or software(0)
-// TODO: Add to API
 void CameraHandler::resetCamera(bool type)
 {
 	if (type)

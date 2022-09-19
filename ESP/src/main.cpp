@@ -45,12 +45,10 @@ void setup()
 
 	deviceConfig.initConfig();
 	deviceConfig.load();
-	cameraHandler.setupCamera();
 
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 
 	wifiHandler.setupWifi();
-	mdnsHandler.startMDNS();
 
 	switch (wifiStateManager.getCurrentState())
 	{

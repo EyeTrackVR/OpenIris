@@ -38,6 +38,7 @@ void ProjectConfig::initConfig()
 		"",
 		1,
 	};
+	// TODO camera config is missing, add it
 }
 
 void ProjectConfig::save()
