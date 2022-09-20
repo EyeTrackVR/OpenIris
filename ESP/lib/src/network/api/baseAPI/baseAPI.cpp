@@ -290,6 +290,7 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 		uint8_t temp_camera_vflip = 0;
 		uint8_t temp_camera_hflip = 0;
 		uint8_t temp_camera_quality = 0;
+		uint8_t temp_camera_brightness = 0;
 
 		int params = request->params();
 		for (int i = 0; i < params; i++)
@@ -311,9 +312,13 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 			{
 				temp_camera_quality = (uint8_t)param->value().toInt();
 			}
+			else if (param->name() == "brightness")
+			{
+				temp_camera_brightness = (uint8_t)param->value().toInt();
+			}
 		}
 
-		projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, true);
+		projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, &temp_camera_brightness, true);
 		projectConfig->cameraConfigSave();
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera Settings have been set.\"}");
