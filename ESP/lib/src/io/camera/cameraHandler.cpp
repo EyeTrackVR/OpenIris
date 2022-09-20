@@ -30,19 +30,17 @@ void CameraHandler::setupBasicResolution()
 {
 	config.pixel_format = PIXFORMAT_JPEG;
 	config.frame_size = FRAMESIZE_240X240;
-	if (psramFound())
-	{
-		log_d("Found psram, setting the higher image quality");
-
-		config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
-		config.fb_count = 3;
-	}
-	else
+	if (!psramFound())
 	{
 		log_e("Did not find psram, setting lower image quality");
 		config.jpeg_quality = 1;
 		config.fb_count = 1;
+		return;
 	}
+
+	log_d("Found psram, setting the higher image quality");
+	config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
+	config.fb_count = 3;
 }
 
 void CameraHandler::setupCameraSensor()
@@ -84,11 +82,9 @@ bool CameraHandler::setupCamera()
 		//! TODO add led blinking here
 		return false;
 	}
-	else
-	{
-		this->setupCameraSensor();
-		return true;
-	}
+	
+	this->setupCameraSensor();
+	return true;
 }
 
 void CameraHandler::loadConfigData()
@@ -150,7 +146,7 @@ void CameraHandler::resetCamera(bool type)
 	{
 		// power cycle the camera module (handy if camera stops responding)
 		digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
-		Network_Utilities::my_delay(0.3); // a for loop with a delay of 300ms
+		Network_Utilities::my_delay(0.3);  // a for loop with a delay of 300ms
 		digitalWrite(PWDN_GPIO_NUM, LOW);
 		Network_Utilities::my_delay(0.3);
 		setupCamera();
