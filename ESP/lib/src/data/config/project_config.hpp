@@ -38,9 +38,10 @@ public:
 	struct CameraConfig_t
 	{
 		uint8_t vflip;
-		uint8_t framesize;
 		uint8_t href;
+		uint8_t framesize;
 		uint8_t quality;
+		uint8_t brightness;
 	};
 
 	struct WiFiConfig_t
@@ -84,7 +85,7 @@ public:
 	AP_WiFiConfig_t *getAPWifiConfig() { return &this->config.ap_network; }
 
 	void setDeviceConfig(const std::string &name, const std::string &OTAPassword, int *OTAPort, bool shouldNotify);
-	void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify);
+	void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, uint8_t *brightness, bool shouldNotify);
 	void setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
 	void setAPWifiConfig(const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
 

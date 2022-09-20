@@ -21,6 +21,12 @@ void ProjectConfig::initConfig()
 	log_i("Config name: %s", _name.c_str());
 	log_i("Config loaded: %s", success ? "true" : "false");
 
+	/* 
+	* If the config is not loaded, 
+	* we need to initialize the config with default data
+	! Do not initialize the WiFiConfig_t struct here,
+	! as it will create a blank network which breaks the WiFiManager
+	 */
 	this->config.device = {
 		_name,
 		"12345678",
@@ -37,8 +43,16 @@ void ProjectConfig::initConfig()
 		"",
 		"",
 		1,
+		false,
 	};
-	// TODO camera config is missing, add it
+	
+	this->config.camera	= {
+		.vflip = 0,
+		.href = 4,
+		.framesize = 0,
+		.quality = 7,
+		.brightness = 0,
+	};
 }
 
 void ProjectConfig::save()
@@ -47,7 +61,8 @@ void ProjectConfig::save()
 	deviceConfigSave();
 	cameraConfigSave();
 	wifiConfigSave();
-	end();
+	end(); // we call end() here to close the connection to the NVS partition, we only do this because we call ESP.restart() next.
+	ESP.restart();
 }
 
 void ProjectConfig::wifiConfigSave()
@@ -88,7 +103,6 @@ void ProjectConfig::wifiConfigSave()
 	putUInt("apChannel", this->config.ap_network.channel);
 
 	log_i("Project config saved and system is rebooting");
-	ESP.restart();
 }
 
 void ProjectConfig::deviceConfigSave()
@@ -104,9 +118,10 @@ void ProjectConfig::cameraConfigSave()
 {
 	/* Camera Config */
 	putInt("vflip", this->config.camera.vflip);
-	putInt("framesize", this->config.camera.framesize);
 	putInt("href", this->config.camera.href);
+	putInt("framesize", this->config.camera.framesize);
 	putInt("quality", this->config.camera.quality);
+	putInt("brightness", this->config.camera.brightness);
 }
 
 bool ProjectConfig::reset()
@@ -170,6 +185,14 @@ void ProjectConfig::load()
 	this->config.ap_network.password = getString("apPass", "12345678").c_str();
 	this->config.ap_network.channel = getUInt("apChannel", 1);
 
+
+	/* Camera Config */
+	this->config.camera.vflip = getInt("vflip", 0);
+	this->config.camera.href = getInt("href", 0);
+	this->config.camera.framesize = getInt("framesize", 4);
+	this->config.camera.quality = getInt("quality", 7);
+	this->config.camera.brightness = getInt("brightness", 0);
+
 	this->_already_loaded = true;
 	this->notify(ObserverEvent::configLoaded);
 }
@@ -190,13 +213,14 @@ void ProjectConfig::setDeviceConfig(const std::string &name, const std::string &
 		this->notify(ObserverEvent::deviceConfigUpdated);
 }
 
-void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, bool shouldNotify)
+void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, uint8_t *brightness, bool shouldNotify)
 {
 	log_d("Updating camera config");
 	this->config.camera.vflip = *vflip;
-	this->config.camera.framesize = *framesize;
 	this->config.camera.href = *href;
+	this->config.camera.framesize = *framesize;
 	this->config.camera.quality = *quality;
+	this->config.camera.brightness = *brightness;
 
 	log_d("Updating Camera config");
 	if (shouldNotify)
