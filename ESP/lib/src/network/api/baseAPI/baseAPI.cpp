@@ -293,6 +293,8 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 		uint8_t temp_camera_brightness = 0;
 
 		int params = request->params();
+		//! Using the else if statements to ensure that the values do not need to be set in a specific order
+		//! This means the order of the URL params does not matter
 		for (int i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
