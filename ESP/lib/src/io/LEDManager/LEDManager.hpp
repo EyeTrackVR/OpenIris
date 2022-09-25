@@ -7,18 +7,16 @@
 class LEDManager
 {
 public:
-	LEDManager(byte pin,
-			   StateManager<LEDStates_e> *stateManager);
+	LEDManager(byte pin);
 	virtual ~LEDManager();
 
 	void begin();
-	void handleLED();
+	void handleLED(StateManager<LEDStates_e> *stateManager);
 	void onOff(bool state) const;
-	void blink(int times, int delayTime);
+	void blink(StateManager<LEDStates_e> *stateManager);
 
 private:
 	byte _ledPin;
-	StateManager<LEDStates_e> *stateManager;
 	unsigned long _previousMillis;
 	bool _ledState;
 

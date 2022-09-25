@@ -39,13 +39,11 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
 	{LEDStates_e::_Camera_Error, {1, 500}},
 };
 
-//!TODO: Change the parameters for each LED state to be unique.
+//! TODO: Change the parameters for each LED state to be unique.
 
-LEDManager::LEDManager(byte pin,
-					   StateManager<LEDStates_e> *stateManager) : _ledPin(pin),
-																  stateManager(stateManager),
-																  _previousMillis(0),
-																  _ledState(false) {}
+LEDManager::LEDManager(byte pin) : _ledPin(pin),
+								   _previousMillis(0),
+								   _ledState(false) {}
 
 LEDManager::~LEDManager() {}
 
@@ -60,7 +58,7 @@ void LEDManager::begin()
  * @details This function must be called in the main loop
  *
  */
-void LEDManager::handleLED()
+void LEDManager::handleLED(StateManager<LEDStates_e> *stateManager)
 {
 	if (ledStateMap.find(stateManager->getCurrentState()) != ledStateMap.end())
 	{
@@ -81,6 +79,8 @@ void LEDManager::handleLED()
 	}
 
 	log_e("LED State not found");
+	stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
+	onOff(false);
 }
 
 /**
@@ -99,13 +99,25 @@ void LEDManager::onOff(bool state) const
  * @param times number of times to blink
  * @param delayTime delay between each blink
  */
-void LEDManager::blink(int times, int delayTime)
+void LEDManager::blink(StateManager<LEDStates_e> *stateManager)
 {
-	for (int i = 0; i < times; i++)
+
+	if (ledStateMap.find(stateManager->getCurrentState()) != ledStateMap.end())
 	{
-		onOff(true);
-		delay(delayTime);
-		onOff(false);
-		delay(delayTime);
+		blinkPatterns = ledStateMap[stateManager->getCurrentState()];	// Get the blink pattern for the current state
+		for (int i = 0; i < blinkPatterns.times; i++)
+		{
+			onOff(true);
+			delay(blinkPatterns.delayTime);
+			onOff(false);
+			delay(blinkPatterns.delayTime);
+		}
+		stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
+		onOff(false);								  // Turn the LED off
+		return;
 	}
+
+	log_e("LED State not found");
+	stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
+	onOff(false);
 }
