@@ -20,15 +20,13 @@ private:
 	unsigned long _previousMillis;
 	bool _ledState;
 
-	struct BlinkPatterns
+	struct BlinkPatterns_t
 	{
 		int times;
 		int delayTime;
 	};
 
-	BlinkPatterns blinkPatterns;
-
-	typedef std::unordered_map<LEDStates_e, BlinkPatterns> ledStateMap_t;
+	typedef std::unordered_map<LEDStates_e, BlinkPatterns_t> ledStateMap_t;
 	static ledStateMap_t ledStateMap;
 };
 
