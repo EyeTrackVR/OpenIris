@@ -41,8 +41,8 @@ int Network_Utilities::getStrength(int points) // TODO: add to JSON doc
 
 void Network_Utilities::my_delay(volatile long delay_time)
 {
-    delay_time = delay_time * 1e6L;
-    for (volatile long count = delay_time; count > 0L; count--)
+    delay_time = delay_time * 1e6L; 
+    for (volatile long count = delay_time; count > 0; count--)
         ;
 }
 

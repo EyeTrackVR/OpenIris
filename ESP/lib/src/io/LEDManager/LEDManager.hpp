@@ -10,7 +10,9 @@ public:
 
 	void begin();
 	void onOff(bool state) const;
-	void blink(unsigned long time);
+	void blink();
+	void blink(int times, int delayTime);
+	void handleLED(unsigned long time);
 	void displayStatus();
 
 private:
