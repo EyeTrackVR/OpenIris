@@ -48,8 +48,8 @@ void LEDManager::blink()
 /**
  * @brief Blink the LED a number of times
  * @details This function is blocking and does not require the handleLED function to be called in the main loop
- * @param times 
- * @param delayTime 
+ * @param times number of times to blink
+ * @param delayTime delay between each blink
  */
 void LEDManager::blink(int times, int delayTime)
 {

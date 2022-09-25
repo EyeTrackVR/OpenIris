@@ -66,7 +66,7 @@ void WiFiHandler::setupWifi()
 		while (WiFi.status() != WL_CONNECTED)
 		{
 			progress++;
-			stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+			stateManager->setState(WiFiState_e::WiFiState_Connecting);
 			currentMillis = millis();
 			Helpers::update_progress_bar(progress, 100);
 			delay(301);
@@ -154,7 +154,7 @@ void WiFiHandler::iniSTA()
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
 	while (WiFi.status() != WL_CONNECTED)
 	{
-		stateManager->setState(ProgramStates::DeviceStates::WiFiState_e::WiFiState_Connecting);
+		stateManager->setState(WiFiState_e::WiFiState_Connecting);
 		currentMillis = millis();
 		Helpers::update_progress_bar(progress, 100);
 		delay(301);

@@ -79,7 +79,7 @@ bool CameraHandler::setupCamera()
 	{
 		log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
 		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
-		//! TODO add led blinking here
+		//! TODO add led blinking trigger boolean here
 		return false;
 	}
 	
