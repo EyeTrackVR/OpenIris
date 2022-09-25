@@ -22,7 +22,7 @@ ProjectConfig deviceConfig;
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
-LEDManager ledManager(33);
+LEDManager ledManager(33, &ledStateManager);
 CameraHandler cameraHandler(&deviceConfig);
 // SerialManager serialManager(&deviceConfig);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
@@ -99,6 +99,6 @@ void loop()
 #if ENABLE_OTA
 	ota.HandleOTAUpdate();
 #endif // ENABLE_OTA
-	ledManager.displayStatus();
+	ledManager.handleLED();
 	//  serialManager.handleSerial();
 }

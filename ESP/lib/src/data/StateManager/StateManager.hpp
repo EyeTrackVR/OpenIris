@@ -22,6 +22,7 @@ struct DeviceStates
         _LEDOff,
         _LEDOn,
         _LEDBlink,
+        _LEDBlinkFast,
         _SerialManager_Start,
         _SerialManager_Stop,
         _SerialManager_Error,
