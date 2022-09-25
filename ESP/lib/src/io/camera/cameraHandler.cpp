@@ -1,5 +1,9 @@
 #include "cameraHandler.hpp"
 
+CameraHandler::CameraHandler(ProjectConfig *configManager,
+							 StateManager<LEDStates_e> *stateManager) : configManager(configManager),
+																		stateManager(stateManager) {}
+
 void CameraHandler::setupCameraPinout()
 {
 	config.ledc_channel = LEDC_CHANNEL_0;
@@ -79,11 +83,12 @@ bool CameraHandler::setupCamera()
 	{
 		log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
 		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
-		//! TODO add led blinking trigger boolean here
+		stateManager->setState(LEDStates_e::_Camera_Error);
 		return false;
 	}
-	
+
 	this->setupCameraSensor();
+	stateManager->setState(LEDStates_e::_Camera_Success);
 	return true;
 }
 

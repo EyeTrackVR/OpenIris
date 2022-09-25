@@ -4,6 +4,7 @@
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/network_utilities.hpp"
 #include "data/config/project_config.hpp"
+#include "data/StateManager/StateManager.hpp"
 
 class CameraHandler : public IObserver
 {
@@ -11,9 +12,10 @@ private:
 	sensor_t *camera_sensor;
 	camera_config_t config;
 	ProjectConfig *configManager;
+	StateManager<LEDStates_e> *stateManager;
 
 public:
-	CameraHandler(ProjectConfig *configManager) : configManager(configManager) {}
+	CameraHandler(ProjectConfig *configManager, StateManager<LEDStates_e> *stateManager);
 	int setCameraResolution(framesize_t frameSize);
 	int setVFlip(int direction);
 	int setHFlip(int direction);
