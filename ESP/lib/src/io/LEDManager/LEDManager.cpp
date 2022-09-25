@@ -37,6 +37,9 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
 	{LEDStates_e::_Camera_Connected, {1, 500}},
 	{LEDStates_e::_Camera_Disconnected, {1, 500}},
 	{LEDStates_e::_Camera_Error, {1, 500}},
+	{LEDStates_e::_Stream_OFF, {1, 500}},
+	{LEDStates_e::_Stream_ON, {1, 500}},
+	{LEDStates_e::_Stream_Error, {1, 500}},
 };
 
 //! TODO: Change the parameters for each LED state to be unique.
