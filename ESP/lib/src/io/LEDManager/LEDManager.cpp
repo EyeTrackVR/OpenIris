@@ -66,8 +66,8 @@ void LEDManager::handleLED(StateManager<LEDStates_e> *stateManager)
 	if (ledStateMap.find(stateManager->getCurrentState()) != ledStateMap.end())
 	{
 		BlinkPatterns_t blinkPatterns = ledStateMap[stateManager->getCurrentState()]; // Get the blink pattern for the current state
-		unsigned long currentMillis = millis();							// Get the current time
-		if (currentMillis - _previousMillis >= blinkPatterns.delayTime) // Check if the current time is greater than the previous time plus the delay time
+		unsigned long currentMillis = millis();										  // Get the current time
+		if (currentMillis - _previousMillis >= blinkPatterns.delayTime)				  // Check if the current time is greater than the previous time plus the delay time
 		{
 			_previousMillis = currentMillis;
 			for (int i = 0; i < blinkPatterns.times; i++)
