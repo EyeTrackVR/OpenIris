@@ -3,14 +3,14 @@
 void MDNSHandler::startMDNS()
 {
 	ProjectConfig::DeviceConfig_t *deviceConfig = configManager->getDeviceConfig();
-
-	if (MDNS.begin(deviceConfig->name.c_str()))
+	// deviceConfig->name.c_str()
+	if (MDNS.begin("OpenIrisTracker"))
 	{
 		stateManager->setState(MDNSState_e::MDNSState_Starting);
-		MDNS.addService("openIrisTracker", "tcp", 80);
+		MDNS.addService(deviceConfig->name.c_str(), "tcp", 80);
 		char port[20];
 		//! Add service needs leading _ on ESP32 implementation for some reason (according to the docs)
-		MDNS.addServiceTxt("_openIrisTracker", "_tcp", "_stream_port", (const char *)Helpers::itoa(80, port, 10)); //! convert int to const char* using a very efficient implemenation of itoa
+		MDNS.addServiceTxt(("_" + deviceConfig->name).c_str(), "_tcp", "_stream_port", (const char *)Helpers::itoa(80, port, 10)); //! convert int to const char* using a very efficient implemenation of itoa
 		log_i("MDNS initialized!");
 		stateManager->setState(MDNSState_e::MDNSState_Started);
 	}
@@ -23,9 +23,13 @@ void MDNSHandler::startMDNS()
 
 void MDNSHandler::update(ObserverEvent::Event event)
 {
-	if (event == ObserverEvent::deviceConfigUpdated)
+	switch (event)
 	{
+	case ObserverEvent::Event::deviceConfigUpdated:
 		MDNS.end();
 		startMDNS();
+		break;
+	default:
+		break;
 	}
 }

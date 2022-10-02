@@ -76,6 +76,7 @@ void setup()
 		log_d("[SETUP]: Starting Stream Server");
 		apiServer.begin();
 		log_d("[SETUP]: Starting API Server");
+		mdnsHandler.startMDNS();
 		break;
 	}
 	case WiFiState_e::WiFiState_Connecting:
