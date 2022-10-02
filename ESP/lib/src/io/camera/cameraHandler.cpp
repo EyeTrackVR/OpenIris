@@ -99,7 +99,7 @@ void CameraHandler::loadConfigData()
 	this->setVFlip(cameraConfig->vflip);
 	this->setCameraResolution((framesize_t)cameraConfig->framesize);
 	camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
-	camera_sensor->set_brightness(camera_sensor, cameraConfig->brightness);
+	camera_sensor->set_agc_gain(camera_sensor, cameraConfig->brightness);
 }
 
 void CameraHandler::update(ObserverEvent::Event event)

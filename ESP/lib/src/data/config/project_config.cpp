@@ -21,8 +21,8 @@ void ProjectConfig::initConfig()
 	log_i("Config name: %s", _name.c_str());
 	log_i("Config loaded: %s", success ? "true" : "false");
 
-	/* 
-	* If the config is not loaded, 
+	/*
+	* If the config is not loaded,
 	* we need to initialize the config with default data
 	! Do not initialize the WiFiConfig_t struct here,
 	! as it will create a blank network which breaks the WiFiManager
@@ -45,13 +45,13 @@ void ProjectConfig::initConfig()
 		1,
 		false,
 	};
-	
+
 	this->config.camera	= {
 		.vflip = 0,
-		.href = 4,
-		.framesize = 0,
+		.href = 0,
+		.framesize = 4,
 		.quality = 7,
-		.brightness = 0,
+		.brightness = 2,
 	};
 }
 
@@ -191,7 +191,7 @@ void ProjectConfig::load()
 	this->config.camera.href = getInt("href", 0);
 	this->config.camera.framesize = getInt("framesize", 4);
 	this->config.camera.quality = getInt("quality", 7);
-	this->config.camera.brightness = getInt("brightness", 0);
+	this->config.camera.brightness = getInt("brightness", 2);
 
 	this->_already_loaded = true;
 	this->notify(ObserverEvent::configLoaded);
