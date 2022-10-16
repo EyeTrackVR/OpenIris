@@ -35,9 +35,9 @@ void APIServer::setupServer()
 {
 	routes.emplace("wifi", &APIServer::setWiFi);
 	routes.emplace("resetConfig", &APIServer::factoryReset);
+	routes.emplace("setDevice", &APIServer::setDeviceConfig);
 	routes.emplace("rebootDevice", &APIServer::rebootDevice);
-	routes.emplace("setJson", &APIServer::handleJson);
-	routes.emplace("deleteRoute", &APIServer::deleteRoute);
+	routes.emplace("getStoredConfig", &APIServer::getJsonConfig);
 	// Camera Routes
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("restartCamera", &APIServer::restartCamera);

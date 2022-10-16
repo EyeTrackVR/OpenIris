@@ -33,27 +33,6 @@ class BaseAPI
 protected:
 	std::string api_url;
 
-	enum JSON_TYPES
-	{
-		CONFIG,
-		SETTINGS,
-		DATA,
-		STATUS,
-		COMMANDS,
-		WIFI,
-		WIFIAP,
-	};
-
-	std::unordered_map<std::string, JSON_TYPES> json_TypesMap = {
-		{"config", CONFIG},
-		{"settings", SETTINGS},
-		{"data", DATA},
-		{"status", STATUS},
-		{"commands", COMMANDS},
-		{"wifi", WIFI},
-		{"wifiap", WIFIAP},
-	};
-
 	static const char *MIMETYPE_HTML;
 	/* static const char *MIMETYPE_CSS; */
 	/* static const char *MIMETYPE_JS; */
@@ -65,14 +44,12 @@ protected:
 protected:
 	/* Commands */
 	void setWiFi(AsyncWebServerRequest *request);
-	void handleJson(AsyncWebServerRequest *request);
+	void getJsonConfig(AsyncWebServerRequest *request);
 	void factoryReset(AsyncWebServerRequest *request);
+	void setDeviceConfig(AsyncWebServerRequest *request);
 	void rebootDevice(AsyncWebServerRequest *request);
-	void deleteRoute(AsyncWebServerRequest *request);
 
 	/* Camera Handlers */
-	void getCameraStatus(AsyncWebServerRequest *request);
-	void setCameraVar(AsyncWebServerRequest *request);
 	void setCamera(AsyncWebServerRequest *request);
 	void restartCamera(AsyncWebServerRequest *request);
 

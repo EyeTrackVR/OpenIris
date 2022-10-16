@@ -16,6 +16,7 @@ void OTA::SetupOTA()
     }
 
     ArduinoOTA.setPort(localConfig->OTAPort);
+    ArduinoOTA.setPassword(localConfig->OTAPassword.c_str());
 
     ArduinoOTA
         .onStart([]()
@@ -52,7 +53,7 @@ void OTA::SetupOTA()
                 } });
 
     log_i("Starting up basic OTA server");
-    log_i("OTA will be live for 30s, after which it will be disabled until restart");
+    log_i("OTA will be live for 5 minutes, after which it will be disabled until restart");
     ArduinoOTA.begin();
     _bootTimestamp = millis();
 }
@@ -61,9 +62,9 @@ void OTA::HandleOTAUpdate()
 {
     if (_isOtaEnabled)
     {
-        if (_bootTimestamp + 30000 < millis())
+        if (_bootTimestamp + (60000 * 5) < millis())
         {
-            // we're disabling ota after first 30sec so that nothing bad happens during runtime
+            // we're disabling ota after first 5 minutes so that nothing bad happens during runtime
             _isOtaEnabled = false;
             log_i("From now on, OTA is disabled");
             return;
