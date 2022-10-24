@@ -27,12 +27,16 @@ public:
 		std::string name;
 		std::string OTAPassword;
 		int OTAPort;
-		bool data_json;
-		bool config_json;
-		bool settings_json;
-		std::string data_json_string;
-		std::string config_json_string;
-		std::string settings_json_string;
+
+		const char* toRepresentation() {
+			char *p = (char*)"device_config: {";
+			p += sprintf(p, "\"name\":%s,", this->name);
+			p += sprintf(p, "\"OTAPassword\":%s,", this->OTAPassword);
+			p += sprintf(p, "\"OTAPort\":%u,", this->OTAPort);
+			p += sprintf(p, "},");
+			*p++ = 0;
+			return p;
+		}
 	};
 
 	struct CameraConfig_t
@@ -42,6 +46,18 @@ public:
 		uint8_t framesize;
 		uint8_t quality;
 		uint8_t brightness;
+
+		const char* toRepresentation() {
+			char *p = (char*)"camera_config: {";
+			p += sprintf(p, "\"vflip\":%u,", this->vflip);
+			p += sprintf(p, "\"href\":%u,", this->href);
+			p += sprintf(p, "\"framesize\":%d,", this->framesize);
+			p += sprintf(p, "\"quality\":%d,", this->quality);
+			p += sprintf(p, "\"brightness\":%d", this->brightness);
+			p += sprintf(p, "},");
+			*p++ = 0;
+			return p;
+		}
 	};
 
 	struct WiFiConfig_t
@@ -61,6 +77,18 @@ public:
 		std::string password;
 		uint8_t channel;
 		bool adhoc;
+
+		const char* toRepresentation() {
+			char *p = (char*)"wifi_entry: {";
+			p += sprintf(p, "\"name\":%s,", this->name);
+			p += sprintf(p, "\"ssid\":%s,", this->ssid);
+			p += sprintf(p, "\"password\":%s,", this->password);
+			p += sprintf(p, "\"channel\":%u,", this->channel);
+			p += sprintf(p, "\"adhoc\":%u", this->adhoc);
+			p += sprintf(p, "},");
+			*p++ = 0;
+			return p;
+		}
 	};
 
 	struct AP_WiFiConfig_t
@@ -69,6 +97,16 @@ public:
 		std::string password;
 		uint8_t channel;
 		bool adhoc;
+		const char* toRepresentation() {
+			char *p = (char*)"adhoc_network: {";
+			p += sprintf(p, "\"ssid\":%s,", this->ssid);
+			p += sprintf(p, "\"password\":%s,", this->password);
+			p += sprintf(p, "\"channel\":%u,", this->channel);
+			p += sprintf(p, "\"adhoc\":%d", this->adhoc);
+			p += sprintf(p, "},");
+			*p++ = 0;
+			return p;
+		}
 	};
 
 	struct TrackerConfig_t

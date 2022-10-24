@@ -125,6 +125,8 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 {
+	// go through the config and build the response uisng toRepresentation methods
+	// consider moving handling the data to fromRepresentation
 	request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
 }
 

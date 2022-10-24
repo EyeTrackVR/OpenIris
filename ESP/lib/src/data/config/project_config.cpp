@@ -31,12 +31,6 @@ void ProjectConfig::initConfig()
 		_name,
 		"12345678",
 		3232,
-		false,
-		false,
-		false,
-		"",
-		"",
-		"",
 	};
 
 	this->config.ap_network = {
