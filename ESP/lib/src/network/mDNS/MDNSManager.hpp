@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MDNSHANDLER_HPP
+#define MDNSHANDLER_HPP
 #include <ESPmDNS.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/utilities/Observer.hpp"
@@ -17,3 +19,5 @@ public:
 	void startMDNS();
 	void update(ObserverEvent::Event event);
 };
+
+#endif // MDNSHANDLER_HPP

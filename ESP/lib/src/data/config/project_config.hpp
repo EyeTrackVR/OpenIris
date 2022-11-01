@@ -28,15 +28,7 @@ public:
 		std::string OTAPassword;
 		int OTAPort;
 
-		const char* toRepresentation() {
-			char *p = (char*)"device_config: {";
-			p += sprintf(p, "\"name\":%s,", this->name);
-			p += sprintf(p, "\"OTAPassword\":%s,", this->OTAPassword);
-			p += sprintf(p, "\"OTAPort\":%u,", this->OTAPort);
-			p += sprintf(p, "},");
-			*p++ = 0;
-			return p;
-		}
+		std::string toRepresentation();
 	};
 
 	struct CameraConfig_t
@@ -47,39 +39,30 @@ public:
 		uint8_t quality;
 		uint8_t brightness;
 
-		const char* toRepresentation() {
-			char *p = (char*)"camera_config: {";
-			p += sprintf(p, "\"vflip\":%u,", this->vflip);
-			p += sprintf(p, "\"href\":%u,", this->href);
-			p += sprintf(p, "\"framesize\":%d,", this->framesize);
-			p += sprintf(p, "\"quality\":%d,", this->quality);
-			p += sprintf(p, "\"brightness\":%d", this->brightness);
-			p += sprintf(p, "},");
-			*p++ = 0;
-			return p;
-		}
+		std::string toRepresentation();
 	};
 
 	struct WiFiConfig_t
 	{
 		//! Constructor for WiFiConfig_t - allows us to use emplace_back
 		WiFiConfig_t(const std::string &name,
-                     const std::string &ssid,
-                     const std::string &password,
-                     uint8_t channel,
-                     bool adhoc) : name(std::move(name)),
-                                   ssid(std::move(ssid)),
-                                   password(std::move(password)),
-                                   channel(channel),
-                                   adhoc(adhoc) {}
+					 const std::string &ssid,
+					 const std::string &password,
+					 uint8_t channel,
+					 bool adhoc) : name(std::move(name)),
+								   ssid(std::move(ssid)),
+								   password(std::move(password)),
+								   channel(channel),
+								   adhoc(adhoc) {}
 		std::string name;
 		std::string ssid;
 		std::string password;
 		uint8_t channel;
 		bool adhoc;
 
-		const char* toRepresentation() {
-			char *p = (char*)"wifi_entry: {";
+		const char *toRepresentation()
+		{
+			char *p = (char *)"wifi_entry: {";
 			p += sprintf(p, "\"name\":%s,", this->name);
 			p += sprintf(p, "\"ssid\":%s,", this->ssid);
 			p += sprintf(p, "\"password\":%s,", this->password);
@@ -97,8 +80,9 @@ public:
 		std::string password;
 		uint8_t channel;
 		bool adhoc;
-		const char* toRepresentation() {
-			char *p = (char*)"adhoc_network: {";
+		const char *toRepresentation()
+		{
+			char *p = (char *)"adhoc_network: {";
 			p += sprintf(p, "\"ssid\":%s,", this->ssid);
 			p += sprintf(p, "\"password\":%s,", this->password);
 			p += sprintf(p, "\"channel\":%u,", this->channel);
