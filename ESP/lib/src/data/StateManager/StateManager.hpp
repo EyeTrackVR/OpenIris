@@ -82,7 +82,9 @@ struct DeviceStates
         MDNSState_Started,
         MDNSState_Stopping,
         MDNSState_Stopped,
-        MDNSState_Error
+        MDNSState_Error,
+        MDNSState_QueryStarted,
+        MDNSState_QueryComplete
     };
 
     enum CameraState_e

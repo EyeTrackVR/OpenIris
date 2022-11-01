@@ -130,34 +130,47 @@ void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 	request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
 }
 
-void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request){
-	switch (_networkMethodsMap_enum[request->method()]){
-		case GET:
+void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
+{
+	switch (_networkMethodsMap_enum[request->method()])
+	{
+	case GET:
+	{
+		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+		break;
+	}
+	case POST:
+	{
+		int params = request->params();
+
+		std::string hostname;
+		std::string service;
+		std::string ota_password;
+		int ota_port;
+
+		for (int i = 0; i < params; i++)
 		{
-			request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
-			break;
-		}
-		case POST: {
-			int params = request->params();
-
-			std::string device_name;
-			std::string ota_password;
-			int ota_port;
-
-			for (int i = 0; i < params; i++){
-				AsyncWebParameter *param = request->getParam(i);
-				if (param->name() == "device_name"){
-					device_name = param->value().c_str();
-				}
-				if (param->name() == "ota_port"){
-					ota_port = atoi(param->value().c_str());
-				}
-				if (param->name() == "ota_password"){
-					ota_password = param->value().c_str();
-				}
+			AsyncWebParameter *param = request->getParam(i);
+			if (param->name() == "hostname")
+			{
+				hostname = param->value().c_str();
 			}
-			projectConfig->setDeviceConfig(device_name, ota_password, &ota_port, true);
+			if (param->name() == "service")
+			{
+				service = param->value().c_str();
+			}
+			if (param->name() == "ota_port")
+			{
+				ota_port = atoi(param->value().c_str());
+			}
+			if (param->name() == "ota_password")
+			{
+				ota_password = param->value().c_str();
+			}
 		}
+		projectConfig->setDeviceConfig(ota_password, &ota_port, true);
+		projectConfig->setMDNSConfig(hostname, service, true);
+	}
 	}
 }
 

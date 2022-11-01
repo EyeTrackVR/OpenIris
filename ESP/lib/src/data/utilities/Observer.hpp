@@ -11,6 +11,7 @@ namespace ObserverEvent
     deviceConfigUpdated = 2,
     cameraConfigUpdated = 3,
     networksConfigUpdated = 4,
+    mdnsConfigUpdated = 5,
   };
 }
 

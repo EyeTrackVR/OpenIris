@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include <network/WifiHandler/WifiHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
+#include <network/mDNS/queryMDNS.hpp>
 #include <io/camera/cameraHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <network/stream/streamServer.hpp>
 #include <network/api/webserverHandler.hpp>
+
 //! TODO: Setup OTA enabled state to be controllable by API if enabled at compile time
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
@@ -20,13 +22,14 @@ int CONTROL_SERVER_PORT = 81;
 
 ProjectConfig deviceConfig;
 #if ENABLE_OTA
-OTA ota(&deviceConfig, "openiristracker");
+OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 // SerialManager serialManager(&deviceConfig);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
+QueryMDNSService mdnsQuery(&mdnsStateManager, &deviceConfig);
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 StreamServer streamServer(STREAM_SERVER_PORT);
 
@@ -76,7 +79,17 @@ void setup()
 		log_d("[SETUP]: Starting Stream Server");
 		apiServer.begin();
 		log_d("[SETUP]: Starting API Server");
-		mdnsHandler.startMDNS();
+
+		mdnsQuery.queryMDNS(); // Query MDNS for hostname
+		switch (mdnsStateManager.getCurrentState())
+		{
+		case MDNSState_e::MDNSState_QueryComplete:
+		{
+			log_d("[SETUP]: MDNS Query Complete");
+			mdnsHandler.startMDNS();
+			break;
+		}
+		}
 		break;
 	}
 	case WiFiState_e::WiFiState_Connecting:

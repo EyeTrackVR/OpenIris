@@ -28,9 +28,13 @@ void ProjectConfig::initConfig()
     ! as it will create a blank network which breaks the WiFiManager
      */
     this->config.device = {
-        _name,
         "12345678",
         3232,
+    };
+
+    this->config.mdns = {
+        "openiristracker",
+        "",
     };
 
     this->config.ap_network = {
@@ -53,6 +57,7 @@ void ProjectConfig::save()
 {
     log_d("Saving project config");
     deviceConfigSave();
+    mdnsConfigSave();
     cameraConfigSave();
     wifiConfigSave();
     end(); // we call end() here to close the connection to the NVS partition, we only do this because we call ESP.restart() next.
@@ -102,10 +107,15 @@ void ProjectConfig::wifiConfigSave()
 void ProjectConfig::deviceConfigSave()
 {
     /* Device Config */
-    putString("deviceName", this->config.device.name.c_str());
     putString("OTAPassword", this->config.device.OTAPassword.c_str());
     putInt("OTAPort", this->config.device.OTAPort);
-    //! No need to save the JSON strings or bools, they are generated and used on the fly
+}
+
+void ProjectConfig::mdnsConfigSave()
+{
+    /* Device Config */
+    putString("hostname", this->config.mdns.hostname.c_str());
+    putString("service", this->config.mdns.service.c_str());
 }
 
 void ProjectConfig::cameraConfigSave()
@@ -134,11 +144,12 @@ void ProjectConfig::load()
     }
 
     /* Device Config */
-    this->config.device.name = getString("deviceName", "openiristracker").c_str();
     this->config.device.OTAPassword = getString("OTAPassword", "12345678").c_str();
     this->config.device.OTAPort = getInt("OTAPort", 3232);
-    //! No need to load the JSON strings or bools, they are generated and used on the fly
 
+    /* MDNS Config */
+    this->config.mdns.hostname = getString("hostname").c_str();
+    this->config.mdns.service = getString("service").c_str();
     /* WiFi Config */
     int networkCount = getInt("networkCount", 0);
     std::string name = "name";
@@ -195,15 +206,24 @@ void ProjectConfig::load()
 //!                                                DeviceConfig
 //*
 //**********************************************************************************************************************
-void ProjectConfig::setDeviceConfig(const std::string &name, const std::string &OTAPassword, int *OTAPort, bool shouldNotify)
+void ProjectConfig::setDeviceConfig(const std::string &OTAPassword, int *OTAPort, bool shouldNotify)
 {
     log_d("Updating device config");
-    this->config.device.name.assign(name);
     this->config.device.OTAPassword.assign(OTAPassword);
     this->config.device.OTAPort = *OTAPort;
 
     if (shouldNotify)
         this->notify(ObserverEvent::deviceConfigUpdated);
+}
+
+void ProjectConfig::setMDNSConfig(const std::string &hostname, const std::string &service, bool shouldNotify)
+{
+    log_d("Updating MDNS config");
+    this->config.mdns.hostname.assign(hostname);
+    this->config.mdns.service.assign(service);
+
+    if (shouldNotify)
+        this->notify(ObserverEvent::mdnsConfigUpdated);
 }
 
 void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, uint8_t *brightness, bool shouldNotify)
@@ -277,21 +297,55 @@ void ProjectConfig::setAPWifiConfig(const std::string &ssid, const std::string &
 std::string ProjectConfig::DeviceConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "device_config: {\"name\": \"%s\", \"OTAPassword\": \"%s\", \"OTAPort\": %u}",
-        this->name.c_str(),
+        "device_config: {\"OTAPassword\": \"%s\", \"OTAPort\": %u}",
         this->OTAPassword.c_str(),
         this->OTAPort);
-
     return json;
 }
 
 std::string ProjectConfig::CameraConfig_t::toRepresentation()
 {
-    std::string json = Helpers::format_string("camera_config: {\"vflip\": %d,\"framesize\": %d,\"href\": %d,\"quality\": %d,\"brightness\": %d}",
-                                              this->vflip,
-                                              this->framesize,
-                                              this->href,
-                                              this->quality,
-                                              this->brightness);
+    std::string json = Helpers::format_string(
+        "camera_config: {\"vflip\": %d,\"framesize\": %d,\"href\": %d,\"quality\": %d,\"brightness\": %d}",
+        this->vflip,
+        this->framesize,
+        this->href,
+        this->quality,
+        this->brightness);
     return json;
 }
+
+std::string ProjectConfig::WiFiConfig_t::toRepresentation()
+{
+    std::string json = Helpers::format_string(
+        "wifi_config: {\"name\": \"%s\", \"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
+        this->name.c_str(),
+        this->ssid.c_str(),
+        this->password.c_str(),
+        this->channel,
+        this->adhoc ? "true" : "false");
+    return json;
+}
+
+std::string ProjectConfig::AP_WiFiConfig_t::toRepresentation()
+{
+    std::string json = Helpers::format_string(
+        "ap_wifi_config: {\"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
+        this->ssid.c_str(),
+        this->password.c_str(),
+        this->channel,
+        this->adhoc ? "true" : "false");
+    return json;
+}
+
+//**********************************************************************************************************************
+//*
+//!                                                Get Methods
+//*
+//**********************************************************************************************************************
+
+ProjectConfig::DeviceConfig_t *ProjectConfig::getDeviceConfig() { return &this->config.device; }
+ProjectConfig::CameraConfig_t *ProjectConfig::getCameraConfig() { return &this->config.camera; }
+std::vector<ProjectConfig::WiFiConfig_t> *ProjectConfig::getWifiConfigs() { return &this->config.networks; }
+ProjectConfig::AP_WiFiConfig_t *ProjectConfig::getAPWifiConfig() { return &this->config.ap_network; }
+ProjectConfig::MDNSConfig_t *ProjectConfig::getMDNSConfig() { return &this->config.mdns; }
