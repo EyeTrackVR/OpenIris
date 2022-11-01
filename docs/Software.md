@@ -7,12 +7,12 @@ The goal is to:
 
 Now, having that out of the way, how should we process the data? It's being sent to us as an uncompressed stream from the ESP. 
 
-We could use the OpenCV for image processing but what out detection? 
+We could use the OpenCV for image processing, but what about detection? 
 
 DLib has a very good eye / face detection pre-trained model 
 There are some ready-to-go solutions for openCV but won't they be too heavy? 
 
-How about training out own CNN model based on yey data sets? 
+How about training our own CNN model based on eye datasets? 
 They would require labeling but they were used with great success by others. 
 
 Datasets - https://datagen.tech/blog/eye-datasets/
