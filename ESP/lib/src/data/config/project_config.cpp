@@ -134,7 +134,7 @@ void ProjectConfig::load()
 	}
 
 	/* Device Config */
-	this->config.device.name = getString("deviceName", "openiris").c_str();
+	this->config.device.name = getString("deviceName", "openiristracker").c_str();
 	this->config.device.OTAPassword = getString("OTAPassword", "12345678").c_str();
 	this->config.device.OTAPort = getInt("OTAPort", 3232);
 	//! No need to load the JSON strings or bools, they are generated and used on the fly
