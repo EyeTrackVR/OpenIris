@@ -9,16 +9,16 @@
 
 namespace StreamHelpers
 {
-  esp_err_t stream(httpd_req_t *req);
+    esp_err_t stream(httpd_req_t *req);
 }
 class StreamServer
 {
 
 private:
-  httpd_handle_t camera_stream = nullptr;
-  int STREAM_SERVER_PORT;
+    httpd_handle_t camera_stream = nullptr;
+    int STREAM_SERVER_PORT;
 
 public:
-  StreamServer(int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
-  int startStreamServer();
+    StreamServer(int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
+    int startStreamServer();
 };
