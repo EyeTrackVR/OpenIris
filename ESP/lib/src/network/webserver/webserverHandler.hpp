@@ -9,11 +9,11 @@
 class APIServer
 {
 private:
-  void command_handler(AsyncWebServerRequest *request);
-  AsyncWebServer *server;
-  CameraHandler *cameraHandler;
+    void command_handler(AsyncWebServerRequest *request);
+    AsyncWebServer *server;
+    CameraHandler *cameraHandler;
 
 public:
-  APIServer(int CONTROL_PORT, CameraHandler *cameraHandler);
-  void startAPIServer();
+    APIServer(int CONTROL_PORT, CameraHandler *cameraHandler);
+    void startAPIServer();
 };

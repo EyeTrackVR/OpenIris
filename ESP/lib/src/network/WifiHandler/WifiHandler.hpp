@@ -4,5 +4,5 @@
 
 namespace WiFiHandler
 {
-  void setupWifi(const char *ssid, const char *password, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager);
+    void setupWifi(const char *ssid, const char *password, StateManager<ProgramStates::DeviceStates::WiFiState_e> *stateManager);
 }
