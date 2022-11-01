@@ -1,10 +1,14 @@
 #include "MDNSManager.hpp"
 
+MDNSHandler::MDNSHandler(StateManager<MDNSState_e> *stateManager,
+						 ProjectConfig *configManager) : stateManager(stateManager),
+														 configManager(configManager) {}
+
 void MDNSHandler::startMDNS()
 {
 	ProjectConfig::DeviceConfig_t *deviceConfig = configManager->getDeviceConfig();
 	// deviceConfig->name.c_str()
-	if (MDNS.begin("OpenIrisTracker"))
+	if (MDNS.begin("openiristracker")) // lowercase only - as this will be the url
 	{
 		stateManager->setState(MDNSState_e::MDNSState_Starting);
 		MDNS.addService(deviceConfig->name.c_str(), "tcp", 80);

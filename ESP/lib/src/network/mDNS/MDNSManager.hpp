@@ -12,7 +12,8 @@ private:
 	ProjectConfig *configManager;
 
 public:
-	MDNSHandler(StateManager<MDNSState_e> *stateManager, ProjectConfig *configManager) : stateManager(stateManager), configManager(configManager) {}
+	MDNSHandler(StateManager<MDNSState_e> *stateManager,
+				ProjectConfig *configManager);
 	void startMDNS();
 	void update(ObserverEvent::Event event);
 };
