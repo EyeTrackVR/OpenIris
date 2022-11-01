@@ -20,7 +20,7 @@ int CONTROL_SERVER_PORT = 81;
 
 ProjectConfig deviceConfig;
 #if ENABLE_OTA
-OTA ota(&deviceConfig);
+OTA ota(&deviceConfig, "openiristracker");
 #endif // ENABLE_OTA
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
