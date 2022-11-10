@@ -125,9 +125,36 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 {
-	// go through the config and build the response uisng toRepresentation methods
-	// consider moving handling the data to fromRepresentation
-	request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+	// returns the current stored config in case it get's deleted on the PC. 
+	switch (_networkMethodsMap_enum[request->method()])
+	{
+	case GET: 
+	{
+		std::string wifiConfigSerialized ="\"wifi_config\": [";
+		auto networksConfigs = projectConfig->getWifiConfigs();
+		for(auto networkIterator = networksConfigs->begin(); networkIterator != networksConfigs->end(); networkIterator++)
+		{	
+			wifiConfigSerialized += networkIterator->toRepresentation() + (std::next(networkIterator) != networksConfigs->end() ? "," : "");
+		}
+		wifiConfigSerialized += "]";
+
+		std::string json = Helpers::format_string(
+			"{%s, %s, %s, %s, %s}",
+			projectConfig->getDeviceConfig()->toRepresentation().c_str(),
+			projectConfig->getCameraConfig()->toRepresentation().c_str(),
+			wifiConfigSerialized.c_str(),
+			projectConfig->getMDNSConfig()->toRepresentation().c_str(),
+			projectConfig->getAPWifiConfig()->toRepresentation().c_str()
+		);
+		request->send(200, MIMETYPE_JSON, json.c_str());
+		break;
+	}
+	default: 
+	{
+		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+		break;
+	}
+	}
 }
 
 void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)

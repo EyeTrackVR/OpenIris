@@ -297,16 +297,27 @@ void ProjectConfig::setAPWifiConfig(const std::string &ssid, const std::string &
 std::string ProjectConfig::DeviceConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "device_config: {\"OTAPassword\": \"%s\", \"OTAPort\": %u}",
+        "\"device_config\": {\"OTAPassword\": \"%s\", \"OTAPort\": %u}",
         this->OTAPassword.c_str(),
-        this->OTAPort);
+        this->OTAPort
+    );
+    return json;
+}
+
+std::string ProjectConfig::MDNSConfig_t::toRepresentation()
+{
+    std::string json = Helpers::format_string(
+        "\"mdns_config\": {\"hostname\": \"%s\", \"service\": \"%s\"}",
+        this->hostname.c_str(),
+        this->service.c_str()
+    );
     return json;
 }
 
 std::string ProjectConfig::CameraConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "camera_config: {\"vflip\": %d,\"framesize\": %d,\"href\": %d,\"quality\": %d,\"brightness\": %d}",
+        "\"camera_config\": {\"vflip\": %d,\"framesize\": %d,\"href\": %d,\"quality\": %d,\"brightness\": %d}",
         this->vflip,
         this->framesize,
         this->href,
@@ -318,7 +329,7 @@ std::string ProjectConfig::CameraConfig_t::toRepresentation()
 std::string ProjectConfig::WiFiConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "wifi_config: {\"name\": \"%s\", \"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
+        "{\"name\": \"%s\", \"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
         this->name.c_str(),
         this->ssid.c_str(),
         this->password.c_str(),
@@ -330,7 +341,7 @@ std::string ProjectConfig::WiFiConfig_t::toRepresentation()
 std::string ProjectConfig::AP_WiFiConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "ap_wifi_config: {\"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
+        "\"ap_wifi_config\": {\"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
         this->ssid.c_str(),
         this->password.c_str(),
         this->channel,
