@@ -19,6 +19,7 @@ StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
 {
+    setCpuFrequencyMhz(240); // 240 MHz
     Serial.begin(115200);
     Serial.setDebugOutput(true);
     ledManager.begin();
