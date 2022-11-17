@@ -40,19 +40,13 @@ void setup()
 	Serial.setDebugOutput(DEBUG_MODE);
 	Serial.println("\n");
 	Logo::printASCII();
-
 	ledManager.begin();
-
 	deviceConfig.attach(&cameraHandler);
 	deviceConfig.attach(&mdnsHandler);
-
 	deviceConfig.initConfig();
 	deviceConfig.load();
-
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
-
 	wifiHandler.setupWifi();
-
 	switch (wifiStateManager.getCurrentState())
 	{
 	case WiFiState_e::WiFiState_Disconnected:
