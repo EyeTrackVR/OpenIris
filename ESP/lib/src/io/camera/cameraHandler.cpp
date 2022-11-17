@@ -27,7 +27,7 @@ void CameraHandler::setupCameraPinout()
 	config.pin_sscb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
-	config.xclk_freq_hz = 20000000; // 10000000 stable,
+	config.xclk_freq_hz = 16500000; // 10000000 stable,
 									// 16500000 optimal,
 									// 20000000 max fps
 }
@@ -93,7 +93,7 @@ void CameraHandler::setupCameraSensor()
 			camera_sensor->set_reg(camera_sensor, 0x11, 0xff, 1); // frame rate (1 means longer exposure)
 		camera_sensor->set_reg(camera_sensor, 0x13, 0xff, 0);	  // manual everything
 		camera_sensor->set_reg(camera_sensor, 0x0c, 0x6, 0x8);	  // manual banding
-		camera_sensor->set_reg(camera_sensor, 0x45, 0x3f, 0x3f); // really long exposure (but it doesn't really work)
+		camera_sensor->set_reg(camera_sensor, 0x45, 0x3f, 0x3f);  // really long exposure (but it doesn't really work)
 	}
 	else
 	{
