@@ -12,12 +12,11 @@ QueryMDNSService::~QueryMDNSService()
 
 void QueryMDNSService::queryMDNS()
 {
-    stateManager->setState(MDNSState_e::MDNSState_QueryComplete);
+    stateManager->setState(MDNSState_e::MDNSState_QueryStarted);
     ProjectConfig::MDNSConfig_t *mdnsConfig = configManager->getMDNSConfig();
     // check if we have a valid MDNS config
     if (mdnsConfig->hostname.empty() && mdnsConfig->service.empty())
     {
-        // Initialize the MDNS library
         std::string hostname;
         std::string service;
         // Initialize the MDNS library
@@ -35,6 +34,7 @@ void QueryMDNSService::queryMDNS()
             hostname.assign("openiristracker");
             log_i("Hostname: %s", hostname.c_str());
             service.assign("openiristracker");
+            configManager->setMDNSConfig(hostname, service, true);
         }
         else
         {
@@ -50,11 +50,11 @@ void QueryMDNSService::queryMDNS()
             }
             // append one greater than the number of services found to the hostname
             // this will allow for multiple trackers to be found
-            hostname.assign(MDNS.hostname(services_found).c_str());
-            hostname.append(std::to_string(services_found));
-
-            service.assign(MDNS.hostname(services_found).c_str());
-            service.append(std::to_string(services_found));
+            hostname.assign("openiristracker");
+            hostname.append(std::to_string(services_found + 1));
+            hostname.assign("openiristracker");
+            service.append(std::to_string(services_found + 1));
+            configManager->setMDNSConfig(hostname, service, true);
         }
         mdns_free(); // Free the MDNS library
         stateManager->setState(MDNSState_e::MDNSState_QueryComplete);
