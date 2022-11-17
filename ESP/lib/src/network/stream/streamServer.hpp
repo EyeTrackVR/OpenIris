@@ -14,21 +14,26 @@
 #include "esp_timer.h"
 #include "fb_gfx.h"
 #include "img_converters.h"
+
+#include "io/camera/cameraHandler.hpp"
 //#include "fd_forward.h"
 namespace StreamHelpers
 {
-	esp_err_t stream(httpd_req_t *req);
+	esp_err_t stream_wrapper(httpd_req_t *req);
 }
+
 class StreamServer
 {
 
 private:
+	CameraHandler *cameraHandler;
 	httpd_handle_t camera_stream = nullptr;
 	int STREAM_SERVER_PORT;
 
 public:
-	StreamServer(int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
+	StreamServer(CameraHandler *cameraHandler, int STREAM_PORT);
 	int startStreamServer();
+	esp_err_t stream(httpd_req_t *req);
 };
 
 #endif // STREAM_SERVER_HPP

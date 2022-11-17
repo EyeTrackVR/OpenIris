@@ -31,11 +31,11 @@ WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWO
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 QueryMDNSService mdnsQuery(&mdnsStateManager, &deviceConfig);
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
-StreamServer streamServer(STREAM_SERVER_PORT);
+StreamServer streamServer(&cameraHandler, STREAM_SERVER_PORT);
 
 void setup()
 {
-
+	setCpuFrequencyMhz(240); // set to 240mhz for performance boost
 	Serial.begin(115200);
 	Serial.setDebugOutput(DEBUG_MODE);
 	Serial.println("\n");

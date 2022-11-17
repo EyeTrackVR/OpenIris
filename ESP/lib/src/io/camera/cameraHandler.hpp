@@ -9,10 +9,17 @@
 class CameraHandler : public IObserver
 {
 private:
-	sensor_t *camera_sensor;
 	camera_config_t config;
 	ProjectConfig *configManager;
 	StateManager<LEDStates_e> *stateManager;
+
+
+	// functions
+	void loadConfigData();
+	bool setupCamera();
+	void setupCameraPinout();
+	void setupBasicResolution();
+	void setupCameraSensor();
 
 public:
 	CameraHandler(ProjectConfig *configManager, StateManager<LEDStates_e> *stateManager);
@@ -23,10 +30,8 @@ public:
 	void update(ObserverEvent::Event event);
 	void resetCamera(bool type = 0);
 
-private:
-	void loadConfigData();
-	bool setupCamera();
-	void setupCameraPinout();
-	void setupBasicResolution();
-	void setupCameraSensor();
+	// Variables
+	sensor_t *camera_sensor;
+	int day_switch_value;
+	int light;
 };

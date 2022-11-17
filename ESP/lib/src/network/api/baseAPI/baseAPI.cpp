@@ -31,11 +31,11 @@ void BaseAPI::begin()
 	// preflight cors check
 	server->on("/", 0b01000000, [&](AsyncWebServerRequest *request)
 			   {
-        		AsyncWebServerResponse* response = request->beginResponse(204);
-        		response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
-        		response->addHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization");
-        		response->addHeader("Access-Control-Allow-Credentials", "true");
-        		request->send(response); });
+				AsyncWebServerResponse* response = request->beginResponse(204);
+				response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
+				response->addHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization");
+				response->addHeader("Access-Control-Allow-Credentials", "true");
+				request->send(response); });
 
 	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
@@ -125,15 +125,15 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 {
-	// returns the current stored config in case it get's deleted on the PC. 
+	// returns the current stored config in case it get's deleted on the PC.
 	switch (_networkMethodsMap_enum[request->method()])
 	{
-	case GET: 
+	case GET:
 	{
-		std::string wifiConfigSerialized ="\"wifi_config\": [";
+		std::string wifiConfigSerialized = "\"wifi_config\": [";
 		auto networksConfigs = projectConfig->getWifiConfigs();
-		for(auto networkIterator = networksConfigs->begin(); networkIterator != networksConfigs->end(); networkIterator++)
-		{	
+		for (auto networkIterator = networksConfigs->begin(); networkIterator != networksConfigs->end(); networkIterator++)
+		{
 			wifiConfigSerialized += networkIterator->toRepresentation() + (std::next(networkIterator) != networksConfigs->end() ? "," : "");
 		}
 		wifiConfigSerialized += "]";
@@ -144,12 +144,11 @@ void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 			projectConfig->getCameraConfig()->toRepresentation().c_str(),
 			wifiConfigSerialized.c_str(),
 			projectConfig->getMDNSConfig()->toRepresentation().c_str(),
-			projectConfig->getAPWifiConfig()->toRepresentation().c_str()
-		);
+			projectConfig->getAPWifiConfig()->toRepresentation().c_str());
 		request->send(200, MIMETYPE_JSON, json.c_str());
 		break;
 	}
-	default: 
+	default:
 	{
 		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
 		break;
