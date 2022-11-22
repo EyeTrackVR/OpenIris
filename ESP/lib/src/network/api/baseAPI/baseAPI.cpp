@@ -98,7 +98,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
-
+		// note: We're passing empty params by design, this is done to reset specific fields
 		projectConfig->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
 
 		/* if (WiFiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
@@ -195,6 +195,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 				ota_password = param->value().c_str();
 			}
 		}
+		// note: We're passing empty params by design, this is done to reset specific fields
 		projectConfig->setDeviceConfig(ota_password, &ota_port, true);
 		projectConfig->setMDNSConfig(hostname, service, true);
 	}
@@ -280,7 +281,7 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 				temp_camera_brightness = (uint8_t)param->value().toInt();
 			}
 		}
-
+		// note: We're passing empty params by design, this is done to reset specific fields
 		projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, &temp_camera_brightness, true);
 		projectConfig->cameraConfigSave();
 
