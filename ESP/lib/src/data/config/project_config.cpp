@@ -242,40 +242,45 @@ void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t 
 
 void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)
 {
-    WiFiConfig_t *networkToUpdate = nullptr;
-
     // we store the ADHOC flag as false because the networks we store in the config are the ones we want the esp to connect to, rather than host as AP, and here we're just updating them
     size_t size = this->config.networks.size();
-    if (size > 0)
-    {
-        for (int i = 0; i < size; i++)
-        {
-            if (strcmp(this->config.networks[i].name.c_str(), networkName.c_str()) == 0)
-                networkToUpdate = &this->config.networks[i];
 
-            //! push_back creates a copy of the object, so we need to use emplace_back
-            if (networkToUpdate != nullptr)
-            {
-                this->config.networks.emplace_back(
-                    networkName,
-                    ssid,
-                    password,
-                    *channel,
-                    false);
-            }
-            log_d("Updating wifi config");
-        }
-    }
-    else
-    {
-        //! push_back creates a copy of the object, so we need to use emplace_back
+    // we're allowing to store up to three additional networks 
+    if (size == 0) {
+        Serial.println("No networks, We're adding a new network");
         this->config.networks.emplace_back(
             networkName,
             ssid,
             password,
             *channel,
             false);
-        networkToUpdate = &this->config.networks[0];
+    } 
+    
+    int networkToUpdate = -1;
+    for (int i = 0; i < size; i++){
+        if (strcmp(this->config.networks[i].name.c_str(), networkName.c_str()) == 0){
+            // we've found a preexisting network, let's upate it
+            networkToUpdate = i;
+            break;
+        }
+    }
+
+    if (networkToUpdate >= 0) {
+            this->config.networks[networkToUpdate].name = networkName;
+            this->config.networks[networkToUpdate].ssid = ssid;
+            this->config.networks[networkToUpdate].password = password;
+            this->config.networks[networkToUpdate].channel = *channel;
+            this->config.networks[networkToUpdate].adhoc = false;
+    } else if (size < 3) {  
+        Serial.println("We're adding a new network");
+        // we don't have that network yet, we can add it as we still have some space
+        // we're using emplace_back as push_back will create a copy of it, we want to avoid that
+        this->config.networks.emplace_back(
+            networkName,
+            ssid,
+            password,
+            *channel,
+            false);
     }
 
     if (shouldNotify)

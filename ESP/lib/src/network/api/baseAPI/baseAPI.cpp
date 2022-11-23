@@ -69,7 +69,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 	case POST:
 	{
 		int params = request->params();
-
+		std::string networkName;
 		std::string ssid;
 		std::string password;
 		uint8_t channel = 0;
@@ -79,6 +79,10 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		for (int i = 0; i < params; i++)
 		{
 			AsyncWebParameter *param = request->getParam(i);
+			if (param->name() == "networkName")
+			{
+				networkName = param->value().c_str();
+			}
 			if (param->name() == "ssid")
 			{
 				ssid = param->value().c_str();
@@ -99,7 +103,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 		// note: We're passing empty params by design, this is done to reset specific fields
-		projectConfig->setWifiConfig(ssid, ssid, password, &channel, adhoc, true);
+		projectConfig->setWifiConfig(networkName,ssid, password, &channel, adhoc, true);
 
 		/* if (WiFiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
