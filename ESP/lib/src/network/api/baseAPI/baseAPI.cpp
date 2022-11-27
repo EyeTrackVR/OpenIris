@@ -83,7 +83,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			{
 				networkName = param->value().c_str();
 			}
-			if (param->name() == "ssid")
+			else if (param->name() == "ssid")
 			{
 				ssid = param->value().c_str();
 			}
@@ -186,15 +186,15 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 			{
 				hostname = param->value().c_str();
 			}
-			if (param->name() == "service")
+			else if (param->name() == "service")
 			{
 				service = param->value().c_str();
 			}
-			if (param->name() == "ota_port")
+			else if (param->name() == "ota_port")
 			{
 				ota_port = atoi(param->value().c_str());
 			}
-			if (param->name() == "ota_password")
+			else if (param->name() == "ota_password")
 			{
 				ota_password = param->value().c_str();
 			}
