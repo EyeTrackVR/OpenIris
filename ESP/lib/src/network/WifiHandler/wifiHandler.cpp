@@ -6,6 +6,7 @@ void WiFiHandler::setupWifi(const char *ssid, const char *password, StateManager
 
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(WIFI_PS_NONE);
+    WiFi.setTxPower(WIFI_POWER_5dBm);
     WiFi.begin(ssid, password);
 
     log_d("connecting");
