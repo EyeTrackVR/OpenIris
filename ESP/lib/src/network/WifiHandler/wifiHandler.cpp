@@ -56,7 +56,8 @@ void WiFiHandler::setupWifi()
 	int progress = 0;
 
 	WiFi.mode(WIFI_STA);
-	WiFi.setSleep(WIFI_PS_NONE);
+    WiFi.setTxPower(WIFI_POWER_5dBm);
+    WiFi.setSleep(WIFI_PS_NONE);
 	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
 		log_i("Trying to connect to the %s network", networkIterator->ssid.c_str());
