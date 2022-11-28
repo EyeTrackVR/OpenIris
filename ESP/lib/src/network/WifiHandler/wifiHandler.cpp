@@ -44,6 +44,8 @@ void WiFiHandler::setupWifi()
 	{
 		log_e("No networks found in config");
 		stateManager->setState(WiFiState_e::WiFiState_Error);
+		WiFi.mode(WIFI_STA);
+		WiFi.setSleep(WIFI_PS_NONE);
 		this->iniSTA();
 		return;
 	}
@@ -148,9 +150,6 @@ void WiFiHandler::iniSTA()
 		this->setUpADHOC();
 		return;
 	}
-
-	WiFi.mode(WIFI_STA);
-	WiFi.setSleep(WIFI_PS_NONE);
 
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
 	while (WiFi.status() != WL_CONNECTED)
