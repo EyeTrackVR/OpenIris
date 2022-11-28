@@ -152,6 +152,7 @@ void WiFiHandler::iniSTA()
 	}
 
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
+	WiFi.setTxPower(WIFI_POWER_5dBm);
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		stateManager->setState(WiFiState_e::WiFiState_Connecting);
