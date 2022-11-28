@@ -29,7 +29,7 @@ void WiFiHandler::setupWifi()
 
 	// check size of networks
 	log_i("Found %d networks stored in the config", networks->size());
-	
+
 	//? Maybe this way is better? I don't know
 	/* if (networks->empty())
 	{
@@ -56,12 +56,12 @@ void WiFiHandler::setupWifi()
 	int progress = 0;
 
 	WiFi.mode(WIFI_STA);
-    WiFi.setTxPower(WIFI_POWER_5dBm);
-    WiFi.setSleep(WIFI_PS_NONE);
+	WiFi.setSleep(WIFI_PS_NONE);
 	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
 		log_i("Trying to connect to the %s network", networkIterator->ssid.c_str());
 		WiFi.begin(networkIterator->ssid.c_str(), networkIterator->password.c_str());
+		WiFi.setTxPower(WIFI_POWER_5dBm);
 		count++;
 
 		while (WiFi.status() != WL_CONNECTED)
