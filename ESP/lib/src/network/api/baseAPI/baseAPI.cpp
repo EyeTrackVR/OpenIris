@@ -120,7 +120,6 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		} */
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Wifi Creds have been set.\"}");
-		projectConfig->wifiConfigSave();
 		break;
 	}
 	default:
@@ -207,8 +206,6 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 		projectConfig->setDeviceConfig(ota_password, &ota_port, true);
 		projectConfig->setMDNSConfig(hostname, service, true);
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Device Config has been set.\"}");
-		projectConfig->deviceConfigSave();
-		projectConfig->mdnsConfigSave();
 	}
 	}
 }
@@ -324,7 +321,6 @@ void BaseAPI::setCamera(AsyncWebServerRequest *request)
 		}
 		// note: We're passing empty params by design, this is done to reset specific fields
 		projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize, &temp_camera_hflip, &temp_camera_quality, &temp_camera_brightness, true);
-		projectConfig->cameraConfigSave();
 
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera Settings have been set.\"}");
 		break;
@@ -344,4 +340,16 @@ void BaseAPI::restartCamera(AsyncWebServerRequest *request)
 	camera->resetCamera(mode);
 
 	request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera had been restarted.\"}");
+}
+
+
+void BaseAPI::ping(AsyncWebServerRequest *request)
+{
+	request->send(200, MIMETYPE_JSON, "{\"status\": \"ok\" }");
+}
+
+void BaseAPI::save(AsyncWebServerRequest *request) 
+{
+	projectConfig->save();
+	request->send(200, MIMETYPE_JSON, "{\"status\": \"ok\" }");
 }

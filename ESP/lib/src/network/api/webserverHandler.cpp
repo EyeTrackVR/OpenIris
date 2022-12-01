@@ -42,6 +42,8 @@ void APIServer::setupServer()
 	// Camera Routes
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("restartCamera", &APIServer::restartCamera);
+	routes.emplace("ping", &APIServer::ping);
+	routes.emplace("save", &APIServer::save);
 
 	//! reserve enough memory for all routes - must be called after adding routes and before adding routes to route_map
 	indexes.reserve(routes.size());			 // this is done to avoid reallocation of memory and copying of data
