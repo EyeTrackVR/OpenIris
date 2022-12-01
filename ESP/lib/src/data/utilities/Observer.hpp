@@ -12,6 +12,7 @@ namespace ObserverEvent
     cameraConfigUpdated = 3,
     networksConfigUpdated = 4,
     mdnsConfigUpdated = 5,
+    wifiTxPowerUpdated = 6,
   };
 }
 

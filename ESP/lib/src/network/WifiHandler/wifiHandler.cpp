@@ -7,15 +7,18 @@ WiFiHandler::WiFiHandler(ProjectConfig *configManager,
 						 const std::string &password,
 						 uint8_t channel) : configManager(configManager),
 											stateManager(stateManager),
+											txpower(NULL),
 											ssid(ssid),
 											password(password),
 											channel(channel),
+											power(0),
 											_enable_adhoc(false) {}
 
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::setupWifi()
 {
+	txpower = configManager->getWiFiTxPowerConfig();
 	if (this->_enable_adhoc || stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 	{
 		this->setUpADHOC();
@@ -63,9 +66,10 @@ void WiFiHandler::setupWifi()
 	{
 		log_i("Trying to connect to the %s network", networkIterator->ssid.c_str());
 		WiFi.begin(networkIterator->ssid.c_str(), networkIterator->password.c_str());
-		WiFi.setTxPower(WIFI_POWER_5dBm);
+		// WiFi.setTxPower(WIFI_POWER_5dBm);
+		// WiFi.setTxPower((wifi_power_t)networkIterator->power);
+		WiFi.setTxPower((wifi_power_t)txpower->power);
 		count++;
-
 		while (WiFi.status() != WL_CONNECTED)
 		{
 			progress++;
@@ -101,7 +105,7 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 	// You can remove the password parameter if you want the AP to be open.
 	WiFi.softAP(ssid, password, channel); // AP mode with password
-	WiFi.setTxPower(WIFI_POWER_11dBm);
+	WiFi.setTxPower((wifi_power_t)txpower->power);
 }
 
 /*
@@ -152,7 +156,7 @@ void WiFiHandler::iniSTA()
 	}
 
 	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
-	WiFi.setTxPower(WIFI_POWER_5dBm);
+	WiFi.setTxPower((wifi_power_t)txpower->power);
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		stateManager->setState(WiFiState_e::WiFiState_Connecting);

@@ -73,6 +73,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 		std::string ssid;
 		std::string password;
 		uint8_t channel = 0;
+		uint8_t power = 0;
 		uint8_t adhoc = 0;
 
 		log_d("Number of Params: %d", params);
@@ -95,6 +96,10 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			{
 				channel = (uint8_t)atoi(param->value().c_str());
 			}
+			else if (param->name() == "power")
+			{
+				power = (uint8_t)atoi(param->value().c_str());
+			}
 			else if (param->name() == "adhoc")
 			{
 				adhoc = (uint8_t)atoi(param->value().c_str());
@@ -103,7 +108,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 		// note: We're passing empty params by design, this is done to reset specific fields
-		projectConfig->setWifiConfig(networkName, ssid, password, &channel, adhoc, true);
+		projectConfig->setWifiConfig(networkName, ssid, password, &channel, &power, adhoc, true);
 
 		/* if (WiFiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
@@ -204,6 +209,36 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Device Config has been set.\"}");
 		projectConfig->deviceConfigSave();
 		projectConfig->mdnsConfigSave();
+	}
+	}
+}
+
+void BaseAPI::setWiFiTXPower(AsyncWebServerRequest *request)
+{
+	switch (_networkMethodsMap_enum[request->method()])
+	{
+	case GET:
+	{
+		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+		break;
+	}
+	case POST:
+	{
+		int params = request->params();
+
+		uint8_t txPower = 0;
+
+		for (int i = 0; i < params; i++)
+		{
+			AsyncWebParameter *param = request->getParam(i);
+			if (param->name() == "txPower")
+			{
+				txPower = atoi(param->value().c_str());
+			}
+		}
+		projectConfig->setWiFiTxPower(&txPower, true);
+		projectConfig->wifiTxPowerConfigSave();
+		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. TX Power has been set.\"}");
 	}
 	}
 }

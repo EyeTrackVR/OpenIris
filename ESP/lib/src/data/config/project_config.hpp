@@ -20,6 +20,7 @@ public:
 	void cameraConfigSave();
 	void deviceConfigSave();
 	void mdnsConfigSave();
+	void wifiTxPowerConfigSave();
 	bool reset();
 	void initConfig();
 
@@ -55,15 +56,18 @@ public:
 					 const std::string &ssid,
 					 const std::string &password,
 					 uint8_t channel,
+					 uint8_t power,
 					 bool adhoc) : name(std::move(name)),
 								   ssid(std::move(ssid)),
 								   password(std::move(password)),
 								   channel(channel),
-								   adhoc(adhoc) {}
+								   adhoc(adhoc),
+								   power(power) {}
 		std::string name;
 		std::string ssid;
 		std::string password;
 		uint8_t channel;
+		uint8_t power;
 		bool adhoc;
 
 		std::string toRepresentation();
@@ -78,6 +82,12 @@ public:
 		std::string toRepresentation();
 	};
 
+	struct WiFiTxPower_t
+	{
+		uint8_t power;
+		std::string toRepresentation();
+	};
+
 	struct TrackerConfig_t
 	{
 		DeviceConfig_t device;
@@ -85,6 +95,7 @@ public:
 		std::vector<WiFiConfig_t> networks;
 		AP_WiFiConfig_t ap_network;
 		MDNSConfig_t mdns;
+		WiFiTxPower_t txpower;
 	};
 
 	DeviceConfig_t *getDeviceConfig();
@@ -92,12 +103,14 @@ public:
 	std::vector<WiFiConfig_t> *getWifiConfigs();
 	AP_WiFiConfig_t *getAPWifiConfig();
 	MDNSConfig_t *getMDNSConfig();
+	WiFiTxPower_t *getWiFiTxPowerConfig();
 
 	void setDeviceConfig(const std::string &OTAPassword, int *OTAPort, bool shouldNotify);
 	void setMDNSConfig(const std::string &hostname, const std::string &service, bool shouldNotify);
 	void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, uint8_t *brightness, bool shouldNotify);
-	void setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
+	void setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, uint8_t *power, bool adhoc, bool shouldNotify);
 	void setAPWifiConfig(const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify);
+	void setWiFiTxPower(uint8_t *power, bool shouldNotify);
 
 private:
 	TrackerConfig_t config;

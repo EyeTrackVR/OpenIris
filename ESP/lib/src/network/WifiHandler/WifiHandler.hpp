@@ -21,6 +21,7 @@ public:
 
 	ProjectConfig *configManager;
 	StateManager<WiFiState_e> *stateManager;
+	ProjectConfig::WiFiTxPower_t *txpower;
 
 	bool _enable_adhoc;
 
@@ -32,5 +33,6 @@ private:
 	std::string ssid;
 	std::string password;
 	uint8_t channel;
+	uint8_t power;
 };
 #endif // WIFIHANDLER_HPP

@@ -75,6 +75,7 @@ void ProjectConfig::wifiConfigSave()
     std::string ssid = "ssid";
     std::string password = "pass";
     std::string channel = "channel";
+    std::string power = "power";
     for (int i = 0; i < this->config.networks.size(); i++)
     {
         char buffer[2];
@@ -84,16 +85,13 @@ void ProjectConfig::wifiConfigSave()
         ssid.append(iter_str);
         password.append(iter_str);
         channel.append(iter_str);
+        power.append(iter_str);
 
         putString(name.c_str(), this->config.networks[i].name.c_str());
         putString(ssid.c_str(), this->config.networks[i].ssid.c_str());
         putString(password.c_str(), this->config.networks[i].password.c_str());
-        putInt(channel.c_str(), this->config.networks[i].channel);
-
-        name = "name";
-        ssid = "ssid";
-        password = "pass";
-        channel = "channel";
+        putUInt(channel.c_str(), this->config.networks[i].channel);
+        putUInt(power.c_str(), this->config.networks[i].power);
     }
 
     /* AP Config */
@@ -116,6 +114,12 @@ void ProjectConfig::mdnsConfigSave()
     /* Device Config */
     putString("hostname", this->config.mdns.hostname.c_str());
     putString("service", this->config.mdns.service.c_str());
+}
+
+void ProjectConfig::wifiTxPowerConfigSave()
+{
+    /* Device Config */
+    putInt("power", this->config.txpower.power);
 }
 
 void ProjectConfig::cameraConfigSave()
@@ -150,12 +154,16 @@ void ProjectConfig::load()
     /* MDNS Config */
     this->config.mdns.hostname = getString("hostname").c_str();
     this->config.mdns.service = getString("service").c_str();
+
+    /* Wifi TX Power Config */
+    this->config.txpower.power = getUInt("power");
     /* WiFi Config */
     int networkCount = getInt("networkCount", 0);
     std::string name = "name";
     std::string ssid = "ssid";
     std::string password = "pass";
     std::string channel = "channel";
+    std::string power = "power";
     for (int i = 0; i < networkCount; i++)
     {
         char buffer[2];
@@ -165,16 +173,13 @@ void ProjectConfig::load()
         ssid.append(iter_str);
         password.append(iter_str);
         channel.append(iter_str);
+        power.append(iter_str);
 
         const std::string &temp_1 = getString(name.c_str()).c_str();
         const std::string &temp_2 = getString(ssid.c_str()).c_str();
         const std::string &temp_3 = getString(password.c_str()).c_str();
         uint8_t temp_4 = getUInt(channel.c_str());
-
-        name = "name";
-        ssid = "ssid";
-        password = "pass";
-        channel = "channel";
+        uint8_t temp_5 = getUInt(power.c_str());
 
         //! push_back creates a copy of the object, so we need to use emplace_back
         this->config.networks.emplace_back(
@@ -182,6 +187,7 @@ void ProjectConfig::load()
             temp_2,
             temp_3,
             temp_4,
+            temp_5,
             false); // false because the networks we store in the config are the ones we want the esp to connect to, rather than host as AP
     }
 
@@ -240,38 +246,46 @@ void ProjectConfig::setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t 
         this->notify(ObserverEvent::cameraConfigUpdated);
 }
 
-void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, bool adhoc, bool shouldNotify)
+void ProjectConfig::setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, uint8_t *power, bool adhoc, bool shouldNotify)
 {
     // we store the ADHOC flag as false because the networks we store in the config are the ones we want the esp to connect to, rather than host as AP, and here we're just updating them
     size_t size = this->config.networks.size();
 
-    // we're allowing to store up to three additional networks 
-    if (size == 0) {
+    // we're allowing to store up to three additional networks
+    if (size == 0)
+    {
         Serial.println("No networks, We're adding a new network");
         this->config.networks.emplace_back(
             networkName,
             ssid,
             password,
             *channel,
+            *power,
             false);
-    } 
-    
+    }
+
     int networkToUpdate = -1;
-    for (int i = 0; i < size; i++){
-        if (strcmp(this->config.networks[i].name.c_str(), networkName.c_str()) == 0){
+    for (int i = 0; i < size; i++)
+    {
+        if (strcmp(this->config.networks[i].name.c_str(), networkName.c_str()) == 0)
+        {
             // we've found a preexisting network, let's upate it
             networkToUpdate = i;
             break;
         }
     }
 
-    if (networkToUpdate >= 0) {
-            this->config.networks[networkToUpdate].name = networkName;
-            this->config.networks[networkToUpdate].ssid = ssid;
-            this->config.networks[networkToUpdate].password = password;
-            this->config.networks[networkToUpdate].channel = *channel;
-            this->config.networks[networkToUpdate].adhoc = false;
-    } else if (size < 3) {  
+    if (networkToUpdate >= 0)
+    {
+        this->config.networks[networkToUpdate].name = networkName;
+        this->config.networks[networkToUpdate].ssid = ssid;
+        this->config.networks[networkToUpdate].password = password;
+        this->config.networks[networkToUpdate].channel = *channel;
+        this->config.networks[networkToUpdate].power = *power;
+        this->config.networks[networkToUpdate].adhoc = false;
+    }
+    else if (size < 3)
+    {
         Serial.println("We're adding a new network");
         // we don't have that network yet, we can add it as we still have some space
         // we're using emplace_back as push_back will create a copy of it, we want to avoid that
@@ -280,6 +294,7 @@ void ProjectConfig::setWifiConfig(const std::string &networkName, const std::str
             ssid,
             password,
             *channel,
+            *power,
             false);
     }
 
@@ -299,13 +314,21 @@ void ProjectConfig::setAPWifiConfig(const std::string &ssid, const std::string &
         this->notify(ObserverEvent::networksConfigUpdated);
 }
 
+void ProjectConfig::setWiFiTxPower(uint8_t *power, bool shouldNotify)
+{
+    this->config.txpower.power = *power;
+
+    log_d("Updating wifi tx power");
+    if (shouldNotify)
+        this->notify(ObserverEvent::wifiTxPowerUpdated);
+}
+
 std::string ProjectConfig::DeviceConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
         "\"device_config\": {\"OTAPassword\": \"%s\", \"OTAPort\": %u}",
         this->OTAPassword.c_str(),
-        this->OTAPort
-    );
+        this->OTAPort);
     return json;
 }
 
@@ -314,8 +337,7 @@ std::string ProjectConfig::MDNSConfig_t::toRepresentation()
     std::string json = Helpers::format_string(
         "\"mdns_config\": {\"hostname\": \"%s\", \"service\": \"%s\"}",
         this->hostname.c_str(),
-        this->service.c_str()
-    );
+        this->service.c_str());
     return json;
 }
 
@@ -365,3 +387,4 @@ ProjectConfig::CameraConfig_t *ProjectConfig::getCameraConfig() { return &this->
 std::vector<ProjectConfig::WiFiConfig_t> *ProjectConfig::getWifiConfigs() { return &this->config.networks; }
 ProjectConfig::AP_WiFiConfig_t *ProjectConfig::getAPWifiConfig() { return &this->config.ap_network; }
 ProjectConfig::MDNSConfig_t *ProjectConfig::getMDNSConfig() { return &this->config.mdns; }
+ProjectConfig::WiFiTxPower_t *ProjectConfig::getWiFiTxPowerConfig() { return &this->config.txpower; }

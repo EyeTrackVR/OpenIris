@@ -5,14 +5,14 @@
 //*********************************************************************************************
 
 APIServer::APIServer(int CONTROL_PORT,
-                     ProjectConfig *projectConfig,
-                     CameraHandler *camera,
-                     StateManager<WiFiState_e> *WiFiStateManager,
-                     const std::string &api_url) : BaseAPI(CONTROL_PORT,
-                                                   projectConfig,
-                                                   camera,
-                                                   WiFiStateManager,
-                                                   api_url){}
+					 ProjectConfig *projectConfig,
+					 CameraHandler *camera,
+					 StateManager<WiFiState_e> *WiFiStateManager,
+					 const std::string &api_url) : BaseAPI(CONTROL_PORT,
+														   projectConfig,
+														   camera,
+														   WiFiStateManager,
+														   api_url) {}
 
 APIServer::~APIServer() {}
 
@@ -38,6 +38,7 @@ void APIServer::setupServer()
 	routes.emplace("setDevice", &APIServer::setDeviceConfig);
 	routes.emplace("rebootDevice", &APIServer::rebootDevice);
 	routes.emplace("getStoredConfig", &APIServer::getJsonConfig);
+	routes.emplace("setTxPower", &APIServer::setWiFiTXPower);
 	// Camera Routes
 	routes.emplace("setCamera", &APIServer::setCamera);
 	routes.emplace("restartCamera", &APIServer::restartCamera);

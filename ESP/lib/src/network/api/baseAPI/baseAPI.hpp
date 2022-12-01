@@ -44,6 +44,7 @@ protected:
 protected:
 	/* Commands */
 	void setWiFi(AsyncWebServerRequest *request);
+	void setWiFiTXPower(AsyncWebServerRequest *request);
 	void getJsonConfig(AsyncWebServerRequest *request);
 	void factoryReset(AsyncWebServerRequest *request);
 	void setDeviceConfig(AsyncWebServerRequest *request);
