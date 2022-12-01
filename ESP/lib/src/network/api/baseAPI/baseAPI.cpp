@@ -103,7 +103,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 			log_i("%s[%s]: %s\n", _networkMethodsMap[request->method()].c_str(), param->name().c_str(), param->value().c_str());
 		}
 		// note: We're passing empty params by design, this is done to reset specific fields
-		projectConfig->setWifiConfig(networkName,ssid, password, &channel, adhoc, true);
+		projectConfig->setWifiConfig(networkName, ssid, password, &channel, adhoc, true);
 
 		/* if (WiFiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 		{
@@ -129,15 +129,15 @@ void BaseAPI::setWiFi(AsyncWebServerRequest *request)
 
 void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 {
-	// returns the current stored config in case it get's deleted on the PC. 
+	// returns the current stored config in case it get's deleted on the PC.
 	switch (_networkMethodsMap_enum[request->method()])
 	{
-	case GET: 
+	case GET:
 	{
-		std::string wifiConfigSerialized ="\"wifi_config\": [";
+		std::string wifiConfigSerialized = "\"wifi_config\": [";
 		auto networksConfigs = projectConfig->getWifiConfigs();
-		for(auto networkIterator = networksConfigs->begin(); networkIterator != networksConfigs->end(); networkIterator++)
-		{	
+		for (auto networkIterator = networksConfigs->begin(); networkIterator != networksConfigs->end(); networkIterator++)
+		{
 			wifiConfigSerialized += networkIterator->toRepresentation() + (std::next(networkIterator) != networksConfigs->end() ? "," : "");
 		}
 		wifiConfigSerialized += "]";
@@ -148,12 +148,11 @@ void BaseAPI::getJsonConfig(AsyncWebServerRequest *request)
 			projectConfig->getCameraConfig()->toRepresentation().c_str(),
 			wifiConfigSerialized.c_str(),
 			projectConfig->getMDNSConfig()->toRepresentation().c_str(),
-			projectConfig->getAPWifiConfig()->toRepresentation().c_str()
-		);
+			projectConfig->getAPWifiConfig()->toRepresentation().c_str());
 		request->send(200, MIMETYPE_JSON, json.c_str());
 		break;
 	}
-	default: 
+	default:
 	{
 		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
 		break;
@@ -202,6 +201,9 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 		// note: We're passing empty params by design, this is done to reset specific fields
 		projectConfig->setDeviceConfig(ota_password, &ota_port, true);
 		projectConfig->setMDNSConfig(hostname, service, true);
+		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Device Config has been set.\"}");
+		projectConfig->deviceConfigSave();
+		projectConfig->mdnsConfigSave();
 	}
 	}
 }
