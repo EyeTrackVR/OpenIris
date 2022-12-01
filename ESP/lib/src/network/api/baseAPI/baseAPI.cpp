@@ -345,11 +345,11 @@ void BaseAPI::restartCamera(AsyncWebServerRequest *request)
 
 void BaseAPI::ping(AsyncWebServerRequest *request)
 {
-	request->send(200, MIMETYPE_JSON, "{\"status\": \"ok\" }");
+	request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
 
 void BaseAPI::save(AsyncWebServerRequest *request) 
 {
 	projectConfig->save();
-	request->send(200, MIMETYPE_JSON, "{\"status\": \"ok\" }");
+	request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
