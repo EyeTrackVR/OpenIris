@@ -71,17 +71,7 @@ void setup()
 		log_d("[SETUP]: Starting Stream Server");
 		apiServer.begin();
 		log_d("[SETUP]: Starting API Server");
-
-		switch (mdnsStateManager.getCurrentState())
-		{
-		case MDNSState_e::MDNSState_QueryComplete:
-		{
-			log_d("[SETUP]: MDNS Query Complete");
-			mdnsHandler.startMDNS();
-			break;
-		}
-		}
-		break;
+		mdnsHandler.startMDNS();
 	}
 	case WiFiState_e::WiFiState_Connecting:
 	{
