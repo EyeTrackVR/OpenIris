@@ -1,6 +1,9 @@
 #include "project_config.hpp"
 
-ProjectConfig::ProjectConfig(const std::string &name) : _name(std::move(name)), _already_loaded(false) {}
+ProjectConfig::ProjectConfig(const std::string &name,
+                             const std::string &mdnsName) : _name(std::move(name)),
+                                                            _mdnsName(std::move(mdnsName)),
+                                                            _already_loaded(false) {}
 
 ProjectConfig::~ProjectConfig() {}
 
@@ -32,10 +35,17 @@ void ProjectConfig::initConfig()
         3232,
     };
 
+    if (_mdnsName.empty())
+    {
+        log_e("MDNS name is null\n Autoassigning name to 'easynetwork'");
+        _mdnsName = "openiristracker";
+    }
     this->config.mdns = {
-        "openiristracker",
+        _mdnsName,
         "",
     };
+
+    log_i("MDNS name: %s", _mdnsName.c_str());
 
     this->config.ap_network = {
         "",
@@ -152,11 +162,8 @@ void ProjectConfig::load()
     this->config.device.OTAPort = getInt("OTAPort", 3232);
 
     /* MDNS Config */
-    const std::string default_hostname = this->config.mdns.hostname;
-    std::string default_service = "_";
-    default_service.append(this->config.mdns.service);
-    this->config.mdns.hostname = getString("hostname", default_hostname.c_str()).c_str();
-    this->config.mdns.service = getString("service", default_service.c_str()).c_str();
+    this->config.mdns.hostname = getString("hostname", _mdnsName.c_str()).c_str();
+    this->config.mdns.service = getString("service").c_str();
 
     /* Wifi TX Power Config */
     this->config.txpower.power = getUInt("power", 52);

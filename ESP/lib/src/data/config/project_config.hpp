@@ -12,7 +12,8 @@
 class ProjectConfig : public Preferences, public ISubject
 {
 public:
-	ProjectConfig(const std::string &name = std::string());
+	ProjectConfig(const std::string &name = std::string(),
+				  const std::string &mdnsName = std::string());
 	virtual ~ProjectConfig();
 	void load();
 	void save();
@@ -114,8 +115,9 @@ public:
 
 private:
 	TrackerConfig_t config;
-	bool _already_loaded;
 	std::string _name;
+	std::string _mdnsName;
+	bool _already_loaded;
 };
 
 #endif // PROJECT_CONFIG_HPP

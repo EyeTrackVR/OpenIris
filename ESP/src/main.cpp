@@ -19,7 +19,13 @@
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 
-ProjectConfig deviceConfig;
+/**
+ * @brief ProjectConfig object
+ * @brief This is the main configuration object for the project
+ * @param name The name of the project config partition
+ * @param mdnsName The mDNS hostname to use
+ */
+ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
