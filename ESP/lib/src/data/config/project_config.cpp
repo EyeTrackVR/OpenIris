@@ -37,7 +37,7 @@ void ProjectConfig::initConfig()
 
     if (_mdnsName.empty())
     {
-        log_e("MDNS name is null\n Autoassigning name to 'easynetwork'");
+        log_e("MDNS name is null\n Autoassigning name to 'openiristracker'");
         _mdnsName = "openiristracker";
     }
     this->config.mdns = {
