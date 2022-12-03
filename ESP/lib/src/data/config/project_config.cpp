@@ -152,11 +152,11 @@ void ProjectConfig::load()
     this->config.device.OTAPort = getInt("OTAPort", 3232);
 
     /* MDNS Config */
-    this->config.mdns.hostname = getString("hostname").c_str();
-    this->config.mdns.service = getString("service").c_str();
+    this->config.mdns.hostname = getString("hostname", "openiristracker").c_str();
+    this->config.mdns.service = getString("service", "_openiristracker").c_str();
 
     /* Wifi TX Power Config */
-    this->config.txpower.power = getUInt("power");
+    this->config.txpower.power = getUInt("power", 52);
     /* WiFi Config */
     int networkCount = getInt("networkCount", 0);
     std::string name = "name";
