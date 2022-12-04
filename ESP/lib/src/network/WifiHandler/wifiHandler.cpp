@@ -18,78 +18,51 @@ WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::setupWifi()
 {
-	txpower = configManager->getWiFiTxPowerConfig();
 	if (this->_enable_adhoc || stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC)
 	{
 		this->setUpADHOC();
 		return;
 	}
+	txpower = configManager->getWiFiTxPowerConfig();
+	WiFi.mode(WIFI_STA);
+	WiFi.setSleep(WIFI_PS_NONE);
 
-	log_i("Initializing connection to wifi");
+	log_i("Initializing connection to wifi \n\r");
 	stateManager->setState(WiFiState_e::WiFiState_Connecting);
 
 	std::vector<ProjectConfig::WiFiConfig_t> *networks = configManager->getWifiConfigs();
 
-	// check size of networks
-	log_i("Found %d networks stored in the config", networks->size());
-
-	//? Maybe this way is better? I don't know
-	/* if (networks->empty())
+	if (networks->empty())
 	{
-		log_e("No networks found in config");
-		this->iniSTA();
-		stateManager->setState(WiFiState_e::WiFiState_Error);
-		return;
-	} */
-
-	//* Check if there are networks in the config, if not move on to values used in ini file.
-	if (networks->size() == 0)
-	{
-		log_e("No networks found in config");
-		stateManager->setState(WiFiState_e::WiFiState_Error);
-		WiFi.mode(WIFI_STA);
-		WiFi.setSleep(WIFI_PS_NONE);
-		this->iniSTA();
-		return;
+		log_i("No networks found in config, trying the default one \n\r");
+		if(this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
+		{
+			return;
+		}
+		else
+		{
+			log_i("Could not connect to the hardcoded network, setting up ADHOC network \n\r");
+			this->setUpADHOC();
+		}
 	}
 
-	int connection_timeout = 30000; // 30 seconds
-
-	int count = 0;
-	unsigned long currentMillis = millis();
-	unsigned long _previousMillis = currentMillis;
-	int progress = 0;
-
-	WiFi.mode(WIFI_STA);
-	WiFi.setSleep(WIFI_PS_NONE);
-	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
+	for(auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
-		log_i("Trying to connect to the %s network", networkIterator->ssid.c_str());
-		WiFi.begin(networkIterator->ssid.c_str(), networkIterator->password.c_str());
-		// WiFi.setTxPower(WIFI_POWER_5dBm);
-		// WiFi.setTxPower((wifi_power_t)networkIterator->power);
-		WiFi.setTxPower((wifi_power_t)txpower->power);
-		count++;
-		while (WiFi.status() != WL_CONNECTED)
+		if(this->iniSTA(networkIterator->ssid.c_str(), networkIterator->password.c_str(), networkIterator->channel, (wifi_power_t)networkIterator->power))
 		{
-			progress++;
-			stateManager->setState(WiFiState_e::WiFiState_Connecting);
-			currentMillis = millis();
-			Helpers::update_progress_bar(progress, 100);
-			delay(301);
-			if (((currentMillis - _previousMillis) >= connection_timeout) && (count >= networks->size()))
-			{
-				log_i("\n[INFO]: WiFi connection timed out.\n");
-				// we've tried all saved networks, none worked, let's error out
-				log_e("\nCould not connect to any of the saved networks, check your Wifi credentials");
-				stateManager->setState(WiFiState_e::WiFiState_Disconnected);
-				log_i("\n[INFO]: Attempting to connect to hardcoded network");
-				this->iniSTA();
-				return;
-			}
+			return;
 		}
-		log_i("\n\rSuccessfully connected to %s\n\r", networkIterator->ssid.c_str());
-		stateManager->setState(WiFiState_e::WiFiState_Connected);
+	}
+
+	// at this point, we've tried every network, let's just setup adhoc 
+	log_i("We've gone through every network, each timed out. Trying to connect to hardcoded network: %s \n\r", this->ssid.c_str());
+	if(this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
+	{
+		log_i("Successfully connected to the hardcoded network. \n\r");
+	} else
+	{
+		log_i("Could not connect to the hardcoded network, setting up adhoc. \n\r");
+		this->setUpADHOC();
 	}
 }
 
@@ -108,9 +81,6 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 	WiFi.setTxPower((wifi_power_t)txpower->power);
 }
 
-/*
- * *
- */
 void WiFiHandler::setUpADHOC()
 {
 	log_i("\n[INFO]: Setting Access Point...\n");
@@ -138,43 +108,35 @@ void WiFiHandler::setUpADHOC()
 	log_d("\n[DEBUG]: channel: %d\n", channel);
 }
 
-void WiFiHandler::iniSTA()
+bool WiFiHandler::iniSTA(const char *ssid, const char *password, uint8_t channel, wifi_power_t power)
 {
-	log_i("\n[INFO]: Setting up station...\n");
-	int connection_timeout = 30000; // 30 seconds
 	unsigned long currentMillis = millis();
-	unsigned long _previousMillis = currentMillis;
+	unsigned long startingMillis = currentMillis;
+	int connectionTimeout = 30000; // 30 seconds
 	int progress = 0;
-	log_i("Trying to connect to the %s network", this->ssid.c_str());
-	//  check size of networks
-	if (this->ssid.size() == 0)
-	{
-		log_e("No networks passed into the constructor");
-		stateManager->setState(WiFiState_e::WiFiState_Error);
-		this->setUpADHOC();
-		return;
-	}
 
-	WiFi.begin(this->ssid.c_str(), this->password.c_str(), this->channel);
-	WiFi.setTxPower((wifi_power_t)txpower->power);
-	while (WiFi.status() != WL_CONNECTED)
+	stateManager->setState(WiFiState_e::WiFiState_Connecting);
+	log_i("Trying to connect to: %s \n\r", ssid);
+	
+	WiFi.begin(ssid, password, channel);
+	while(WiFi.status() != WL_CONNECTED)
 	{
-		stateManager->setState(WiFiState_e::WiFiState_Connecting);
+		progress++;
 		currentMillis = millis();
 		Helpers::update_progress_bar(progress, 100);
 		delay(301);
-		if ((currentMillis - _previousMillis) >= connection_timeout)
+		if ((currentMillis - startingMillis) >= connectionTimeout)
 		{
-			log_i("\n[INFO]: WiFi connection timed out.\n");
-			// we've tried all saved networks, none worked, let's error out
-			log_e("Could not connect to any of the save networks, check your Wifi credentials");
 			stateManager->setState(WiFiState_e::WiFiState_Error);
-			this->setUpADHOC();
-			log_w("Setting up adhoc mode");
-			log_w("Please use adhoc mode and the app to set your WiFi credentials and reboot the device");
-			return;
-		}
+			log_e("Connection to: %s TIMEOUT \n\r", ssid);
+			return false;
+		} 
 	}
-	log_i("\n\rSuccessfully connected to %s\n\r", this->ssid.c_str());
+
 	stateManager->setState(WiFiState_e::WiFiState_Connected);
+	log_i("Successfully connected to %s \n\r", ssid);
+	log_i("Setting TX power to: %d \n\r", (uint8_t)power);
+	WiFi.setTxPower(power);
+
+	return true;
 }

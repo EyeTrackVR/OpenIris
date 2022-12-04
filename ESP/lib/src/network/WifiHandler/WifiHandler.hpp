@@ -28,7 +28,7 @@ public:
 private:
 	void setUpADHOC();
 	void adhoc(const char *ssid, const char *password, uint8_t channel);
-	void iniSTA();
+	bool iniSTA(const char *ssid, const char *password, uint8_t channel, wifi_power_t power);
 
 	std::string ssid;
 	std::string password;
