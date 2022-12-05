@@ -70,6 +70,7 @@ void ProjectConfig::save()
     mdnsConfigSave();
     cameraConfigSave();
     wifiConfigSave();
+    wifiTxPowerConfigSave();
     end(); // we call end() here to close the connection to the NVS partition, we only do this because we call ESP.restart() next.
     ESP.restart();
 }

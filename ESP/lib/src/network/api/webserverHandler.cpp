@@ -27,7 +27,6 @@ void APIServer::begin()
 	log_d("API URL: %s", buffer);
 	server->on(buffer, 0b01111111, [&](AsyncWebServerRequest *request)
 			   { handleRequest(request); });
-
 	server->begin();
 }
 

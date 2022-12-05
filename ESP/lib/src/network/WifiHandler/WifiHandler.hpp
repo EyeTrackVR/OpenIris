@@ -3,6 +3,7 @@
 #define WIFIHANDLER_HPP
 #include <memory>
 #include <string>
+#include <vector>
 #include <WiFi.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
@@ -27,7 +28,7 @@ public:
 
 private:
 	void setUpADHOC();
-	void adhoc(const char *ssid, const char *password, uint8_t channel);
+	void adhoc(const char *ssid, uint8_t channel, const char *password = NULL);
 	bool iniSTA(const char *ssid, const char *password, uint8_t channel, wifi_power_t power);
 
 	std::string ssid;

@@ -1,5 +1,4 @@
 #include "WifiHandler.hpp"
-#include <vector>
 
 WiFiHandler::WiFiHandler(ProjectConfig *configManager,
 						 StateManager<WiFiState_e> *stateManager,
@@ -35,7 +34,7 @@ void WiFiHandler::setupWifi()
 	if (networks->empty())
 	{
 		log_i("No networks found in config, trying the default one \n\r");
-		if(this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
+		if (this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
 		{
 			return;
 		}
@@ -43,30 +42,32 @@ void WiFiHandler::setupWifi()
 		{
 			log_i("Could not connect to the hardcoded network, setting up ADHOC network \n\r");
 			this->setUpADHOC();
+			return;
 		}
 	}
 
-	for(auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
+	for (auto networkIterator = networks->begin(); networkIterator != networks->end(); ++networkIterator)
 	{
-		if(this->iniSTA(networkIterator->ssid.c_str(), networkIterator->password.c_str(), networkIterator->channel, (wifi_power_t)networkIterator->power))
+		if (this->iniSTA(networkIterator->ssid.c_str(), networkIterator->password.c_str(), networkIterator->channel, (wifi_power_t)networkIterator->power))
 		{
 			return;
 		}
 	}
 
-	// at this point, we've tried every network, let's just setup adhoc 
+	// at this point, we've tried every network, let's just setup adhoc
 	log_i("We've gone through every network, each timed out. Trying to connect to hardcoded network: %s \n\r", this->ssid.c_str());
-	if(this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
+	if (this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel, (wifi_power_t)txpower->power))
 	{
 		log_i("Successfully connected to the hardcoded network. \n\r");
-	} else
+	}
+	else
 	{
 		log_i("Could not connect to the hardcoded network, setting up adhoc. \n\r");
 		this->setUpADHOC();
 	}
 }
 
-void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
+void WiFiHandler::adhoc(const char *ssid, uint8_t channel, const char *password)
 {
 	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
 	log_i("\n[INFO]: Setting Access Point...\n");
@@ -84,28 +85,29 @@ void WiFiHandler::adhoc(const char *ssid, const char *password, uint8_t channel)
 void WiFiHandler::setUpADHOC()
 {
 	log_i("\n[INFO]: Setting Access Point...\n");
-	size_t ssidLen = strlen(configManager->getAPWifiConfig()->ssid.c_str());
-	size_t passwordLen = strlen(configManager->getAPWifiConfig()->password.c_str());
-	char ssid[ssidLen + 1];
-	char password[passwordLen + 1];
-	uint8_t channel = configManager->getAPWifiConfig()->channel;
-	if (ssidLen > 0 || passwordLen > 0)
+	size_t ssidLen = configManager->getAPWifiConfig()->ssid.length();
+	size_t passwordLen = configManager->getAPWifiConfig()->password.length();
+	if (ssidLen <= 0)
 	{
-		strcpy(ssid, configManager->getAPWifiConfig()->ssid.c_str());
-		strcpy(password, configManager->getAPWifiConfig()->password.c_str());
-		channel = configManager->getAPWifiConfig()->channel;
+		this->adhoc("OpenIris", 1, "12345678");
+		return;
 	}
-	else
+
+	if (passwordLen <= 0)
 	{
-		strcpy(ssid, "OpenIris");
-		strcpy(password, "12345678");
-		channel = 1;
+		log_i("\n[INFO]: Configuring access point without a password\n");
+		this->adhoc(configManager->getAPWifiConfig()->ssid.c_str(),
+					configManager->getAPWifiConfig()->channel);
+		return;
 	}
-	this->adhoc(ssid, password, channel);
+
+	this->adhoc(configManager->getAPWifiConfig()->ssid.c_str(),
+				configManager->getAPWifiConfig()->channel,
+				configManager->getAPWifiConfig()->password.c_str());
 	log_i("\n[INFO]: Configuring access point...\n");
-	log_d("\n[DEBUG]: ssid: %s\n", ssid);
-	log_d("\n[DEBUG]: password: %s\n", password);
-	log_d("\n[DEBUG]: channel: %d\n", channel);
+	log_d("\n[DEBUG]: ssid: %s\n", configManager->getAPWifiConfig()->ssid.c_str());
+	log_d("\n[DEBUG]: password: %s\n", configManager->getAPWifiConfig()->password.c_str());
+	log_d("\n[DEBUG]: channel: %d\n", configManager->getAPWifiConfig()->channel);
 }
 
 bool WiFiHandler::iniSTA(const char *ssid, const char *password, uint8_t channel, wifi_power_t power)
@@ -117,9 +119,9 @@ bool WiFiHandler::iniSTA(const char *ssid, const char *password, uint8_t channel
 
 	stateManager->setState(WiFiState_e::WiFiState_Connecting);
 	log_i("Trying to connect to: %s \n\r", ssid);
-	
+
 	WiFi.begin(ssid, password, channel);
-	while(WiFi.status() != WL_CONNECTED)
+	while (WiFi.status() != WL_CONNECTED)
 	{
 		progress++;
 		currentMillis = millis();
@@ -130,7 +132,7 @@ bool WiFiHandler::iniSTA(const char *ssid, const char *password, uint8_t channel
 			stateManager->setState(WiFiState_e::WiFiState_Error);
 			log_e("Connection to: %s TIMEOUT \n\r", ssid);
 			return false;
-		} 
+		}
 	}
 
 	stateManager->setState(WiFiState_e::WiFiState_Connected);
