@@ -216,7 +216,21 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest *request)
 	{
 	case GET:
 	{
-		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+		int params = request->params();
+
+		uint8_t txPower = 0;
+
+		for (int i = 0; i < params; i++)
+		{
+			AsyncWebParameter *param = request->getParam(i);
+			if (param->name() == "txPower")
+			{
+				txPower = atoi(param->value().c_str());
+			}
+		}
+		projectConfig->setWiFiTxPower(&txPower, true);
+		projectConfig->wifiTxPowerConfigSave();
+		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. TX Power has been set.\"}");
 		break;
 	}
 	case POST:
@@ -342,13 +356,12 @@ void BaseAPI::restartCamera(AsyncWebServerRequest *request)
 	request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
 
-
 void BaseAPI::ping(AsyncWebServerRequest *request)
 {
 	request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
 
-void BaseAPI::save(AsyncWebServerRequest *request) 
+void BaseAPI::save(AsyncWebServerRequest *request)
 {
 	projectConfig->save();
 	request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
