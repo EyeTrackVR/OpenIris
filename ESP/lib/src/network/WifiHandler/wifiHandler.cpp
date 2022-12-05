@@ -120,6 +120,9 @@ bool WiFiHandler::iniSTA(const char *ssid, const char *password, uint8_t channel
 	stateManager->setState(WiFiState_e::WiFiState_Connecting);
 	log_i("Trying to connect to: %s \n\r", ssid);
 
+	auto mdnsConfig = configManager->getMDNSConfig();
+	WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE); // need to call before setting hostname
+	WiFi.setHostname(mdnsConfig->hostname.c_str());
 	WiFi.begin(ssid, password, channel);
 	while (WiFi.status() != WL_CONNECTED)
 	{
