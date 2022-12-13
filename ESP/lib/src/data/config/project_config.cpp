@@ -42,7 +42,7 @@ void ProjectConfig::initConfig()
     }
     this->config.mdns = {
         _mdnsName,
-        "",
+        "openiristracker",
     };
 
     log_i("MDNS name: %s", _mdnsName.c_str());
