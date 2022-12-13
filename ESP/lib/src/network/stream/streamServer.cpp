@@ -33,7 +33,9 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 		fb = esp_camera_fb_get();
 		if (!fb)
 		{
-			log_e("Camera capture failed with error = 0x%i", res);
+			log_e("Camera capture failed with response: %s", esp_err_to_name(res));
+			log_e("Frame Buffer Length: %d", fb->len);
+			log_e("Frame Buffer: %d", fb->buf);
 			res = ESP_FAIL;
 		}
 		else
