@@ -24,7 +24,7 @@ AutoDiscovery::~AutoDiscovery()
 void AutoDiscovery::start()
 {
     stateManager->setState(MDNSState_e::MDNSState_QueryStarted);
-    queryService(("_" + mdnsConfig->hostname).c_str(), "_tcp");
+    queryService(mdnsConfig->hostname.c_str(), "tcp");
     stop();
 }
 
