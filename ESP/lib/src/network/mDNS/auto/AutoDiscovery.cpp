@@ -4,7 +4,6 @@ AutoDiscovery::AutoDiscovery(StateManager<MDNSState_e> *stateManager,
                              ProjectConfig *configManager) : stateManager(stateManager),
                                                              configManager(configManager),
                                                              mdnsConfig(NULL),
-                                                             callback(NULL),
                                                              _queryTimeout(5000),
                                                              _currentTime(millis()),
                                                              _previousTime(0)
