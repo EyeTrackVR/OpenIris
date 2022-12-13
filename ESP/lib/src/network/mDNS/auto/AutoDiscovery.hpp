@@ -19,13 +19,14 @@ private:
     unsigned long _currentTime;
     unsigned long _previousTime;
 
+    void queryService(const std::string &service, const std::string &protocol);
+    void stop();
+
 public:
     AutoDiscovery(StateManager<MDNSState_e> *stateManager,
                   ProjectConfig *configManager);
     ~AutoDiscovery();
     void start();
-    void queryService(const std::string &service, const std::string &protocol);
-    void stop();
     void setCallback(void (*callback)(const char *));
     void update(ObserverEvent::Event event);
 };

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <network/WifiHandler/WifiHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
+#include <network/mDNS/auto/AutoDiscovery.hpp>
 #include <io/camera/cameraHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <network/stream/streamServer.hpp>
@@ -13,8 +14,8 @@
 #include <logo/logo.hpp>
 #include <data/config/project_config.hpp>
 
-//#include <data/utilities/makeunique.hpp>
-//#include <io/SerialManager/serialmanager.hpp> // Serial Manager
+// #include <data/utilities/makeunique.hpp>
+// #include <io/SerialManager/serialmanager.hpp> // Serial Manager
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
@@ -35,6 +36,7 @@ CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
+AutoDiscovery autoDiscoveryHandler(&mdnsStateManager, &deviceConfig);
 StreamServer streamServer(STREAM_SERVER_PORT);
 
 void setup()
@@ -51,7 +53,22 @@ void setup()
 	deviceConfig.load();
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 	wifiHandler.setupWifi();
-	mdnsHandler.startMDNS();
+
+	mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
+	switch (mdnsStateManager.getCurrentState())
+	{
+	case MDNSState_e::MDNSState_Starting:
+		autoDiscoveryHandler.start();
+		break;
+	case MDNSState_e::MDNSState_Error:
+		break;
+	case MDNSState_e::MDNSState_QueryComplete:
+		mdnsHandler.startMDNS();
+		break;
+	default:
+		break;
+	}
+
 	switch (wifiStateManager.getCurrentState())
 	{
 	case WiFiState_e::WiFiState_Disconnected:
