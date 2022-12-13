@@ -1,6 +1,8 @@
 #include "OTA.hpp"
 
-OTA::OTA(ProjectConfig *_deviceConfig) : _deviceConfig(_deviceConfig) {}
+OTA::OTA(ProjectConfig *_deviceConfig) : _deviceConfig(_deviceConfig),
+                                         _bootTimestamp(0),
+                                         _isOtaEnabled(true) {}
 
 OTA::~OTA() {}
 
@@ -14,9 +16,7 @@ void OTA::SetupOTA()
         log_e("THE PASSWORD IS REQUIRED, [[ABORTING]]");
         return;
     }
-
     ArduinoOTA.setPort(localConfig->OTAPort);
-
     ArduinoOTA
         .onStart([]()
                  {
@@ -50,7 +50,6 @@ void OTA::SetupOTA()
                     log_e("End Failed");
                     break;
                 } });
-
     log_i("Starting up basic OTA server");
     log_i("OTA will be live for 5 minutes, after which it will be disabled until restart");
     auto mdnsConfig = _deviceConfig->getMDNSConfig();
