@@ -92,11 +92,6 @@ void AutoDiscovery::stop()
     stateManager->setState(MDNSState_e::MDNSState_QueryComplete);
 }
 
-void AutoDiscovery::setCallback(void (*callback)(const char *))
-{
-    this->callback = callback;
-}
-
 void AutoDiscovery::update(ObserverEvent::Event event)
 {
     switch (event)

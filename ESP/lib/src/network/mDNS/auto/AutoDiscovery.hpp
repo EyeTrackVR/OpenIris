@@ -27,7 +27,6 @@ public:
                   ProjectConfig *configManager);
     ~AutoDiscovery();
     void start();
-    void setCallback(void (*callback)(const char *));
     void update(ObserverEvent::Event event);
 };
 
