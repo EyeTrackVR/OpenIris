@@ -14,7 +14,6 @@ private:
     StateManager<MDNSState_e> *stateManager;
     ProjectConfig *configManager;
     ProjectConfig::MDNSConfig_t *mdnsConfig;
-    void (*callback)(const char *);
     int _queryTimeout;
     unsigned long _currentTime;
     unsigned long _previousTime;
