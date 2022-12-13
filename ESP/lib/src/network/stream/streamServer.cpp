@@ -33,8 +33,8 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 		fb = esp_camera_fb_get();
 		if (!fb)
 		{
-			log_e("Camera capture failed");
 			res = ESP_FAIL;
+			log_e("Camera capture failed with error = %d", res);
 		}
 		else
 		{
@@ -105,9 +105,7 @@ int StreamServer::startStreamServer()
 	{
 		httpd_register_uri_handler(camera_stream, &stream_page);
 		Serial.println("Stream server initialized");
-		Serial.print("\n\rThe stream is under: http://");
-		Serial.print(WiFi.localIP());
-		Serial.printf(":%i\n\r", this->STREAM_SERVER_PORT);
+		Serial.printf("\n\rThe stream is under: http://%s:%d\n\r", WiFi.localIP().toString().c_str(), this->STREAM_SERVER_PORT);
 		return 0;
 	}
 }
