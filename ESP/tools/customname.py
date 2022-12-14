@@ -2,6 +2,9 @@
      
 Import("env")
 
+# Dump global construction environment (for debug purpose)
+#print(env.Dump())
+
 my_flags = env.ParseFlags(env['BUILD_FLAGS'])
 defines = dict()
 for x in my_flags.get("CPPDEFINES"):
@@ -19,5 +22,5 @@ for x in my_flags.get("CPPDEFINES"):
 s = lambda x: x.replace('"', "")
 env.Replace(
     PROGNAME="%s-%s-%s-%s-%s" %
-    (s(defines.get("PIO_SRC_NAM")), s(defines.get("VERSION")), str(env["BOARD"]),
+    (s(defines.get("PIO_SRC_NAM")), s(defines.get("VERSION")), str(env["PIOENV"]),
      s(defines.get("PIO_SRC_REV")), s(defines.get("PIO_SRC_BRH"))))
