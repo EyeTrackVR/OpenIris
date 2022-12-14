@@ -7,8 +7,8 @@ project = project.split("/")
 project = project[len(project)-1]
 
 # Get 0.0.0 version from latest Git tag
-tagcmd = "git describe --tags --abbrev=0"
-version = subprocess.check_output(tagcmd, shell=True).decode().strip()
+#tagcmd = "git describe --tags --abbrev=0"
+#version = subprocess.check_output(tagcmd, shell=True).decode().strip()
 
 # Get latest commit short from Git
 revcmd = "git log --pretty=format:'%h' -n 1"
