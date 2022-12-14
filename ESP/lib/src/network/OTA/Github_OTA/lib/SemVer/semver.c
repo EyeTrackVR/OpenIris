@@ -566,7 +566,7 @@ void semver_free(semver_t *x)
  */
 
 static void
-concat_num(char *str, int x, char *sep)
+concat_num(char *str, int x, const char *sep)
 {
     char buf[SLICE_SIZE] = {0};
     if (sep == NULL)
@@ -577,7 +577,7 @@ concat_num(char *str, int x, char *sep)
 }
 
 static void
-concat_char(char *str, char *x, char *sep)
+concat_char(char *str, char *x, const char *sep)
 {
     char buf[SLICE_SIZE] = {0};
     sprintf(buf, "%s%s", sep, x);

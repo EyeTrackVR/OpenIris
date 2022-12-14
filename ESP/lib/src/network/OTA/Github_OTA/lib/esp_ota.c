@@ -813,7 +813,7 @@ esp_err_t Github_OTA_start_update_timer(Github_OTA_client_handle_t *handle)
     return ESP_OK;
 }
 
-char *Github_OTA_get_event_str(Github_OTA_event_e event)
+const char *Github_OTA_get_event_str(Github_OTA_event_e event)
 {
     switch (event)
     {

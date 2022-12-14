@@ -54,7 +54,7 @@ extern "C"
      */
     typedef struct Github_OTA_config_t
     {
-        char filenamematch[CONFIG_MAX_FILENAME_LEN];    /*!< Filename to match against on Github indicating this is a firmware file */
+        char *filenamematch;    /*!< Filename to match against on Github indicating this is a firmware file */
         char storagenamematch[CONFIG_MAX_FILENAME_LEN]; /*!< Filename to match against on Github indicating this is a storage file */
         char storagepartitionname[17];                  /*!< Name of the storage partition to update */
         char *hostname;                                 /*!< Hostname of the Github server. Defaults to api.github.com*/
@@ -166,7 +166,7 @@ extern "C"
      * @param event the eventid passed to the event handler
      * @return char* a string representing the event
      */
-    char *Github_OTA_get_event_str(Github_OTA_event_e event);
+    const char *Github_OTA_get_event_str(Github_OTA_event_e event);
 
 #ifdef __cplusplus
 }
