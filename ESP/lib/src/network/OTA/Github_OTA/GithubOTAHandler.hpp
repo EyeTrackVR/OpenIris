@@ -1,6 +1,6 @@
 #ifndef GITHUB_OTA_HANDLER_HPP
 #define GITHUB_OTA_HANDLER_HPP
-#include <Arduino.h>
+//#include <Arduino.h>
 
 // ESP && FreeRTOS Libraries
 #include <stdlib.h>

@@ -1,7 +1,5 @@
 #include "esp_ota.h"
 
-static const char *TAG = "Github_OTA";
-
 ESP_EVENT_DEFINE_BASE(Github_OTA_EVENTS);
 
 typedef struct Github_OTA_client_handle_t

@@ -27,6 +27,7 @@ extern "C"
 {
 #endif
 
+    static const char *TAG = "Github_OTA";
     ESP_EVENT_DECLARE_BASE(Github_OTA_EVENTS);
 
     /**
