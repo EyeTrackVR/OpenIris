@@ -11,17 +11,9 @@ void CameraHandler::setupCameraPinout()
 	/* IO13, IO14 is designed for JTAG by default,
 	 * to use it as generalized input,
 	 * firstly declair it as pullup input */
-	gpio_config_t conf;
-	conf.mode = GPIO_MODE_INPUT;
-	conf.pull_up_en = GPIO_PULLUP_ENABLE;
-	conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-	conf.intr_type = GPIO_INTR_DISABLE;
-	conf.pin_bit_mask = 1LL << 13;
-	gpio_config(&conf);
-	conf.pin_bit_mask = 1LL << 14;
-	gpio_config(&conf);
+	pinMode(13, INPUT_PULLUP);
+	pinMode(14, INPUT_PULLUP);
 #endif
-
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
 	config.grab_mode = CAMERA_GRAB_LATEST;
@@ -50,6 +42,11 @@ void CameraHandler::setupBasicResolution()
 {
 	config.pixel_format = PIXFORMAT_JPEG;
 	config.frame_size = FRAMESIZE_240X240;
+
+#if PSRAM_INIT_FAILURE
+	config.fb_location = CAMERA_FB_IN_DRAM;
+#endif
+
 	if (!psramFound())
 	{
 		log_e("Did not find psram, setting lower image quality");
