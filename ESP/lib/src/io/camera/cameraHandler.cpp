@@ -43,13 +43,10 @@ void CameraHandler::setupBasicResolution()
 	config.pixel_format = PIXFORMAT_JPEG;
 	config.frame_size = FRAMESIZE_240X240;
 
-#if PSRAM_INIT_FAILURE
-	config.fb_location = CAMERA_FB_IN_DRAM;
-#endif
-
 	if (!psramFound())
 	{
 		log_e("Did not find psram, setting lower image quality");
+		config.fb_location = CAMERA_FB_IN_DRAM;
 		config.jpeg_quality = 1;
 		config.fb_count = 1;
 		return;
