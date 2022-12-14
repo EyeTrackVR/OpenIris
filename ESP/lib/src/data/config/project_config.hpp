@@ -29,6 +29,7 @@ public:
 	{
 		std::string OTAPassword;
 		int OTAPort;
+		std::string binaryName;
 		std::string toRepresentation();
 	};
 
@@ -106,7 +107,7 @@ public:
 	MDNSConfig_t *getMDNSConfig();
 	WiFiTxPower_t *getWiFiTxPowerConfig();
 
-	void setDeviceConfig(const std::string &OTAPassword, int *OTAPort, bool shouldNotify);
+	void setDeviceConfig(const std::string &OTAPassword, int OTAPort, const std::string &binaryName, bool shouldNotify);
 	void setMDNSConfig(const std::string &hostname, const std::string &service, bool shouldNotify);
 	void setCameraConfig(uint8_t *vflip, uint8_t *framesize, uint8_t *href, uint8_t *quality, uint8_t *brightness, bool shouldNotify);
 	void setWifiConfig(const std::string &networkName, const std::string &ssid, const std::string &password, uint8_t *channel, uint8_t *power, bool adhoc, bool shouldNotify);

@@ -1,9 +1,6 @@
-
 #include "GithubOTAHandler.hpp"
 
-GithubOTAHandler::GithubOTAHandler()
-{
-}
+GithubOTAHandler::GithubOTAHandler() {}
 
 GithubOTAHandler::~GithubOTAHandler() {}
 
@@ -21,7 +18,7 @@ void GithubOTAHandler::githubOTAEventCallback(void *handler_args, esp_event_base
     return;
 }
 
-void GithubOTAHandler::updateFirmware()
+void GithubOTAHandler::updateFirmware(const std::string &binaryName)
 {
     ESP_LOGI(TAG, "Starting Github OTA Update Handler");
 
@@ -34,9 +31,8 @@ void GithubOTAHandler::updateFirmware()
     ESP_ERROR_CHECK(ret);
 
     /* initialize our Github_OTA config */
-    char file_name[] = "esp_Github_OTA-esp32.bin";
     Github_OTA_config_t ghconfig = {
-        .filenamematch = file_name,
+        .filenamematch = (char *)binaryName.c_str(),
         /* 1 minute as a example, but in production you should pick something larger (remember, Github has ratelimits on the API! )*/
         .updateInterval = 30,
     };
