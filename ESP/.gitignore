@@ -2,3 +2,5 @@
 .vscode/
 build/
 *.log
+/tools/firmware_name.txt
+/tools/version.txt
