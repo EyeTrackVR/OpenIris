@@ -30,20 +30,20 @@ void GithubOTAHandler::updateFirmware(const std::string &binaryName)
     }
     ESP_ERROR_CHECK(ret);
 
-    /* initialize our Github_OTA config */
+    // initialize our Github_OTA config
     Github_OTA_config_t ghconfig = {
         .filenamematch = (char *)binaryName.c_str(),
         /* 1 minute as a example, but in production you should pick something larger (remember, Github has ratelimits on the API! )*/
         .updateInterval = 30,
     };
-    /* initialize Github_OTA. */
+    // initialize Github_OTA
     Github_OTA_client_handle_t *Github_OTA_client = Github_OTA_init(&ghconfig);
     if (Github_OTA_client == NULL)
     {
         ESP_LOGE(TAG, "Github_OTA_client_init failed");
         return;
     }
-    /* register for events relating to the update progress */
+    // register for events relating to the update progress
     esp_event_handler_register(Github_OTA_EVENTS, ESP_EVENT_ANY_ID, &githubOTAEventCallback, Github_OTA_client);
 
 #if DO_BACKGROUND_UPDATE
@@ -55,7 +55,7 @@ void GithubOTAHandler::updateFirmware(const std::string &binaryName)
      */
     // ESP_ERROR_CHECK(Github_OTA_set_auth(Github_OTA_client, "<Insert GH Username>", "<insert PAT TOKEN>"));
 
-    /* start a timer that will automatically check for updates based on the interval specified above */
+    // start a timer that will automatically check for updates based on the interval specified above
     ESP_ERROR_CHECK(Github_OTA_start_update_timer(Github_OTA_client));
 
 #elif DO_FORGROUND_UPDATE
