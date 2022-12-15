@@ -16,7 +16,6 @@
 #include <data/config/project_config.hpp>
 
 // #include <data/utilities/makeunique.hpp>
-// #include <io/SerialManager/serialmanager.hpp> // Serial Manager
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;

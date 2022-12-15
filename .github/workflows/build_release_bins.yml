@@ -83,9 +83,10 @@ jobs:
         message: "Latest release of OpenIris firmware"
     - name: Release Firmware
       uses: ncipollo/release-action@v1
-      if: startsWith(github.ref, 'refs/tags/${{ env.VERSION }}') 
+      #if: startsWith(github.ref, 'refs/tags/${{ env.VERSION }}') 
       with:
         artifacts: release/${{ matrix.targets }}/*.bin
+        tag: ${{ env.VERSION }}
         generateReleaseNotes: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
