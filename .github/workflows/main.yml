@@ -2,6 +2,7 @@ name: Build the OpenIris bin file
 on:
   push:
     branches:
+      - "mdns-autodiscovery"
       - "master"
   pull_request:
     branches:
