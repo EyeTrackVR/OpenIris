@@ -56,10 +56,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: version
-          path: ./tools/version.txt
+          path: ~/tools/version.txt
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
-        run: echo "FIRMWARE_NAME=$(cat ./tools/firmware_name.txt)" >> $GITHUB_ENV
+        run: echo "FIRMWARE_NAME=$(cat ~/tools/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Files
         uses: actions/upload-artifact@v3
         with: 
