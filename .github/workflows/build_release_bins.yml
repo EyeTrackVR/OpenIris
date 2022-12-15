@@ -1,12 +1,14 @@
 name: Build and Release the OpenIris bin files
 on:
   push:
-    tags: v[0-9]+.[0-9]+.[0-9]+
+    tags: 
+      - 'v[0-9]+.[0-9]+.[0-9]+'
     branches:
       - "feature/mdns-autodiscovery"
       - "master"
   pull_request:
-    tags: v[0-9]+.[0-9]+.[0-9]+
+    tags: 
+      - 'v[0-9]+.[0-9]+.[0-9]+'
     branches:
       - "master"
   workflow_dispatch:
