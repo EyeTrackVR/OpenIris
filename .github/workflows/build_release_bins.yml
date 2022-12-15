@@ -2,7 +2,7 @@ name: Build and Release the OpenIris bin files
 on:
   push:
     branches:
-      - "mdns-autodiscovery"
+      - "feature/mdns-autodiscovery"
       - "master"
   pull_request:
     branches:
@@ -13,21 +13,21 @@ jobs:
     strategy:
       fail-fast: true
       matrix: 
-        targets: [esp32AITinker_release, 
-                  esp32CAM_release, 
-                  esp_eye_release, 
-                  esp32M5Stack_release, 
-                  wrover_release,
-                  esp32CAM,
-                  esp32AITinker,
-                  esp32M5Stack,
-                  esp_eye,
-                  wrover,
-                  esp32CAM_OTA,
-                  esp32AITinker_OTA,
-                  esp32M5Stack_OTA,
-                  esp_eye_OTA,
-                  wrover_OTA,
+        targets: [esp32Cam_release, 
+                 # esp32AITinker_release,
+                 # esp_eye_release, 
+                 # esp32M5Stack_release, 
+                 # wrover_release,
+                 # esp32Cam,
+                 # esp32AITinker,
+                 # esp32M5Stack,
+                 # esp_eye,
+                 # wrover,
+                 # esp32Cam_OTA,
+                 # esp32AITinker_OTA,
+                 # esp32M5Stack_OTA,
+                 # esp_eye_OTA,
+                 # wrover_OTA,
                  ]
     runs-on: ubuntu-latest
     steps:

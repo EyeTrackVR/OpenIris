@@ -13,7 +13,7 @@ with open(FILENAME_BUILDNO, 'w+') as f:
 
 # crate a file with the version number
 with open(FILENAME_VERSION, 'w+') as f:
-    f.write('"{0}"'.format(version+str(build_no)))
+    f.write('{0}'.format(version+str(build_no)))
 
 #print("-DVERSION=\"%s\"" % version+str(build_no))
 print("-DVERSION={0}".format(version+str(build_no)))
