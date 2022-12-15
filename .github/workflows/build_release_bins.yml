@@ -77,7 +77,7 @@ jobs:
       uses: ncipollo/release-action@v1
       if: startsWith(github.ref, 'refs/tags/') 
       with:
-        artifacts: release/*/*.bin
+        artifacts: release/*.bin
         generateReleaseNotes: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
