@@ -1,4 +1,4 @@
-#include "serialmanager.hpp"
+/* #include "serialmanager.hpp"
 
 std::unordered_map<std::string, SerialManager::Serial_Commands> SerialManager::command_map = {
 	{"", NO_INPUT},
@@ -80,4 +80,4 @@ void SerialManager::handleSerial()
 		const char *wifi_config_password = jsonDoc["wifi_config_password"];
 		const char *wifi_config_channel = jsonDoc["wifi_config_channel"];
 	}
-}
+} */
