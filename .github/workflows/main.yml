@@ -13,21 +13,21 @@ jobs:
     strategy:
       fail-fast: true
       matrix: 
-        targets: [esp32AITinker_release, 
-                  esp32CAM_release, 
-                  esp_eye_release, 
-                  esp32M5Stack_release, 
-                  wrover_release,
-                  esp32CAM,
-                  esp32AITinker,
-                  esp32M5Stack,
-                  esp_eye,
-                  wrover,
-                  esp32CAM_OTA,
-                  esp32AITinker_OTA,
-                  esp32M5Stack_OTA,
-                  esp_eye_OTA,
-                  wrover_OTA,
+        targets: [esp32CAM_release, 
+                 # esp32AITinker_release,
+                 # esp_eye_release, 
+                 # esp32M5Stack_release, 
+                 # wrover_release,
+                 # esp32CAM,
+                 # esp32AITinker,
+                 # esp32M5Stack,
+                 # esp_eye,
+                 # wrover,
+                 # esp32CAM_OTA,
+                 # esp32AITinker_OTA,
+                 # esp32M5Stack_OTA,
+                 # esp_eye_OTA,
+                 # wrover_OTA,
                  ]
     runs-on: ubuntu-latest
     steps:
