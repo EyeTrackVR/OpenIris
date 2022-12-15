@@ -72,12 +72,12 @@ jobs:
     - name: Download Firmware Files
       uses: actions/download-artifact@v2
       with:
-       path: release
+        path: release
     - name: Release Firmware
       uses: ncipollo/release-action@v1
       if: startsWith(github.ref, 'refs/tags/') 
       with:
-        artifacts: release/*.bin
+        artifacts: release/${{ matrix.targets }}/*.bin
         generateReleaseNotes: true
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
