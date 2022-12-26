@@ -1,4 +1,4 @@
-FILENAME_VERSION = 'version.txt'  
+FILENAME_VERSION = 'tools/version.txt'  
 build_no = 'v0.0.0'
 try:
     with open(FILENAME_VERSION) as f:
