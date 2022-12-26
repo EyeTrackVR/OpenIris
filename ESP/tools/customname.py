@@ -2,6 +2,9 @@
      
 Import("env")
 
+# Dump global construction environment (for debug purpose)
+#print(env.Dump())
+
 my_flags = env.ParseFlags(env['BUILD_FLAGS'])
 defines = dict()
 for x in my_flags.get("CPPDEFINES"):
@@ -21,3 +24,12 @@ env.Replace(
     PROGNAME="%s-%s-%s-%s-%s" %
     (s(defines.get("PIO_SRC_NAM")), s(defines.get("VERSION")), str(env["PIOENV"]),
      s(defines.get("PIO_SRC_REV")), s(defines.get("PIO_SRC_BRH"))))
+
+#detect if there is a forward slash in the PROGNAME and replace it with an underscore
+if "/" in env["PROGNAME"]:
+    env.Replace(
+        PROGNAME="%s" %
+        (env["PROGNAME"].replace("/", "-")))
+
+# create a file with the name of the firmware
+env.Execute("echo %s > %s" % (env["PROGNAME"], env.subst("./tools/firmware_name.txt")))
