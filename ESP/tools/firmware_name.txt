@@ -1,1 +1,1 @@
-OpenIris-v1.0.7-esp32Cam_release-c3b7dd1-feature-mdns-autodiscovery 
+OpenIris-v1.0.9-esp32AITinker-e9c51a6-feature-mdns-autodiscovery 
