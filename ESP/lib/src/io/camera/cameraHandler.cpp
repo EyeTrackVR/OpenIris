@@ -10,17 +10,19 @@ void CameraHandler::setupCameraPinout()
 #if CONFIG_CAMERA_MODULE_ESP_EYE
 	/* IO13, IO14 is designed for JTAG by default,
 	 * to use it as generalized input,
-	 * firstly declair it as pullup input 
+	 * firstly declair it as pullup input
 	 **/
 	pinMode(13, INPUT_PULLUP);
 	pinMode(14, INPUT_PULLUP);
+	log_i("ESP_EYE");
 #elif CONFIG_CAMERA_MODULE_CAM_BOARD
 	/* IO13, IO14 is designed for JTAG by default,
 	 * to use it as generalized input,
-	 * firstly declair it as pullup input 
+	 * firstly declair it as pullup input
 	 **/
 	pinMode(13, INPUT_PULLUP);
 	pinMode(14, INPUT_PULLUP);
+	log_i("CAM_BOARD");
 #endif
 
 	config.ledc_channel = LEDC_CHANNEL_0;
