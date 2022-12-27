@@ -1,1 +1,1 @@
-OpenIris-v1.0.9-esp32AITinker-e9c51a6-feature-mdns-autodiscovery 
+OpenIris-v1.7.10-esp_eye-4b8419d-feature-esp-eye-support 
