@@ -1,0 +1,5 @@
+---
+language: Cpp
+BasedOnStyle: Google
+IndentWidth: 4
+---
