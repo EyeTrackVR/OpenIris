@@ -1,1 +1,1 @@
-OpenIris-v2.0.8-esp_eye-b55d8ea-feature-esp-eye-support 
+OpenIris-v2.0.10-esp32AITinker-d2acaee-feature-esp-eye-support 

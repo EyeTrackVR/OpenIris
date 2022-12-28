@@ -69,7 +69,7 @@ void WiFiHandler::setupWifi()
 void WiFiHandler::adhoc(const std::string &ssid, uint8_t channel, const std::string &password)
 {
 	stateManager->setState(WiFiState_e::WiFiState_ADHOC);
-	log_i("\n[INFO]: Setting Access Point...\n");
+	
 	log_i("\n[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
 	WiFi.setSleep(WIFI_PS_NONE);
@@ -84,6 +84,7 @@ void WiFiHandler::adhoc(const std::string &ssid, uint8_t channel, const std::str
 
 void WiFiHandler::setUpADHOC()
 {
+	log_i("\n[INFO]: Setting Up Access Point...\n");
 	size_t ssidLen = configManager->getAPWifiConfig()->ssid.length();
 	size_t passwordLen = configManager->getAPWifiConfig()->password.length();
 	if (ssidLen <= 0)
