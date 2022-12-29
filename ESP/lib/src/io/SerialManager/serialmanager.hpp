@@ -7,7 +7,7 @@
 #include <memory>
 #include <serialStr.h>
 #include <strTools.h>
-#include <ArduinoJSON.h>
+#include <ArduinoJson.h>
 
 #include "data/config/project_config.hpp"
 #include "data/utilities/makeunique.hpp"
