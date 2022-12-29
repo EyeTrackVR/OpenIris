@@ -6,6 +6,25 @@ CameraHandler::CameraHandler(ProjectConfig *configManager,
 
 void CameraHandler::setupCameraPinout()
 {
+	log_i("Camera module is %s", CAMERA_MODULE_NAME);
+#if CONFIG_CAMERA_MODULE_ESP_EYE
+	/* IO13, IO14 is designed for JTAG by default,
+	 * to use it as generalized input,
+	 * firstly declair it as pullup input
+	 **/
+	pinMode(13, INPUT_PULLUP);
+	pinMode(14, INPUT_PULLUP);
+	log_i("ESP_EYE");
+#elif CONFIG_CAMERA_MODULE_CAM_BOARD
+	/* IO13, IO14 is designed for JTAG by default,
+	 * to use it as generalized input,
+	 * firstly declair it as pullup input
+	 **/
+	pinMode(13, INPUT_PULLUP);
+	pinMode(14, INPUT_PULLUP);
+	log_i("CAM_BOARD");
+#endif
+
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
 	config.grab_mode = CAMERA_GRAB_LATEST;
