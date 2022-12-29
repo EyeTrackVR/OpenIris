@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix: 
-        targets: [esp32Cam_release, 
+        targets: [esp32CAM_release, 
                  # esp32AITinker_release,
                  # esp_eye_release, 
                  # esp32M5Stack_release, 
@@ -23,7 +23,7 @@ jobs:
                  # esp32M5Stack,
                  # esp_eye,
                  # wrover,
-                 # esp32Cam_OTA,
+                 # esp32CAM_OTA,
                  # esp32AITinker_OTA,
                  # esp32M5Stack_OTA,
                  # esp_eye_OTA,
