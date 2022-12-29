@@ -1,1 +1,1 @@
-OpenIris-v1.0.5-esp32Cam-44ca285-master 
+OpenIris-v1.0.7-esp32AITinker-c9e523b-master 
