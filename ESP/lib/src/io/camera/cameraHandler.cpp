@@ -6,7 +6,13 @@ CameraHandler::CameraHandler(ProjectConfig *configManager,
 
 void CameraHandler::setupCameraPinout()
 {
+	// Workaround for espM5SStack not having a defined camera
+#ifdef CAMERA_MODULE_NAME
 	log_i("Camera module is %s", CAMERA_MODULE_NAME);
+#else
+	log_i("Camera module is undefined");
+#endif
+
 #if CONFIG_CAMERA_MODULE_ESP_EYE
 	/* IO13, IO14 is designed for JTAG by default,
 	 * to use it as generalized input,
@@ -40,8 +46,8 @@ void CameraHandler::setupCameraPinout()
 	config.pin_pclk = PCLK_GPIO_NUM;
 	config.pin_vsync = VSYNC_GPIO_NUM;
 	config.pin_href = HREF_GPIO_NUM;
-	config.pin_sscb_sda = SIOD_GPIO_NUM;
-	config.pin_sscb_scl = SIOC_GPIO_NUM;
+	config.pin_sccb_sda = SIOD_GPIO_NUM;
+	config.pin_sccb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
 	config.xclk_freq_hz = 16500000; // 10000000 stable,
