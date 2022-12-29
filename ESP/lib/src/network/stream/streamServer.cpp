@@ -33,7 +33,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 		fb = esp_camera_fb_get();
 		if (!fb)
 		{
-			log_e("Camera capture failed");
+			log_e("Camera capture failed with response: %s", esp_err_to_name(res));
 			res = ESP_FAIL;
 		}
 		else
@@ -43,10 +43,8 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 			_jpg_buf_len = fb->len;
 			_jpg_buf = fb->buf;
 		}
-
 		if (res == ESP_OK)
 			res = httpd_resp_send_chunk(req, STREAM_BOUNDARY, strlen(STREAM_BOUNDARY));
-
 		if (res == ESP_OK)
 		{
 			size_t hlen = snprintf((char *)part_buf, 128, STREAM_PART, _jpg_buf_len, _timestamp.tv_sec, _timestamp.tv_usec);
@@ -54,7 +52,6 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 		}
 		if (res == ESP_OK)
 			res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len);
-
 		if (fb)
 		{
 			esp_camera_fb_return(fb);
@@ -66,18 +63,14 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
 			free(_jpg_buf);
 			_jpg_buf = NULL;
 		}
-
 		if (res != ESP_OK)
 			break;
-
 		long request_end = millis();
 		long latency = (request_end - last_request_time);
 		last_request_time = request_end;
 		log_d("Size: %uKB, Time: %ums (%ifps)\n", _jpg_buf_len / 1024, latency, 1000 / latency);
 	}
-
 	last_frame = 0;
-
 	return res;
 }
 
@@ -105,9 +98,7 @@ int StreamServer::startStreamServer()
 	{
 		httpd_register_uri_handler(camera_stream, &stream_page);
 		Serial.println("Stream server initialized");
-		Serial.print("\n\rThe stream is under: http://");
-		Serial.print(WiFi.localIP());
-		Serial.printf(":%i\n\r", this->STREAM_SERVER_PORT);
+		Serial.printf("\n\rThe stream is under: http://%s:%i\n\r", WiFi.localIP().toString().c_str(), this->STREAM_SERVER_PORT);
 		return 0;
 	}
 }

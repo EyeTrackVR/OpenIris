@@ -22,13 +22,12 @@ public:
 
 	ProjectConfig *configManager;
 	StateManager<WiFiState_e> *stateManager;
-	ProjectConfig::WiFiTxPower_t *txpower;
 
 	bool _enable_adhoc;
 
 private:
 	void setUpADHOC();
-	void adhoc(const char *ssid, uint8_t channel, const char *password = NULL);
+	void adhoc(const std::string &ssid, uint8_t channel, const std::string &password = std::string());
 	bool iniSTA(const char *ssid, const char *password, uint8_t channel, wifi_power_t power);
 
 	std::string ssid;

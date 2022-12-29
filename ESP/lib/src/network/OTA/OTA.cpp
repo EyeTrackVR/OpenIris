@@ -52,7 +52,7 @@ void OTA::SetupOTA()
                 } });
 
     log_i("Starting up basic OTA server");
-    log_i("OTA will be live for 30s, after which it will be disabled until restart");
+    log_i("OTA will be live for 5 minutes, after which it will be disabled until restart");
     auto mdnsConfig = _deviceConfig->getMDNSConfig();
     ArduinoOTA.setHostname(mdnsConfig->hostname.c_str());
     ArduinoOTA.begin();
