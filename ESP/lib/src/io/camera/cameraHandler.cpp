@@ -50,7 +50,7 @@ void CameraHandler::setupCameraPinout()
 	config.pin_sccb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
-	config.xclk_freq_hz = 16500000; // 10000000 stable,
+	config.xclk_freq_hz = 20000000; // 10000000 stable,
 									// 16500000 optimal,
 									// 20000000 max fps
 }
@@ -64,8 +64,13 @@ void CameraHandler::setupBasicResolution()
 	{
 		log_e("Did not find psram, setting lower image quality");
 		config.fb_location = CAMERA_FB_IN_DRAM;
+<<<<<<< HEAD
 		config.jpeg_quality = 9;
 		config.fb_count = 2;
+=======
+		config.jpeg_quality = 1;
+		config.fb_count = 1;
+>>>>>>> 5e4e1a971c57061f1d3d896b518c2e2828e22500
 		return;
 	}
 

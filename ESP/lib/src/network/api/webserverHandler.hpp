@@ -8,10 +8,11 @@ class APIServer : public BaseAPI
 {
 public:
 	APIServer(int CONTROL_PORT,
-              ProjectConfig *projectConfig,
-              CameraHandler *camera,
-              StateManager<WiFiState_e> *WiFiStateManager,
-              const std::string &api_url);
+			  ProjectConfig *projectConfig,
+			  CameraHandler *camera,
+			  StateManager<WiFiState_e> *WiFiStateManager,
+			  GithubOTAHandler *otaHandler,
+			  const std::string &api_url);
 
 	virtual ~APIServer();
 	void begin();

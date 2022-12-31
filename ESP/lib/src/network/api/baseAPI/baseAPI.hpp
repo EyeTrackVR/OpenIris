@@ -15,13 +15,14 @@
 #define XHTTP_OPTIONS 0b01000000;
 #define XHTTP_ANY 0b01111111; */
 
+#include "network/OTA/Github_OTA/GithubOTAHandler.hpp"
 #define HTTP_ANY 0b01111111
 #define HTTP_GET 0b00000001
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
-//#include "network/api/utilities/apiUtilities.hpp" //! Only needed for the shaEncoder function (for now)
+// #include "network/api/utilities/apiUtilities.hpp" //! Only needed for the shaEncoder function (for now)
 #include "data/utilities/network_utilities.hpp"
 
 #include "data/config/project_config.hpp"
@@ -47,6 +48,7 @@ protected:
 	void setWiFiTXPower(AsyncWebServerRequest *request);
 	void getJsonConfig(AsyncWebServerRequest *request);
 	void factoryReset(AsyncWebServerRequest *request);
+	void initOTAHandler(AsyncWebServerRequest *request);
 	void setDeviceConfig(AsyncWebServerRequest *request);
 	void rebootDevice(AsyncWebServerRequest *request);
 	void ping(AsyncWebServerRequest *request);
@@ -98,13 +100,15 @@ protected:
 	AsyncWebServer *server;
 	CameraHandler *camera;
 	StateManager<WiFiState_e> *WiFiStateManager;
+	GithubOTAHandler *otaHandler;
 
 public:
 	BaseAPI(int CONTROL_PORT,
-            ProjectConfig *projectConfig,
-            CameraHandler *camera,
-            StateManager<WiFiState_e> *WiFiStateManager,
-            const std::string &api_url);
+			ProjectConfig *projectConfig,
+			CameraHandler *camera,
+			StateManager<WiFiState_e> *WiFiStateManager,
+			GithubOTAHandler *otaHandler,
+			const std::string &api_url);
 
 	virtual ~BaseAPI();
 	virtual void begin();

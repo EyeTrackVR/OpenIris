@@ -42,7 +42,7 @@ void ProjectConfig::initConfig()
     }
     this->config.mdns = {
         _mdnsName,
-        "",
+        "openiristracker",
     };
 
     log_i("MDNS name: %s", _mdnsName.c_str());
@@ -223,11 +223,16 @@ void ProjectConfig::load()
 //!                                                DeviceConfig
 //*
 //**********************************************************************************************************************
-void ProjectConfig::setDeviceConfig(const std::string &OTAPassword, int *OTAPort, bool shouldNotify)
+void ProjectConfig::setDeviceConfig(const std::string &OTAPassword, int OTAPort, const std::string &binaryName, bool shouldNotify)
 {
     log_d("Updating device config");
     this->config.device.OTAPassword.assign(OTAPassword);
-    this->config.device.OTAPort = *OTAPort;
+    this->config.device.OTAPort = OTAPort;
+    // check if binary name is empty
+    if (binaryName.empty())
+        log_w("Binary name is empty, using previous value");
+    else
+        this->config.device.binaryName.assign(binaryName);
 
     if (shouldNotify)
         this->notify(ObserverEvent::deviceConfigUpdated);

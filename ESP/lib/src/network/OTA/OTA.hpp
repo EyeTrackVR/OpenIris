@@ -13,8 +13,8 @@ public:
     void HandleOTAUpdate();
 
 private:
-    unsigned long _bootTimestamp = 0;
-    bool _isOtaEnabled = true;
     ProjectConfig *_deviceConfig;
+    unsigned long _bootTimestamp;
+    bool _isOtaEnabled;
 };
 #endif // OTA_HPP

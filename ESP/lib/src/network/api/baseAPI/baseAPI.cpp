@@ -14,10 +14,12 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 ProjectConfig *projectConfig,
 				 CameraHandler *camera,
 				 StateManager<WiFiState_e> *WiFiStateManager,
+				 GithubOTAHandler *otaHandler,
 				 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
 											   projectConfig(projectConfig),
 											   camera(camera),
 											   WiFiStateManager(WiFiStateManager),
+											   otaHandler(otaHandler),
 											   api_url(api_url) {}
 
 BaseAPI::~BaseAPI() {}
@@ -180,6 +182,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 		std::string hostname;
 		std::string service;
 		std::string ota_password;
+		std::string firmware_name;
 		int ota_port;
 
 		for (int i = 0; i < params; i++)
@@ -187,11 +190,11 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 			AsyncWebParameter *param = request->getParam(i);
 			if (param->name() == "hostname")
 			{
-				hostname = param->value().c_str();
+				hostname.assign(param->value().c_str());
 			}
 			else if (param->name() == "service")
 			{
-				service = param->value().c_str();
+				service.assign(param->value().c_str());
 			}
 			else if (param->name() == "ota_port")
 			{
@@ -199,11 +202,15 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest *request)
 			}
 			else if (param->name() == "ota_password")
 			{
-				ota_password = param->value().c_str();
+				ota_password.assign(param->value().c_str());
+			}
+			else if (param->name() == "firmware_name")
+			{
+				firmware_name.assign(param->value().c_str());
 			}
 		}
 		// note: We're passing empty params by design, this is done to reset specific fields
-		projectConfig->setDeviceConfig(ota_password, &ota_port, true);
+		projectConfig->setDeviceConfig(ota_password, ota_port, firmware_name, true);
 		projectConfig->setMDNSConfig(hostname, service, true);
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Done. Device Config has been set.\"}");
 	}
@@ -280,6 +287,26 @@ void BaseAPI::factoryReset(AsyncWebServerRequest *request)
 		log_d("Factory Reset");
 		projectConfig->reset();
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Factory Reset\"}");
+	}
+	default:
+	{
+		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+		break;
+	}
+	}
+}
+
+void BaseAPI::initOTAHandler(AsyncWebServerRequest *request)
+{
+	switch (_networkMethodsMap_enum[request->method()])
+	{
+	case POST:
+	{
+		log_d("OTA Update Initiated");
+		auto otaConfig = projectConfig->getDeviceConfig();
+		// start the OTA update
+		otaHandler->updateFirmware(otaConfig->binaryName);
+		request->send(200, MIMETYPE_JSON, "{\"msg\":\"OTA Update In progress\"}");
 	}
 	default:
 	{
