@@ -1,4 +1,4 @@
-/* #pragma once
+#pragma once
 #ifndef SERIAL_MANAGER_HPP
 #define SERIAL_MANAGER_HPP
 #include <Arduino.h>
@@ -7,7 +7,7 @@
 #include <memory>
 #include <serialStr.h>
 #include <strTools.h>
-#include <ArduinoJSON.h>
+#include <ArduinoJson.h>
 
 #include "data/config/project_config.hpp"
 #include "data/utilities/makeunique.hpp"
@@ -40,4 +40,4 @@ protected:
 	StaticJsonDocument<1024> jsonDoc;
 };
 
-#endif // SERIAL_MANAGER_HPP */
+#endif // SERIAL_MANAGER_HPP

@@ -372,11 +372,12 @@ std::string ProjectConfig::CameraConfig_t::toRepresentation()
 std::string ProjectConfig::WiFiConfig_t::toRepresentation()
 {
     std::string json = Helpers::format_string(
-        "{\"name\": \"%s\", \"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"adhoc\": %s}",
+        "{\"name\": \"%s\", \"ssid\": \"%s\", \"password\": \"%s\", \"channel\": %u, \"power\": %u,\"adhoc\": %s}",
         this->name.c_str(),
         this->ssid.c_str(),
         this->password.c_str(),
         this->channel,
+        this->power,
         this->adhoc ? "true" : "false");
     return json;
 }
@@ -389,6 +390,14 @@ std::string ProjectConfig::AP_WiFiConfig_t::toRepresentation()
         this->password.c_str(),
         this->channel,
         this->adhoc ? "true" : "false");
+    return json;
+}
+
+std::string ProjectConfig::WiFiTxPower_t::toRepresentation()
+{
+    std::string json = Helpers::format_string(
+        "\"wifi_tx_power\": {\"power\": %u}",
+        this->power);
     return json;
 }
 

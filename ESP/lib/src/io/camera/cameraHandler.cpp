@@ -6,14 +6,31 @@ CameraHandler::CameraHandler(ProjectConfig *configManager,
 
 void CameraHandler::setupCameraPinout()
 {
+	// Workaround for espM5SStack not having a defined camera
+#ifdef CAMERA_MODULE_NAME
 	log_i("Camera module is %s", CAMERA_MODULE_NAME);
-#if CONFIG_CAMERA_MODULE_ESP_EYE || CONFIG_CAMERA_MODULE_CAM_BOARD
+#else
+	log_i("Camera module is undefined");
+#endif
+
+#if CONFIG_CAMERA_MODULE_ESP_EYE
 	/* IO13, IO14 is designed for JTAG by default,
 	 * to use it as generalized input,
-	 * firstly declair it as pullup input */
+	 * firstly declair it as pullup input
+	 **/
 	pinMode(13, INPUT_PULLUP);
 	pinMode(14, INPUT_PULLUP);
+	log_i("ESP_EYE");
+#elif CONFIG_CAMERA_MODULE_CAM_BOARD
+	/* IO13, IO14 is designed for JTAG by default,
+	 * to use it as generalized input,
+	 * firstly declair it as pullup input
+	 **/
+	pinMode(13, INPUT_PULLUP);
+	pinMode(14, INPUT_PULLUP);
+	log_i("CAM_BOARD");
 #endif
+
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
 	config.grab_mode = CAMERA_GRAB_LATEST;
@@ -29,8 +46,8 @@ void CameraHandler::setupCameraPinout()
 	config.pin_pclk = PCLK_GPIO_NUM;
 	config.pin_vsync = VSYNC_GPIO_NUM;
 	config.pin_href = HREF_GPIO_NUM;
-	config.pin_sscb_sda = SIOD_GPIO_NUM;
-	config.pin_sscb_scl = SIOC_GPIO_NUM;
+	config.pin_sccb_sda = SIOD_GPIO_NUM;
+	config.pin_sccb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
 	config.xclk_freq_hz = 20000000; // 10000000 stable,
@@ -47,8 +64,13 @@ void CameraHandler::setupBasicResolution()
 	{
 		log_e("Did not find psram, setting lower image quality");
 		config.fb_location = CAMERA_FB_IN_DRAM;
+<<<<<<< HEAD
+		config.jpeg_quality = 9;
+		config.fb_count = 2;
+=======
 		config.jpeg_quality = 1;
 		config.fb_count = 1;
+>>>>>>> 5e4e1a971c57061f1d3d896b518c2e2828e22500
 		return;
 	}
 
