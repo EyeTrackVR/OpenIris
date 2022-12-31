@@ -21,7 +21,6 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
-// #include "network/api/utilities/apiUtilities.hpp" //! Only needed for the shaEncoder function (for now)
 #include "data/utilities/network_utilities.hpp"
 
 #include "data/config/project_config.hpp"
