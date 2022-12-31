@@ -15,7 +15,6 @@
 #define XHTTP_OPTIONS 0b01000000;
 #define XHTTP_ANY 0b01111111; */
 
-#include "network/OTA/Github_OTA/GithubOTAHandler.hpp"
 #define HTTP_ANY 0b01111111
 #define HTTP_GET 0b00000001
 
@@ -100,14 +99,12 @@ protected:
 	AsyncWebServer *server;
 	CameraHandler *camera;
 	StateManager<WiFiState_e> *WiFiStateManager;
-	GithubOTAHandler *otaHandler;
 
 public:
 	BaseAPI(int CONTROL_PORT,
 			ProjectConfig *projectConfig,
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *WiFiStateManager,
-			GithubOTAHandler *otaHandler,
 			const std::string &api_url);
 
 	virtual ~BaseAPI();

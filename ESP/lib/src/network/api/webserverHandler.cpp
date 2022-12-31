@@ -8,12 +8,10 @@ APIServer::APIServer(int CONTROL_PORT,
 					 ProjectConfig *projectConfig,
 					 CameraHandler *camera,
 					 StateManager<WiFiState_e> *WiFiStateManager,
-					 GithubOTAHandler *otaHandler,
 					 const std::string &api_url) : BaseAPI(CONTROL_PORT,
 														   projectConfig,
 														   camera,
 														   WiFiStateManager,
-														   otaHandler,
 														   api_url) {}
 
 APIServer::~APIServer() {}

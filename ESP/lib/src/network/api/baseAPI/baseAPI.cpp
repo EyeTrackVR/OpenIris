@@ -14,12 +14,10 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 ProjectConfig *projectConfig,
 				 CameraHandler *camera,
 				 StateManager<WiFiState_e> *WiFiStateManager,
-				 GithubOTAHandler *otaHandler,
 				 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
 											   projectConfig(projectConfig),
 											   camera(camera),
 											   WiFiStateManager(WiFiStateManager),
-											   otaHandler(otaHandler),
 											   api_url(api_url) {}
 
 BaseAPI::~BaseAPI() {}
@@ -296,25 +294,6 @@ void BaseAPI::factoryReset(AsyncWebServerRequest *request)
 	}
 }
 
-void BaseAPI::initOTAHandler(AsyncWebServerRequest *request)
-{
-	switch (_networkMethodsMap_enum[request->method()])
-	{
-	case POST:
-	{
-		log_d("OTA Update Initiated");
-		auto otaConfig = projectConfig->getDeviceConfig();
-		// start the OTA update
-		otaHandler->updateFirmware(otaConfig->binaryName);
-		request->send(200, MIMETYPE_JSON, "{\"msg\":\"OTA Update In progress\"}");
-	}
-	default:
-	{
-		request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
-		break;
-	}
-	}
-}
 
 //*********************************************************************************************
 //!                                     Camera Command Functions
