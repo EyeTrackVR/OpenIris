@@ -103,6 +103,7 @@ void WiFiHandler::setUpADHOC()
 	size_t passwordLen = configManager->getAPWifiConfig()->password.length();
 	if (ssidLen <= 0)
 	{
+		log_i("\n[INFO]: Configuring access point with default values\n");
 		this->adhoc(WIFI_AP_SSID, WIFI_AP_CHANNEL, WIFI_AP_PASSWORD);
 		return;
 	}
