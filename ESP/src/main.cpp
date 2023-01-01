@@ -34,7 +34,7 @@ CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
-StreamServer streamServer(STREAM_SERVER_PORT);
+StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
 
 void setup()
 {
