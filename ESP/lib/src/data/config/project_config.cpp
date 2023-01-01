@@ -203,9 +203,9 @@ void ProjectConfig::load()
     }
 
     /* AP Config */
-    this->config.ap_network.ssid = getString("apSSID", "openiris").c_str();
-    this->config.ap_network.password = getString("apPass", "12345678").c_str();
-    this->config.ap_network.channel = getUInt("apChannel", 1);
+    this->config.ap_network.ssid = getString("apSSID").c_str();
+    this->config.ap_network.password = getString("apPass").c_str();
+    this->config.ap_network.channel = getUInt("apChannel");
 
     /* Camera Config */
     this->config.camera.vflip = getInt("vflip", 0);
