@@ -103,8 +103,8 @@ void WiFiHandler::setUpADHOC()
 	size_t passwordLen = configManager->getAPWifiConfig()->password.length();
 	if (ssidLen <= 0)
 	{
-		this->adhoc("OpenIris", 1, "12345678");
-		return;
+                this->adhoc(WIFI_AP_SSID, 1, WIFI_AP_PASSWORD);
+                return;
 	}
 
 	if (passwordLen <= 0)
@@ -120,8 +120,8 @@ void WiFiHandler::setUpADHOC()
 				configManager->getAPWifiConfig()->password);
 
 	log_i("\n[INFO]: Configuring access point...\n");
-	log_d("\n[DEBUG]: ssid: %s\n", configManager->getAPWifiConfig()->ssid);
-	log_d("\n[DEBUG]: password: %s\n", configManager->getAPWifiConfig()->password);
+	log_d("\n[DEBUG]: ssid: %s\n", configManager->getAPWifiConfig()->ssid.c_str());
+	log_d("\n[DEBUG]: password: %s\n", configManager->getAPWifiConfig()->password.c_str());
 	log_d("\n[DEBUG]: channel: %d\n", configManager->getAPWifiConfig()->channel);
 }
 
