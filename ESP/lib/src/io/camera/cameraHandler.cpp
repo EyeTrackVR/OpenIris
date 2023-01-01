@@ -64,13 +64,8 @@ void CameraHandler::setupBasicResolution()
 	{
 		log_e("Did not find psram, setting lower image quality");
 		config.fb_location = CAMERA_FB_IN_DRAM;
-<<<<<<< HEAD
 		config.jpeg_quality = 9;
 		config.fb_count = 2;
-=======
-		config.jpeg_quality = 1;
-		config.fb_count = 1;
->>>>>>> 5e4e1a971c57061f1d3d896b518c2e2828e22500
 		return;
 	}
 
