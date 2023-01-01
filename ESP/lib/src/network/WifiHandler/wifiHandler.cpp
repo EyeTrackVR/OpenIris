@@ -103,8 +103,8 @@ void WiFiHandler::setUpADHOC()
 	size_t passwordLen = configManager->getAPWifiConfig()->password.length();
 	if (ssidLen <= 0)
 	{
-                this->adhoc(WIFI_AP_SSID, WIFI_AP_CHANNEL, WIFI_AP_PASSWORD);
-                return;
+		this->adhoc(WIFI_AP_SSID, WIFI_AP_CHANNEL, WIFI_AP_PASSWORD);
+		return;
 	}
 
 	if (passwordLen <= 0)
