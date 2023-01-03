@@ -50,7 +50,7 @@ void CameraHandler::setupCameraPinout()
 	config.pin_sccb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
-	config.xclk_freq_hz = 20000000; // 10000000 stable,
+	config.xclk_freq_hz = 16500000; // 10000000 stable,
 									// 16500000 optimal,
 									// 20000000 max fps
 }
