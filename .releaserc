@@ -50,7 +50,7 @@
             "@semantic-release/exec",
             {
                 "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json",
-                "publishCmd": "cd ~/work/OpenIris/OpenIris/release/ && ls -l"
+                "publishCmd": "ls ~/work/OpenIris/OpenIris/release/ -l"
             }
         ],
         [
@@ -58,7 +58,7 @@
             {
                 "assets": [
                     {
-                        "path": "~/runner/work/OpenIris/OpenIris/release/**/*.bin",
+                        "path": "~/work/OpenIris/OpenIris/release/**/*.bin",
                         "label": "Firmware Files"
                     }
                 ]
