@@ -50,7 +50,7 @@
             "@semantic-release/exec",
             {
                 "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json",
-                "publishCmd": "ls -l"
+                "publishCmd": "cd .. && ls -l"
             }
         ],
         [
@@ -58,12 +58,8 @@
             {
                 "assets": [
                     {
-                        "path": [
-                            [
-                                "release",
-                                "**/*.bin"
-                            ]
-                        ]
+                        "path": "release/**/*.bin",
+                        "label": "Firmware Files"
                     }
                 ]
             }
