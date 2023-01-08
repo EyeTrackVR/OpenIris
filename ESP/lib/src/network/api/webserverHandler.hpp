@@ -10,7 +10,7 @@ public:
 	APIServer(int CONTROL_PORT,
 			  ProjectConfig *projectConfig,
 			  CameraHandler *camera,
-			  StateManager<WiFiState_e> *WiFiStateManager,
+			  StateManager<WiFiState_e> *wiFiStateManager,
 			  const std::string &api_url);
 
 	virtual ~APIServer();

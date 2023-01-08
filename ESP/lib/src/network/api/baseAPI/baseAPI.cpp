@@ -17,7 +17,7 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 const std::string &api_url) : server(CONTROL_PORT),
 											   projectConfig(projectConfig),
 											   camera(camera),
-											   WiFiStateManager(WiFiStateManager),
+											   wiFiStateManager(wiFiStateManager),
 											   api_url(api_url) {}
 
 BaseAPI::~BaseAPI() {}
