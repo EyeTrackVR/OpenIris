@@ -46,7 +46,6 @@ protected:
 	void setWiFiTXPower(AsyncWebServerRequest *request);
 	void getJsonConfig(AsyncWebServerRequest *request);
 	void factoryReset(AsyncWebServerRequest *request);
-	void initOTAHandler(AsyncWebServerRequest *request);
 	void setDeviceConfig(AsyncWebServerRequest *request);
 	void rebootDevice(AsyncWebServerRequest *request);
 	void ping(AsyncWebServerRequest *request);
