@@ -50,7 +50,7 @@
             "@semantic-release/exec",
             {
                 "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json",
-                "publishCmd": "ls /release -l"
+                "publishCmd": "ls release -l"
             }
         ],
         [
