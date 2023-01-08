@@ -35,7 +35,7 @@ void WiFiHandler::setupWifi()
 	if (networks->empty())
 	{
 		log_i("No networks found in config, trying the default one \n\r");
-		if (this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel,
+		if (this->iniSTA(this->ssid, this->password, this->channel,
 						 (wifi_power_t)txpower->power))
 		{
 			return;
@@ -54,7 +54,7 @@ void WiFiHandler::setupWifi()
 		 networkIterator != networks->end(); ++networkIterator)
 	{
 		if (this->iniSTA(
-				networkIterator->ssid.c_str(), networkIterator->password.c_str(),
+				networkIterator->ssid, networkIterator->password,
 				networkIterator->channel, (wifi_power_t)networkIterator->power))
 		{
 			return;
@@ -66,7 +66,7 @@ void WiFiHandler::setupWifi()
 		"We've gone through every network, each timed out. Trying to connect "
 		"to hardcoded network: %s \n\r",
 		this->ssid.c_str());
-	if (this->iniSTA(this->ssid.c_str(), this->password.c_str(), this->channel,
+	if (this->iniSTA(this->ssid, this->password, this->channel,
 					 (wifi_power_t)txpower->power))
 	{
 		log_i("Successfully connected to the hardcoded network. \n\r");
@@ -126,7 +126,7 @@ void WiFiHandler::setUpADHOC()
 	log_d("\n[DEBUG]: channel: %d\n", configManager->getAPWifiConfig()->channel);
 }
 
-bool WiFiHandler::iniSTA(const char *ssid, const char *password,
+bool WiFiHandler::iniSTA(const std::string &ssid, const std::string &password,
 						 uint8_t channel, wifi_power_t power)
 {
 	unsigned long currentMillis = millis();
@@ -135,13 +135,13 @@ bool WiFiHandler::iniSTA(const char *ssid, const char *password,
 	int progress = 0;
 
 	stateManager->setState(WiFiState_e::WiFiState_Connecting);
-	log_i("Trying to connect to: %s \n\r", ssid);
+	log_i("Trying to connect to: %s \n\r", ssid.c_str());
 
 	auto mdnsConfig = configManager->getMDNSConfig();
 	WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
 				INADDR_NONE); // need to call before setting hostname
 	WiFi.setHostname(mdnsConfig->hostname.c_str());
-	WiFi.begin(ssid, password, channel);
+	WiFi.begin(ssid.c_str(), password.c_str(), channel);
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		progress++;
@@ -151,12 +151,12 @@ bool WiFiHandler::iniSTA(const char *ssid, const char *password,
 		if ((currentMillis - startingMillis) >= connectionTimeout)
 		{
 			stateManager->setState(WiFiState_e::WiFiState_Error);
-			log_e("Connection to: %s TIMEOUT \n\r", ssid);
+			log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
 			return false;
 		}
 	}
 	stateManager->setState(WiFiState_e::WiFiState_Connected);
-	log_i("Successfully connected to %s \n\r", ssid);
+	log_i("Successfully connected to %s \n\r", ssid.c_str());
 	log_i("Setting TX power to: %d \n\r", (uint8_t)power);
 	WiFi.setTxPower(power);
 	return true;
