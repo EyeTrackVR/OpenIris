@@ -95,7 +95,8 @@ protected:
 	typedef std::unordered_map<std::string, WebRequestMethodComposite> networkMethodsMap_t;
 
 	ProjectConfig *projectConfig;
-	AsyncWebServer *server;
+	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
+	AsyncWebServer server;
 	CameraHandler *camera;
 	StateManager<WiFiState_e> *WiFiStateManager;
 

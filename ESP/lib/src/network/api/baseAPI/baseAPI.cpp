@@ -14,7 +14,7 @@ BaseAPI::BaseAPI(int CONTROL_PORT,
 				 ProjectConfig *projectConfig,
 				 CameraHandler *camera,
 				 StateManager<WiFiState_e> *WiFiStateManager,
-				 const std::string &api_url) : server(new AsyncWebServer(CONTROL_PORT)),
+				 const std::string &api_url) : server(CONTROL_PORT),
 											   projectConfig(projectConfig),
 											   camera(camera),
 											   WiFiStateManager(WiFiStateManager),
@@ -25,11 +25,11 @@ BaseAPI::~BaseAPI() {}
 void BaseAPI::begin()
 {
 	//! i have changed this to use lambdas instead of std::bind to avoid the overhead. Lambdas are always more preferable.
-	server->on("/", 0b00000001, [&](AsyncWebServerRequest *request)
+	server.on("/", 0b00000001, [&](AsyncWebServerRequest *request)
 			   { request->send(200); });
 
 	// preflight cors check
-	server->on("/", 0b01000000, [&](AsyncWebServerRequest *request)
+	server.on("/", 0b01000000, [&](AsyncWebServerRequest *request)
 			   {
         		AsyncWebServerResponse* response = request->beginResponse(204);
         		response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
@@ -40,7 +40,7 @@ void BaseAPI::begin()
 	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
 	// std::bind(&BaseAPI::notFound, &std::placeholders::_1);
-	server->onNotFound([&](AsyncWebServerRequest *request)
+	server.onNotFound([&](AsyncWebServerRequest *request)
 					   { notFound(request); });
 }
 
