@@ -49,17 +49,21 @@
         [
             "@semantic-release/exec",
             {
-                "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json"
+                "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json",
+                "publishCmd": "ls -l"
             }
         ],
         [
             "@semantic-release/github",
             {
-
                 "assets": [
                     {
-                        "path": "release/**/*.bin",
-                        "label": "Firmware Files"
+                        "path": [
+                            [
+                                "release",
+                                "**/*.bin"
+                            ]
+                        ]
                     }
                 ]
             }
