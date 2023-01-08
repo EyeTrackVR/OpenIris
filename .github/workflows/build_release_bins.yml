@@ -86,6 +86,7 @@ jobs:
     - run: npm install -g @semantic-release/exec
     - run: npm install -g @semantic-release/git
     - run: npm install -g @semantic-release/release-notes-generator
+    - run: npm install -g @semantic-release/github
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
