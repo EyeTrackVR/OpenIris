@@ -58,7 +58,7 @@
             {
                 "assets": [
                     {
-                        "path": "release/**/*.bin",
+                        "path": "~/runner/work/OpenIris/OpenIris/release/**/*.bin",
                         "label": "Firmware Files"
                     }
                 ]
