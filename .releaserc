@@ -52,16 +52,26 @@
                 "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json"
             }
         ],
-        "@semantic-release/github",
         [
-            "@semantic-release/git",
+            "@semantic-release/github",
             {
                 "assets": [
-                    "ESP/lib/library.json",
-                    "release/**/*.bin"
-                ],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-            }
+                    {
+                        "path": "release/**/*.bin",
+                        "label": "Firmware Files"
+                    }
+                ]
+            },
+            [
+                "@semantic-release/git",
+                {
+                    "assets": [
+                        "ESP/lib/library.json",
+                        "release/**/*.bin"
+                    ],
+                    "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+                }
+            ]
         ]
     ]
 }
