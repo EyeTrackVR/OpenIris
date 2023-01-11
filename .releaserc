@@ -58,7 +58,7 @@
             {
                 "assets": [
                     {
-                        "path": "./build"
+                        "path": "./build/**/*.bin"
                     }
                 ]
             }
