@@ -11,18 +11,22 @@ for x in my_flags.get("CPPDEFINES"):
     if type(x) is tuple:
         (k,v) = x
         defines[k] = v
+        #print("Type Tuple: %s" % x)
     elif type(x) is list:
         k = x[0]
         v = x[1]
         defines[k] = v
+        #print("Type List: %s" % x)
     else:
         defines[x] = "" # empty value
+        #print("Warning: unknown type for %s" % x)
 # defines.get("PIO_SRC_TAG") - tag name
 # strip quotes needed for shell escaping
 s = lambda x: x.replace('"', "")
+
 env.Replace(
     PROGNAME="%s-%s-%s-%s-%s" %
-    (s(defines.get("PIO_SRC_NAM")), s(defines.get("VERSION")), str(env["PIOENV"]),
+    (s(defines.get("PIO_SRC_NAM")), s(defines.get("PIO_SRC_TAG")), str(env["PIOENV"]),
      s(defines.get("PIO_SRC_REV")), s(defines.get("PIO_SRC_BRH"))))
 
 #detect if there is a forward slash in the PROGNAME and replace it with an underscore
