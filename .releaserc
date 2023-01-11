@@ -58,8 +58,7 @@
             {
                 "assets": [
                     {
-                        "path": "./build",
-                        "label": "Firmware Files"
+                        "path": "./build"
                     }
                 ]
             }
