@@ -95,10 +95,16 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: semantic-release
-      #uses: ncipollo/release-action@v1
-      #if: startsWith(github.ref, 'refs/tags/') 
-      #with:
-      #  artifacts: release/*/*.bin
-      #  generateReleaseNotes: true
-      #  allowUpdates: true
-      #  token: ${{ secrets.GITHUB_TOKEN }}
+  cleanup:
+   name: Cleanup actions
+   needs:
+     - release-openiris
+   runs-on: ubuntu-latest
+   timeout-minutes: 10
+   steps:
+     - name: "♻️ remove build artifacts"
+       uses: geekyeggo/delete-artifact@v1
+       with:
+         name: |
+           build
+           release-openiris

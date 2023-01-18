@@ -20,7 +20,7 @@ for x in my_flags.get("CPPDEFINES"):
     else:
         defines[x] = "" # empty value
         #print("Warning: unknown type for %s" % x)
-# defines.get("PIO_SRC_TAG") - tag name
+
 # strip quotes needed for shell escaping
 s = lambda x: x.replace('"', "")
 
