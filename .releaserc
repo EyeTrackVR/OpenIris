@@ -7,24 +7,53 @@
         [
             "@semantic-release/commit-analyzer",
             {
-                "preset": "angular",
+                "preset": "conventionalcommits",
+                "parserOpts": {
+                    "noteKeywords": [
+                        "BREAKING CHANGE",
+                        "BREAKING CHANGES",
+                        "BREAKING"
+                    ]
+                },
                 "releaseRules": [
                     {
+                        "breaking": true,
+                        "release": "major"
+                    },
+                    {
+                        "type": "feat",
+                        "release": "minor"
+                    },
+                    {
+                        "type": "fix",
+                        "release": "patch"
+                    },
+                    {
+                        "type": "perf",
+                        "release": "patch"
+                    },
+                    {
+                        "type": "revert",
+                        "release": "patch"
+                    },
+                    {
                         "type": "docs",
+                        "release": "minor"
+                    },
+                    {
+                        "type": "style",
                         "release": "patch"
                     },
                     {
                         "type": "refactor",
-                        "scope": "core-*",
-                        "release": "minor"
+                        "release": "patch"
                     },
                     {
-                        "type": "feat",
-                        "scope": "feat-*",
-                        "release": "minor"
+                        "type": "test",
+                        "release": "patch"
                     },
                     {
-                        "type": "refactor",
+                        "type": "build",
                         "release": "patch"
                     },
                     {
@@ -33,19 +62,89 @@
                         "release": "patch"
                     },
                     {
-                        "scope": "no-release",
+                        "type": "chore",
+                        "release": false
+                    },
+                    {
+                        "type": "no-release",
                         "release": false
                     }
-                ],
+                ]
+            }
+        ],
+        [
+            "@semantic-release/release-notes-generator",
+            {
+                "preset": "conventionalcommits",
                 "parserOpts": {
                     "noteKeywords": [
                         "BREAKING CHANGE",
-                        "BREAKING CHANGES"
+                        "BREAKING CHANGES",
+                        "BREAKING"
+                    ]
+                },
+                "writerOpts": {
+                    "commitsSort": [
+                        "subject",
+                        "scope"
+                    ]
+                },
+                "presetConfig": {
+                    "types": [
+                        {
+                            "type": "feat",
+                            "section": "🍕 Features"
+                        },
+                        {
+                            "type": "feature",
+                            "section": "🍕 Features"
+                        },
+                        {
+                            "type": "fix",
+                            "section": "🐛 Bug Fixes"
+                        },
+                        {
+                            "type": "perf",
+                            "section": "🔥 Performance Improvements"
+                        },
+                        {
+                            "type": "revert",
+                            "section": "⏩ Reverts"
+                        },
+                        {
+                            "type": "docs",
+                            "section": "📝 Documentation"
+                        },
+                        {
+                            "type": "style",
+                            "section": "🎨 Styles"
+                        },
+                        {
+                            "type": "refactor",
+                            "section": "🧑‍💻 Code Refactoring"
+                        },
+                        {
+                            "type": "test",
+                            "section": "✅ Tests"
+                        },
+                        {
+                            "type": "build",
+                            "section": "🤖 Build System"
+                        },
+                        {
+                            "type": "ci",
+                            "section": "🔁 Continuous Integration"
+                        }
                     ]
                 }
             }
         ],
-        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/changelog",
+            {
+                "changelogTitle": "# 📦 Changelog \n[![conventional commits](https: //img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org) \n[![semantic versioning](https: //img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org) \n> All notable changes to this project will be documented in this file"
+            }
+        ],
         [
             "@semantic-release/exec",
             {
@@ -56,6 +155,7 @@
         [
             "@semantic-release/github",
             {
+                "addReleases": "bottom",
                 "assets": [
                     {
                         "path": "./build/**/*.bin"
@@ -67,9 +167,11 @@
             "@semantic-release/git",
             {
                 "assets": [
-                    "ESP/lib/library.json"
+                    "ESP/lib/library.json",
+                    "LICENSE*",
+                    "CHANGELOG.md"
                 ],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+                "message": "chore(${nextRelease.type}): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
         ]
     ]
