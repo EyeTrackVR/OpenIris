@@ -1,4 +1,16 @@
 # 📦 Changelog 
+[![conventional commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
+> All notable changes to this project will be documented in this file
+
+## [1.1.4](https://github.com/lorow/OpenIris/compare/v1.1.3...v1.1.4) (2023-01-18)
+
+
+### 🔁 Continuous Integration
+
+* **ci-releaserc:** fix formatting for CHANGELOG.md ([6647d2e](https://github.com/lorow/OpenIris/commit/6647d2eeb119b6bb150d3306855c3a1f5800c405))
+
+# 📦 Changelog 
 [![conventional commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org) 
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org) 
 > All notable changes to this project will be documented in this file
