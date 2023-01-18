@@ -1,6 +1,6 @@
 # 📦 Changelog 
-[![conventional commits](https: //img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org) 
-[![semantic versioning](https: //img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org) 
+[![conventional commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://conventionalcommits.org) 
+[![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org) 
 > All notable changes to this project will be documented in this file
 
 ## [1.1.3](https://github.com/lorow/OpenIris/compare/v1.1.2...v1.1.3) (2023-01-18)
