@@ -65,7 +65,7 @@ jobs:
           echo "::group::pio run"
           pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }} --target upload
           echo "::endgroup::"
-          unzip -l ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip
+          unzip -l ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/$FIRMWARE_NAME.zip
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
