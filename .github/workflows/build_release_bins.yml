@@ -59,7 +59,7 @@ jobs:
           cat platformio.ini
           echo "::endgroup::"
           echo "::group::pio run"
-          pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }} --target upload
+          pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
           echo "::endgroup::"
           unzip -l './build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
       - name: Archive Firmware name File
