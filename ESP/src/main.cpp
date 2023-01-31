@@ -68,41 +68,41 @@ void setup()
 	switch (wifiStateManager.getCurrentState())
 	{
 	case WiFiState_e::WiFiState_Disconnected:
-	{
-		//! TODO: Implement
-		break;
-	}
+		{
+			//! TODO: Implement
+			break;
+		}
 	case WiFiState_e::WiFiState_Disconnecting:
-	{
-		//! TODO: Implement
-		break;
-	}
+		{
+			//! TODO: Implement
+			break;
+		}
 	case WiFiState_e::WiFiState_ADHOC:
-	{
-		streamServer.startStreamServer();
-		log_d("[SETUP]: Starting Stream Server");
-		apiServer.begin();
-		log_d("[SETUP]: Starting API Server");
-		break;
-	}
+		{
+			streamServer.startStreamServer();
+			log_d("[SETUP]: Starting Stream Server");
+			apiServer.begin();
+			log_d("[SETUP]: Starting API Server");
+			break;
+		}
 	case WiFiState_e::WiFiState_Connected:
-	{
-		streamServer.startStreamServer();
-		log_d("[SETUP]: Starting Stream Server");
-		apiServer.begin();
-		log_d("[SETUP]: Starting API Server");
-		break;
-	}
+		{
+			streamServer.startStreamServer();
+			log_d("[SETUP]: Starting Stream Server");
+			apiServer.begin();
+			log_d("[SETUP]: Starting API Server");
+			break;
+		}
 	case WiFiState_e::WiFiState_Connecting:
-	{
-		//! TODO: Implement
-		break;
-	}
+		{
+			//! TODO: Implement
+			break;
+		}
 	case WiFiState_e::WiFiState_Error:
-	{
-		//! TODO: Implement
-		break;
-	}
+		{
+			//! TODO: Implement
+			break;
+		}
 	}
 #if ENABLE_OTA
 	ota.SetupOTA();

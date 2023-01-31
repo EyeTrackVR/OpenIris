@@ -1,0 +1,11 @@
+---
+BasedOnStyle: Chromium
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: 'false'
+CompactNamespaces: 'false'
+Language: Cpp
+NamespaceIndentation: All
+PointerAlignment: Left
+ReflowComments: 'true'
+UseTab: Never
