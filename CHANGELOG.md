@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-create-zip.2](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.1...v1.4.0-create-zip.2) (2023-01-31)
+
+
+### 🍕 Features
+
+* testing createzip script ([fb9c35d](https://github.com/lorow/OpenIris/commit/fb9c35dda9b8447e74673ffb7ed793bd57d9c39e))
+
 ## [1.4.0-create-zip.1](https://github.com/lorow/OpenIris/compare/v1.3.0...v1.4.0-create-zip.1) (2023-01-31)
 
 
