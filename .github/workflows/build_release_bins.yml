@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - "master"
+      - "create-zip"
   pull_request:
     branches:
       - "master"
@@ -58,7 +59,7 @@ jobs:
           pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }} --target upload
           echo "::endgroup::"
           unzip -l ./build/firmware.zip
-          
+
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
