@@ -45,8 +45,8 @@ jobs:
           pio pkg update --global
       - name: Update build command
         run: |
-          sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
-          sed -i '/\[env\]/p; s/\[env\]/upload_command = \$PYTHONEXE .\/tools\/createzip.py \$FLASH_EXTRA_IMAGES \$ESP32_APP_OFFSET \$SOURCE/' platformio.ini
+          sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' ./ESP/platformio.ini
+          sed -i '/\[env\]/p; s/\[env\]/upload_command = \$PYTHONEXE .\/tools\/createzip.py \$FLASH_EXTRA_IMAGES \$ESP32_APP_OFFSET \$SOURCE/' ./ESP/platformio.ini
       - name: Build OpenIris Firmware
         working-directory: ./ESP
         run: |
