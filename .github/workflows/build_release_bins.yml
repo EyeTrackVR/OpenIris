@@ -50,6 +50,10 @@ jobs:
         run: |
           sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
         #  sed -i '/\[env\]/p; s/\[env\]/upload_command = \$PYTHONEXE .\/tools\/createzip.py \$FLASH_EXTRA_IMAGES \$ESP32_APP_OFFSET \$SOURCE/' platformio.ini
+      - name: Archive Firmware name File
+        # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
+        run: |
+          echo "FIRMWARE_NAME=$(cat ./ESP/tools/firmware_name.txt)" >> $GITHUB_ENV
       - name: Build OpenIris Firmware
         working-directory: ./ESP
         run: |
@@ -62,11 +66,6 @@ jobs:
           pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }} --target upload
           echo "::endgroup::"
           unzip -l ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip
-
-      - name: Archive Firmware name File
-        # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
-        run: |
-          echo "FIRMWARE_NAME=$(cat ./ESP/tools/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
