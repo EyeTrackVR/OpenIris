@@ -58,7 +58,7 @@ jobs:
           echo "::group::pio run"
           pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }} --target upload
           echo "::endgroup::"
-          unzip -l ./build/openiris.zip
+          unzip -l ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/${{ env.FIRMWARE_NAME }}.zip
 
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
