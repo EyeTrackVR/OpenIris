@@ -162,7 +162,7 @@
                 "addReleases": "bottom",
                 "assets": [
                     {
-                        "path": "./build/openiris.zip"
+                        "path": "./build/**/*.zip"
                     }
                 ]
             }
