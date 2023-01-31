@@ -51,6 +51,7 @@ jobs:
       - name: Build OpenIris Firmware
         working-directory: ./ESP
         run: |
+          mkdir build 
           mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
           echo "::group::platformio.ini"
           cat platformio.ini
