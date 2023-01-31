@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 Import("env")
 
-import sys
 import os
+import distro
+
+print(distro.id())
 from ntpath import basename
 from zipfile import ZipFile
 import json
 
 
 def createZip(source, target, env):
-    if os == "linux":
+    if distro.id() == "ubuntu":
         print("Program has been built, creating zip archive!")
         my_flags = env.ParseFlags(env["BUILD_FLAGS"])
         defines = dict()
@@ -61,6 +63,7 @@ def createZip(source, target, env):
             }
             archive.writestr("manifest.json", json.dumps(manifest))
     else:
-       print("Not running on Linux, skipping zip creation")
+        print("Not running on Linux, skipping zip creation")
+
 
 env.AddPostAction("$PROGPATH", createZip)
