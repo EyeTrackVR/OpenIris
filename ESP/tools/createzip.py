@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 Import("env")
 
-import os
-import distro
-
-print(distro.id())
+import sys
 from ntpath import basename
 from zipfile import ZipFile
 import json
 
 
 def createZip(source, target, env):
-    if distro.id() == "ubuntu":
+    if (
+        sys.platform.startswith("ubuntu")
+        or sys.platform.startswith("Linux")
+        or sys.platform.startswith("linux")
+    ):
         print("Program has been built, creating zip archive!")
         my_flags = env.ParseFlags(env["BUILD_FLAGS"])
         defines = dict()
