@@ -1,7 +1,11 @@
 {
     "branches": [
         "main",
-        "master"
+        "master",
+        {
+            "name": "create-zip",
+            "prerelease": true
+        }
     ],
     "plugins": [
         [
@@ -158,7 +162,7 @@
                 "addReleases": "bottom",
                 "assets": [
                     {
-                        "path": "./build/**/*.bin"
+                        "path": "./build/openiris.zip"
                     }
                 ]
             }
