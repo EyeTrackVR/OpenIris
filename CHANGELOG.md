@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-create-zip.4](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.3...v1.4.0-create-zip.4) (2023-02-01)
+
+
+### 🐛 Bug Fixes
+
+* firmware binary bundling bug ([6004cdf](https://github.com/lorow/OpenIris/commit/6004cdf9b7c97d7f604f62077751926919059774))
+
 ## [1.4.0-create-zip.3](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.2...v1.4.0-create-zip.3) (2023-01-31)
 
 
