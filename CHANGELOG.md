@@ -3,6 +3,23 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-create-zip.3](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.2...v1.4.0-create-zip.3) (2023-01-31)
+
+
+### 🍕 Features
+
+* testing createzip script ([1a3ba1b](https://github.com/lorow/OpenIris/commit/1a3ba1b47ff9b948e69e1ce03119fe1aea65e62e))
+* testing createzip script ([3094c29](https://github.com/lorow/OpenIris/commit/3094c29d1fde5d3b16dd7150f9784e07d0093cc3))
+* testing createzip script ([af89d4d](https://github.com/lorow/OpenIris/commit/af89d4d38062947fef578970787d1b90e3cea188))
+* testing createzip script ([35bb0f2](https://github.com/lorow/OpenIris/commit/35bb0f2935832b2e65a3f0870c8f084daee5fde1))
+* testing createzip script ([ab196c5](https://github.com/lorow/OpenIris/commit/ab196c56ac61932144e27d69b181e7c0b25aedc6))
+* testing createzip script ([c63e223](https://github.com/lorow/OpenIris/commit/c63e22300215103321b4be6821d9f3902c9dd128))
+* testing createzip script ([9d3fd65](https://github.com/lorow/OpenIris/commit/9d3fd65d6f13f22f522d840ce50dad74663891c2))
+* testing createzip script ([ef652f4](https://github.com/lorow/OpenIris/commit/ef652f4a923f59134a697ed6dc0228a31b978826))
+* testing createzip script ([bcef340](https://github.com/lorow/OpenIris/commit/bcef34014d37b3b974bdd8209b67ae6e9f30cfaf))
+* testing createzip script ([8d4d5cc](https://github.com/lorow/OpenIris/commit/8d4d5cc1705628c38b0046201b4ff146f9ba9e20))
+* testing createzip script ([fd6ccdc](https://github.com/lorow/OpenIris/commit/fd6ccdcae140dd2fdfd8a4b439cba84282a9832c))
+
 ## [1.4.0-create-zip.2](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.1...v1.4.0-create-zip.2) (2023-01-31)
 
 
