@@ -34,14 +34,14 @@ def createZip(source, target, env):
 
         for (offset, image) in env["FLASH_EXTRA_IMAGES"]:
             print("\nImage: %s" % str(image))
-            array_args.append(str(image))
             array_args.append(str(offset))
+            array_args.append(str(image))
 
         for _source in source:
             print("\nSource: %s" % str(_source))
             array_args.append(str(_source))
         n = 2
-        partitions_arg = array_args[1:]
+        partitions_arg = array_args[1:] 
         partitions = final = [
             partitions_arg[i * n : (i + 1) * n]
             for i in range((len(partitions_arg) + n - 1) // n)
