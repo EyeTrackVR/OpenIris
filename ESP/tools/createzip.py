@@ -15,23 +15,10 @@ def createZip(source, target, env):
     ):
         print("Program has been built, creating zip archive!")
         program_path = target[0].get_abspath()
-        print("binary path", program_path)
-        my_flags = env.ParseFlags(env["BUILD_FLAGS"])
-        defines = dict()
-        for x in my_flags.get("CPPDEFINES"):
-            if type(x) is tuple:
-                (k, v) = x
-                defines[k] = v
-            elif type(x) is list:
-                k = x[0]
-                v = x[1]
-                defines[k] = v
-            else:
-                defines[x] = ""  # empty value
-        s = lambda x: x.replace('"', "")
-
-        print("FLASH_EXTRA_IMAGES: %s\n" % env["FLASH_EXTRA_IMAGES"])
-        print("ESP32_APP_OFFSET: %s\n" % env["ESP32_APP_OFFSET"])
+        #print("binary path", program_path)
+        #print("FLASH_EXTRA_IMAGES: %s\n" % env["FLASH_EXTRA_IMAGES"])
+        #print("ESP32_APP_OFFSET: %s\n" % env["ESP32_APP_OFFSET"])
+        
         array_args = [env["FLASH_EXTRA_IMAGES"]]
 
         for [offset, image] in env["FLASH_EXTRA_IMAGES"]:
