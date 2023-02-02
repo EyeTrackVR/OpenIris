@@ -1,11 +1,7 @@
 {
     "branches": [
         "main",
-        "master",
-        {
-            "name": "create-zip",
-            "prerelease": true
-        }
+        "master"
     ],
     "plugins": [
         [
