@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-create-zip.5](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.4...v1.4.0-create-zip.5) (2023-02-02)
+
+
+### 🧑‍💻 Code Refactoring
+
+* cleanup script ([a2202d6](https://github.com/lorow/OpenIris/commit/a2202d6288a76ab195d7cfb8fc14245d1a4715f9))
+
 ## [1.4.0-create-zip.4](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.3...v1.4.0-create-zip.4) (2023-02-01)
 
 
