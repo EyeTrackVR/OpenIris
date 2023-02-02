@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-create-zip.6](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.5...v1.4.0-create-zip.6) (2023-02-02)
+
+
+### 🍕 Features
+
+* add detection of environment variable ([ca8080e](https://github.com/lorow/OpenIris/commit/ca8080e7f1727d273f4d135414a1e17d11eaddc8))
+
 ## [1.4.0-create-zip.5](https://github.com/lorow/OpenIris/compare/v1.4.0-create-zip.4...v1.4.0-create-zip.5) (2023-02-02)
 
 
