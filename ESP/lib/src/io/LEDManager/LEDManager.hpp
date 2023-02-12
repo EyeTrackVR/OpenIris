@@ -1,5 +1,6 @@
 #ifndef LEDMANAGER_HPP
 #define LEDMANAGER_HPP
+#include <vector>
 #include <Arduino.h>
 #include <data/StateManager/StateManager.hpp>
 #include <unordered_map>
@@ -7,27 +8,29 @@
 class LEDManager
 {
 public:
-	LEDManager(byte pin);
+	LEDManager(byte pin, StateManager<LEDStates_e> *stateManager);
 	virtual ~LEDManager();
 
 	void begin();
-	void handleLED(StateManager<LEDStates_e> *stateManager);
-	void onOff(bool state) const;
-	void blink(StateManager<LEDStates_e> *stateManager);
+	void handleLED();
+	void toggleLED(bool state) const;
 
 private:
 	byte _ledPin;
-	unsigned long _previousMillis;
+	StateManager<LEDStates_e> *_stateManager;
+	unsigned long nextStateChangeMillis = 0;
 	bool _ledState;
 
 	struct BlinkPatterns_t
 	{
-		int times;
+		int state;
 		int delayTime;
 	};
 
-	typedef std::unordered_map<LEDStates_e, BlinkPatterns_t> ledStateMap_t;
+	typedef std::unordered_map<LEDStates_e, std::vector<BlinkPatterns_t>> ledStateMap_t;
 	static ledStateMap_t ledStateMap;
+	LEDStates_e currentState;
+	int currentPatternIndex = 0;
 };
 
 #endif // LEDMANAGER_HPP

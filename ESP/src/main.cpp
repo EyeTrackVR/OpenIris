@@ -28,7 +28,7 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
-LEDManager ledManager(33);
+LEDManager ledManager(33, &ledStateManager);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 // SerialManager serialManager(&deviceConfig);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
@@ -43,40 +43,29 @@ void setup()
 	Serial.setDebugOutput(DEBUG_MODE);
 	Serial.println("\n");
 	Logo::printASCII();
+
 	ledManager.begin();
+	//! TODO: rewrite the state managers to use messages/pubsub to tell otherones when to change the state
+	// rewrite the whole thing so that actions rely on states
 	deviceConfig.attach(&cameraHandler);
 	deviceConfig.attach(&mdnsHandler);
 	deviceConfig.initConfig();
 	deviceConfig.load();
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 	wifiHandler.setupWifi();
-
-	mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
+	
+	// this should really be based on messages / pubsub, but we will have to change that in a separate task
 	switch (mdnsStateManager.getCurrentState())
 	{
-	case MDNSState_e::MDNSState_Starting:
-		break;
-	case MDNSState_e::MDNSState_Error:
-		break;
 	case MDNSState_e::MDNSState_QueryComplete:
 		mdnsHandler.startMDNS();
 		break;
 	default:
 		break;
 	}
-
+	
 	switch (wifiStateManager.getCurrentState())
 	{
-	case WiFiState_e::WiFiState_Disconnected:
-	{
-		//! TODO: Implement
-		break;
-	}
-	case WiFiState_e::WiFiState_Disconnecting:
-	{
-		//! TODO: Implement
-		break;
-	}
 	case WiFiState_e::WiFiState_ADHOC:
 	{
 		streamServer.startStreamServer();
@@ -93,16 +82,8 @@ void setup()
 		log_d("[SETUP]: Starting API Server");
 		break;
 	}
-	case WiFiState_e::WiFiState_Connecting:
-	{
-		//! TODO: Implement
+	default:
 		break;
-	}
-	case WiFiState_e::WiFiState_Error:
-	{
-		//! TODO: Implement
-		break;
-	}
 	}
 #if ENABLE_OTA
 	ota.SetupOTA();
@@ -114,6 +95,6 @@ void loop()
 #if ENABLE_OTA
 	ota.HandleOTAUpdate();
 #endif // ENABLE_OTA
-	ledManager.handleLED(&ledStateManager);
+	ledManager.handleLED();
 	//  serialManager.handleSerial();
 }

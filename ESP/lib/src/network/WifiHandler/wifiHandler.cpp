@@ -74,7 +74,7 @@ void WiFiHandler::setupWifi()
 	else
 	{
 		log_i(
-			"Could not connect to the hardcoded network, setting up adhoc. "
+			"Could not connect to the hardcoded network, setting up adhoc."
 			"\n\r");
 		this->setUpADHOC();
 	}
@@ -87,7 +87,7 @@ void WiFiHandler::adhoc(const std::string &ssid, uint8_t channel, const std::str
 	log_i("\n[INFO]: Configuring access point...\n");
 	WiFi.mode(WIFI_AP);
 	WiFi.setSleep(WIFI_PS_NONE);
-	Serial.printf("\r\nStarting AP. \r\n");
+	Serial.printf("\r\nStarting AP.\r\n");
 	IPAddress IP = WiFi.softAPIP();
 	Serial.printf("[INFO]: AP IP address: %s.\r\n", IP.toString().c_str());
 	// You can remove the password parameter if you want the AP to be open.

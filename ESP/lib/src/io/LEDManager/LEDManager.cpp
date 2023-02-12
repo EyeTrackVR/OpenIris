@@ -6,84 +6,66 @@
  ** @brief The LEDStates are the keys and the BlinkPatterns are the values.
  ** @brief The BlinkPatterns are the number of times to blink and the delay between blinks.
  */
+
+// side note - do we need a separate state for the led maanger?
+// we could get away with using pubsub pattern 
+// like, register led manager to anything that needs its state displayed
+// and we just update the current held pattern list 
 LEDManager::ledStateMap_t LEDManager::ledStateMap = {
-	{LEDStates_e::_LEDOff, {0, 0}},
-	{LEDStates_e::_LEDOn, {0, 0}},
-	{LEDStates_e::_LEDBlink, {1, 500}},
-	{LEDStates_e::_LEDBlinkFast, {1, 250}},
-	{LEDStates_e::_SerialManager_Start, {1, 500}},
-	{LEDStates_e::_SerialManager_Stop, {1, 500}},
-	{LEDStates_e::_SerialManager_Error, {1, 500}},
-	{LEDStates_e::_WiFiState_None, {1, 500}},
-	{LEDStates_e::_WiFiState_Connecting, {1, 500}},
-	{LEDStates_e::_WiFiState_Connected, {1, 500}},
-	{LEDStates_e::_WiFiState_Disconnected, {1, 500}},
-	{LEDStates_e::_WiFiState_Disconnecting, {1, 500}},
-	{LEDStates_e::_WiFiState_ADHOC, {1, 500}},
-	{LEDStates_e::_WiFiState_Error, {1, 500}},
-	{LEDStates_e::_WebServerState_None, {1, 500}},
-	{LEDStates_e::_WebServerState_Starting, {1, 500}},
-	{LEDStates_e::_WebServerState_Started, {1, 500}},
-	{LEDStates_e::_WebServerState_Stopping, {1, 500}},
-	{LEDStates_e::_WebServerState_Stopped, {1, 500}},
-	{LEDStates_e::_WebServerState_Error, {1, 500}},
-	{LEDStates_e::_MDNSState_None, {1, 500}},
-	{LEDStates_e::_MDNSState_Starting, {1, 500}},
-	{LEDStates_e::_MDNSState_Started, {1, 500}},
-	{LEDStates_e::_MDNSState_Stopping, {1, 500}},
-	{LEDStates_e::_MDNSState_Stopped, {1, 500}},
-	{LEDStates_e::_MDNSState_Error, {1, 500}},
-	{LEDStates_e::_Camera_Success, {1, 500}},
-	{LEDStates_e::_Camera_Connected, {1, 500}},
-	{LEDStates_e::_Camera_Disconnected, {1, 500}},
-	{LEDStates_e::_Camera_Error, {1, 500}},
-	{LEDStates_e::_Stream_OFF, {1, 500}},
-	{LEDStates_e::_Stream_ON, {1, 500}},
-	{LEDStates_e::_Stream_Error, {1, 500}},
+	{LEDStates_e::_SerialManager_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}}, 
+	{LEDStates_e::_WebServerState_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
+	{LEDStates_e::_WiFiState_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
+	{LEDStates_e::_MDNSState_Error, {{1, 200}, {0, 100}, {1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}, {0, 100}, {1, 200}}},
+	{LEDStates_e::_Camera_Error, {{1, 500}}}, // this also works as a more general error - something went critically wrong? We go here
+	{LEDStates_e::_WiFiState_Connecting, {{1, 100}, {0, 100}}},
+	{LEDStates_e::_WiFiState_Connected, {{1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}}}
 };
 
-//! TODO: Change the parameters for each LED state to be unique.
-
-LEDManager::LEDManager(byte pin) : _ledPin(pin),
-								   _previousMillis(0),
-								   _ledState(false) {}
+LEDManager::LEDManager(
+	byte pin,
+	 StateManager<LEDStates_e> *stateManager) : _ledPin(pin),
+												_stateManager(stateManager),
+												_ledState(false) {}
 
 LEDManager::~LEDManager() {}
 
 void LEDManager::begin()
 {
 	pinMode(_ledPin, OUTPUT);
-	onOff(false);
+	this->toggleLED(false);
+	this->currentState = this->_stateManager->getCurrentState(); // no idea if we should be checking for empty state here
+	BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
+	this->nextStateChangeMillis = pattern.delayTime;
 }
 
 /**
- * @brief Control the LED
+ * @brief Display the current state of the LED manager as a pattern of blinking LED
  * @details This function must be called in the main loop
- *
  */
-void LEDManager::handleLED(StateManager<LEDStates_e> *stateManager)
-{
-	if (ledStateMap.find(stateManager->getCurrentState()) != ledStateMap.end())
-	{
-		BlinkPatterns_t blinkPatterns = ledStateMap[stateManager->getCurrentState()]; // Get the blink pattern for the current state
-		unsigned long currentMillis = millis();										  // Get the current time
-		if (currentMillis - _previousMillis >= blinkPatterns.delayTime)				  // Check if the current time is greater than the previous time plus the delay time
-		{
-			_previousMillis = currentMillis;
-			for (int i = 0; i < blinkPatterns.times; i++)
-			{
-				_ledState = !_ledState;
-				onOff(_ledState);
+void LEDManager::handleLED() {
+	if(millis() >= this->nextStateChangeMillis){
+		// we've waited enough, let's check if we're finished with this state
+		// and if so, grab the next one if there is one, otherwise we're finished
+		if (this->currentPatternIndex > this->ledStateMap[this->currentState].size() - 1){
+			auto nextState = this->_stateManager->getCurrentState();
+			if(this->ledStateMap.find(nextState) != this->ledStateMap.end()){
+				this->toggleLED(false);
+				this->currentState = nextState;
+				this->currentPatternIndex = 0; // because we will be advancing it as the next step
+				BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
+				this->nextStateChangeMillis = millis() + pattern.delayTime;
+			} else {
+				return;
 			}
 		}
-		stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
-		onOff(false);								  // Turn the LED off
-		return;
+		// we can, so let's grab it and advance the timer
+		BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
+		log_d("state, currentTime, stateChangeMillis %d %d %d", pattern.state, this->currentPatternIndex, this->nextStateChangeMillis );
+		this->toggleLED(pattern.state);
+		this->nextStateChangeMillis = millis() + pattern.delayTime;
+		// we've passed the time of this state being on, let's advance it
+		this->currentPatternIndex += 1;
 	}
-
-	log_e("LED State not found");
-	stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
-	onOff(false);
 }
 
 /**
@@ -91,36 +73,7 @@ void LEDManager::handleLED(StateManager<LEDStates_e> *stateManager)
  *
  * @param state
  */
-void LEDManager::onOff(bool state) const
+void LEDManager::toggleLED(bool state) const
 {
 	digitalWrite(_ledPin, state);
-}
-
-/**
- * @brief Blink the LED a number of times
- * @details This function is blocking and does not require the handleLED function to be called in the main loop
- * @param times number of times to blink
- * @param delayTime delay between each blink
- */
-void LEDManager::blink(StateManager<LEDStates_e> *stateManager)
-{
-
-	if (ledStateMap.find(stateManager->getCurrentState()) != ledStateMap.end())
-	{
-		BlinkPatterns_t blinkPatterns = ledStateMap[stateManager->getCurrentState()]; // Get the blink pattern for the current state
-		for (int i = 0; i < blinkPatterns.times; i++)
-		{
-			onOff(true);
-			delay(blinkPatterns.delayTime);
-			onOff(false);
-			delay(blinkPatterns.delayTime);
-		}
-		stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
-		onOff(false);								  // Turn the LED off
-		return;
-	}
-
-	log_e("LED State not found");
-	stateManager->setState(LEDStates_e::_LEDOff); // Set the state to off
-	onOff(false);
 }
