@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.3.2](https://github.com/lorow/OpenIris/compare/v1.3.1...v1.3.2) (2023-02-13)
+
+
+### 🐛 Bug Fixes
+
+* cleanup main ini file ([6ba704f](https://github.com/lorow/OpenIris/commit/6ba704f1f80290f7639f376057d3a824c683e61c))
+
 ## [1.3.1](https://github.com/lorow/OpenIris/compare/v1.3.0...v1.3.1) (2023-02-04)
 
 
