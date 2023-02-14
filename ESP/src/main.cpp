@@ -31,7 +31,7 @@ OTA ota(&deviceConfig);
 LEDManager ledManager(33, &ledStateManager);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 // SerialManager serialManager(&deviceConfig);
-WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, &ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
@@ -53,7 +53,7 @@ void setup()
 	deviceConfig.load();
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 	wifiHandler.setupWifi();
-	
+
 	// this should really be based on messages / pubsub, but we will have to change that in a separate task
 	switch (mdnsStateManager.getCurrentState())
 	{
@@ -63,7 +63,7 @@ void setup()
 	default:
 		break;
 	}
-	
+
 	switch (wifiStateManager.getCurrentState())
 	{
 	case WiFiState_e::WiFiState_ADHOC:
@@ -92,6 +92,7 @@ void setup()
 
 void loop()
 {
+	Network_Utilities::checkWiFiState();
 #if ENABLE_OTA
 	ota.HandleOTAUpdate();
 #endif // ENABLE_OTA

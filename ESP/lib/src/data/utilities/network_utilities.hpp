@@ -4,14 +4,15 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <unordered_map>
+#include <data/StateManager/StateManager.hpp>
 #include "mbedtls/md.h"
+
 namespace Network_Utilities
 {
-    bool LoopWifiScan();
-    void SetupWifiScan();
+    bool loopWifiScan();
+    void setupWifiScan();
     void my_delay(volatile long delay_time);
-    int CheckWifiState();
     int getStrength(int points);
-    static std::string shaEncoder(const std::string &data);
+    void checkWiFiState();
 }
 #endif // !UTILITIES_hpp

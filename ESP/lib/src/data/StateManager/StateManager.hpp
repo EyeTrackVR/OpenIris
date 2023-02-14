@@ -30,6 +30,8 @@ struct DeviceStates
 
     enum WiFiState_e
     {
+        WiFiState_None,
+        WiFiState_Idle,
         WiFiState_Disconnected,
         WiFiState_Connecting,
         WiFiState_Connected,
@@ -83,7 +85,8 @@ class StateManager
 public:
     StateManager() {}
 
-    virtual ~StateManager() {
+    virtual ~StateManager()
+    {
         this->_current_state = static_cast<T>(0);
     }
 
