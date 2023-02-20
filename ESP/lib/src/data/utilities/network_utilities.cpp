@@ -33,7 +33,7 @@ int Network_Utilities::getStrength(int points) // TODO: add to JSON doc
     for (int i = 0; i < points; i++)
     {
         rssi += WiFi.RSSI();
-        my_delay(0.02);
+        my_delay(0.02L);
     }
     averageRSSI = rssi / points;
     return averageRSSI;
@@ -51,7 +51,7 @@ void Network_Utilities::my_delay(volatile long delay_time)
  *
  * @brief Call this function in the loop() function
  */
-static void Network_Utilities::checkWiFiState()
+void Network_Utilities::checkWiFiState()
 {
     if (wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC)
     {
@@ -75,6 +75,6 @@ static void Network_Utilities::checkWiFiState()
     case wl_status_t::WL_DISCONNECTED:
         wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
     default:
-        wifiStateManager.setState(WiFiState_e::WiFiState_None);
+        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
     }
 }

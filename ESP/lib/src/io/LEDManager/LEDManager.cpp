@@ -7,11 +7,8 @@
  ** @brief The BlinkPatterns are the number of times to blink and the delay between blinks.
  */
 
-// side note - do we need a separate state for the led maanger?
-// we could get away with using pubsub pattern 
-// like, register led manager to anything that needs its state displayed
-// and we just update the current held pattern list 
 LEDManager::ledStateMap_t LEDManager::ledStateMap = {
+	{LEDStates_e::_LedStateNone, {{0, 500}}},
 	{LEDStates_e::_SerialManager_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}}, 
 	{LEDStates_e::_WebServerState_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
 	{LEDStates_e::_WiFiState_Error, {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
@@ -19,6 +16,11 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
 	{LEDStates_e::_Camera_Error, {{1, 500}}}, // this also works as a more general error - something went critically wrong? We go here
 	{LEDStates_e::_WiFiState_Connecting, {{1, 100}, {0, 100}}},
 	{LEDStates_e::_WiFiState_Connected, {{1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}, {1, 50}, {0, 50}}}
+};
+
+std::vector<LEDStates_e> LEDManager::keepAliveStates = {
+	LEDStates_e::_WebServerState_Error,
+	LEDStates_e::_Camera_Error
 };
 
 LEDManager::LEDManager(
@@ -33,7 +35,8 @@ void LEDManager::begin()
 {
 	pinMode(_ledPin, OUTPUT);
 	this->toggleLED(false);
-	this->currentState = this->_stateManager->getCurrentState(); // no idea if we should be checking for empty state here
+	// the defualt state is _LedStateNone so we're fine
+	this->currentState = this->_stateManager->getCurrentState();
 	BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
 	this->nextStateChangeMillis = pattern.delayTime;
 }
@@ -50,6 +53,15 @@ void LEDManager::handleLED() {
 			auto nextState = this->_stateManager->getCurrentState();
 			if(this->ledStateMap.find(nextState) != this->ledStateMap.end()){
 				this->toggleLED(false);
+
+				// we only keep displaying the same state if it's designed to be kept alive 
+				if (
+					this->currentState == nextState &&
+					std::find(this->keepAliveStates.begin(), this->keepAliveStates.end(), nextState) != this->keepAliveStates.end()
+				){
+					return;
+				}
+
 				this->currentState = nextState;
 				this->currentPatternIndex = 0; // because we will be advancing it as the next step
 				BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
@@ -60,7 +72,6 @@ void LEDManager::handleLED() {
 		}
 		// we can, so let's grab it and advance the timer
 		BlinkPatterns_t pattern = this->ledStateMap[this->currentState][this->currentPatternIndex];
-		log_d("state, currentTime, stateChangeMillis %d %d %d", pattern.state, this->currentPatternIndex, this->nextStateChangeMillis );
 		this->toggleLED(pattern.state);
 		this->nextStateChangeMillis = millis() + pattern.delayTime;
 		// we've passed the time of this state being on, let's advance it

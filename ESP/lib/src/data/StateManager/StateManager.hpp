@@ -19,6 +19,7 @@ struct DeviceStates
 
     enum LEDStates_e
     {
+        _LedStateNone,
         _SerialManager_Error,
         _WebServerState_Error,
         _WiFiState_Error,
@@ -83,12 +84,11 @@ template <class T>
 class StateManager
 {
 public:
-    StateManager() {}
-
-    virtual ~StateManager()
-    {
+    StateManager() {
         this->_current_state = static_cast<T>(0);
     }
+
+    virtual ~StateManager() {}
 
     /*
      * @brief Sets the  state of the stateManager

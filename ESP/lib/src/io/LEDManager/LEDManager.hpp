@@ -29,6 +29,7 @@ private:
 
 	typedef std::unordered_map<LEDStates_e, std::vector<BlinkPatterns_t>> ledStateMap_t;
 	static ledStateMap_t ledStateMap;
+	static std::vector<LEDStates_e> keepAliveStates;
 	LEDStates_e currentState;
 	int currentPatternIndex = 0;
 };

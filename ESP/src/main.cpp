@@ -30,7 +30,6 @@ OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
 LEDManager ledManager(33, &ledStateManager);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
-// SerialManager serialManager(&deviceConfig);
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, &ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
@@ -45,8 +44,8 @@ void setup()
 	Logo::printASCII();
 
 	ledManager.begin();
-	//! TODO: rewrite the state managers to use messages/pubsub to tell otherones when to change the state
-	// rewrite the whole thing so that actions rely on states
+	//! TODO: rewrite the state managers to use messages/pubsub to tell other ones when to change the state
+	// maybe rewrite the whole thing so that actions rely on states
 	deviceConfig.attach(&cameraHandler);
 	deviceConfig.attach(&mdnsHandler);
 	deviceConfig.initConfig();
