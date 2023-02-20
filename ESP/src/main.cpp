@@ -44,8 +44,6 @@ void setup()
 	Logo::printASCII();
 
 	ledManager.begin();
-	//! TODO: rewrite the state managers to use messages/pubsub to tell other ones when to change the state
-	// maybe rewrite the whole thing so that actions rely on states
 	deviceConfig.attach(&cameraHandler);
 	deviceConfig.attach(&mdnsHandler);
 	deviceConfig.initConfig();
@@ -53,7 +51,7 @@ void setup()
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 	wifiHandler.setupWifi();
 
-	// this should really be based on messages / pubsub, but we will have to change that in a separate task
+	// todo refactor this into message passing / pubsub for proper state management
 	switch (mdnsStateManager.getCurrentState())
 	{
 	case MDNSState_e::MDNSState_QueryComplete:

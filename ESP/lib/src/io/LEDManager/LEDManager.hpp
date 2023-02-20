@@ -31,7 +31,7 @@ private:
 	static ledStateMap_t ledStateMap;
 	static std::vector<LEDStates_e> keepAliveStates;
 	LEDStates_e currentState;
-	int currentPatternIndex = 0;
+	unsigned int currentPatternIndex = 0;
 };
 
 #endif // LEDMANAGER_HPP
