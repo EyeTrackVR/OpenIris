@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.0](https://github.com/lorow/OpenIris/compare/v1.3.3...v1.4.0) (2023-02-25)
+
+
+### 🍕 Features
+
+* Disable auto-exposure, tweak settings to produce a bit cleaner image, document the options ([#38](https://github.com/lorow/OpenIris/issues/38)) ([85094bc](https://github.com/lorow/OpenIris/commit/85094bc3f75e3d8ce16d0039e8c98df0a2875f60))
+
 ## [1.3.3](https://github.com/lorow/OpenIris/compare/v1.3.2...v1.3.3) (2023-02-13)
 
 
