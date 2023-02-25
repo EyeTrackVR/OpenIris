@@ -78,25 +78,44 @@ void CameraHandler::setupCameraSensor()
 {
 	camera_sensor = esp_camera_sensor_get();
 	// fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
-	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel
+	// documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
+	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel, here we're directly writing to the registers. 0xFF==0x00 is the first bank, there's also 0xFF==0x01 
 	camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);			 // clock
-	camera_sensor->set_brightness(camera_sensor, 2);				 // -2 to 2   I see no difference between numbers..
+	camera_sensor->set_brightness(camera_sensor, 2);				 // -2 to 2
 	camera_sensor->set_contrast(camera_sensor, 2);					 // -2 to 2
 	camera_sensor->set_saturation(camera_sensor, -2);				 // -2 to 2
+
+	// white balance control
 	camera_sensor->set_whitebal(camera_sensor, 1);					 // 0 = disable , 1 = enable
-	camera_sensor->set_awb_gain(camera_sensor, 1);					 // 0 = disable , 1 = enable
-	camera_sensor->set_wb_mode(camera_sensor, 0);					 // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-	camera_sensor->set_exposure_ctrl(camera_sensor, 1);				 // 0 = disable , 1 = enable
+	camera_sensor->set_awb_gain(camera_sensor, 0);					 // 0 = disable , 1 = enable
+	camera_sensor->set_wb_mode(camera_sensor, 0);                    // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+	
+	// controls the exposure
+	camera_sensor->set_exposure_ctrl(camera_sensor, 0);				 // 0 = disable , 1 = enable
 	camera_sensor->set_aec2(camera_sensor, 0);						 // 0 = disable , 1 = enable
+	camera_sensor->set_ae_level(camera_sensor, 0);       			 // -2 to 2
+	camera_sensor->set_aec_value(camera_sensor, 300);     			 // 0 to 1200
+
+	// controls the gain
 	camera_sensor->set_gain_ctrl(camera_sensor, 0);					 // 0 = disable , 1 = enable
-	camera_sensor->set_agc_gain(camera_sensor, 2);					 // 0 to 30  brightness of sorts? higher = brighter with more lag
+	
+	// automatic gain control gain, controls by how much the resulting image should be amplified 
+	camera_sensor->set_agc_gain(camera_sensor, 2);					 // 0 to 30
 	camera_sensor->set_gainceiling(camera_sensor, (gainceiling_t)6); // 0 to 6
+
+	// black and white pixel correction, averages the white and black spots
 	camera_sensor->set_bpc(camera_sensor, 1);						 // 0 = disable , 1 = enable
 	camera_sensor->set_wpc(camera_sensor, 1);						 // 0 = disable , 1 = enable
-	camera_sensor->set_raw_gma(camera_sensor, 1);					 // 0 = disable , 1 = enable (makes much lighter and noisy)
-	camera_sensor->set_lenc(camera_sensor, 0);						 // 0 = disable , 1 = enable                // 0 = disable , 1 = enable
+	// digital clamp white balance
 	camera_sensor->set_dcw(camera_sensor, 0);						 // 0 = disable , 1 = enable
+
+	//gamma correction
+	camera_sensor->set_raw_gma(camera_sensor, 1);					 // 0 = disable , 1 = enable (makes much lighter and noisy)
+	
+	camera_sensor->set_lenc(camera_sensor, 0);						 // 0 = disable , 1 = enable                // 0 = disable , 1 = enable
+	
 	camera_sensor->set_colorbar(camera_sensor, 0);					 // 0 = disable , 1 = enable
+	
 	camera_sensor->set_special_effect(camera_sensor, 2);			 // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
 }
 
