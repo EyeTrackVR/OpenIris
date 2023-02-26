@@ -22,6 +22,7 @@
 #include <AsyncTCP.h>
 
 #include "data/utilities/network_utilities.hpp"
+#include "tasks/tasks.hpp"
 
 #include "data/config/project_config.hpp"
 #include "data/StateManager/StateManager.hpp"

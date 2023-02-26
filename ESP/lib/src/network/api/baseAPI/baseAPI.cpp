@@ -266,7 +266,7 @@ void BaseAPI::rebootDevice(AsyncWebServerRequest *request)
 	case GET:
 	{
 		request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
-		ESP.restart();
+		OpenIrisTasks::ScheduleRestart(2000);
 	}
 	default:
 	{

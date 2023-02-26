@@ -6,14 +6,17 @@
 #include <vector>
 #include <string>
 
+#include "tasks/tasks.hpp"
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/helpers.hpp"
 
 class ProjectConfig : public Preferences, public ISubject
 {
 public:
-	ProjectConfig(const std::string &name = std::string(),
-				  const std::string &mdnsName = std::string());
+	ProjectConfig(
+		const std::string &name = std::string(),
+		const std::string &mdnsName = std::string()
+	);
 	virtual ~ProjectConfig();
 	void load();
 	void save();

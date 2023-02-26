@@ -72,7 +72,7 @@ void ProjectConfig::save()
     wifiConfigSave();
     wifiTxPowerConfigSave();
     end(); // we call end() here to close the connection to the NVS partition, we only do this because we call ESP.restart() next.
-    ESP.restart();
+    OpenIrisTasks::ScheduleRestart(2000);
 }
 
 void ProjectConfig::wifiConfigSave()
