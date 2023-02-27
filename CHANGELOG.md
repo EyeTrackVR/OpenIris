@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.6.0](https://github.com/lorow/OpenIris/compare/v1.5.0...v1.6.0) (2023-02-27)
+
+
+### 📝 Documentation
+
+* raise exception when user adds apostrophy ([e1577b8](https://github.com/lorow/OpenIris/commit/e1577b87593ae0f626697e57df37c41e926a9c98))
+
 ## [1.5.0](https://github.com/lorow/OpenIris/compare/v1.4.2...v1.5.0) (2023-02-27)
 
 
