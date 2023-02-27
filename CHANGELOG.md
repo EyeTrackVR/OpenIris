@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.9.0](https://github.com/lorow/OpenIris/compare/v1.8.0...v1.9.0) (2023-02-27)
+
+
+### 🍕 Features
+
+* add DELETE method to wifi endpoint ([de3ab8b](https://github.com/lorow/OpenIris/commit/de3ab8b4f53aac624a0340c79e64491c7e595c9e))
+
 ## [1.8.0](https://github.com/lorow/OpenIris/compare/v1.7.0...v1.8.0) (2023-02-27)
 
 
