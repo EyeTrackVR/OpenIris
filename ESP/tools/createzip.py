@@ -42,18 +42,11 @@ def createZip(source, target, env):
                 print('\nCreating "' + archive.filename + '"', end="\n")
                 parts = []
 
-                # parse version from the PROGNAME
-                # version is the second part of the PROGNAME
-                # PROGNAME = OpenIris-v1.3.0-esp32AIThinker-8229a3a-master
-                # version = v1.3.0
-
                 name = "OpenIris"
                 version = env["PROGNAME"].split("-")[1]
                 new_install_prompt_erase = True
 
                 print("Creating manifest.json")
-
-                print("[PARTITIONS]: {}".format(partitions))
 
                 temp = []
                 for [offset, path] in partitions:
@@ -77,11 +70,6 @@ def createZip(source, target, env):
                     "offset": 0,
                 }
                 parts.append(partition)
-
-                """ for [offset, path] in partitions:
-                        filename = basename(path)
-                        archive.write(path, filename)
-                """
 
                 manifest = {
                     "name": name,
