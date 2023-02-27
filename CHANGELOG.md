@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.8.0](https://github.com/lorow/OpenIris/compare/v1.7.0...v1.8.0) (2023-02-27)
+
+
+### 🍕 Features
+
+* add wifi rssi endpoint ([8f2b6db](https://github.com/lorow/OpenIris/commit/8f2b6db65b611b4c82de09e2add5a004426da7ec))
+
 ## [1.7.0](https://github.com/lorow/OpenIris/compare/v1.6.0...v1.7.0) (2023-02-27)
 
 
