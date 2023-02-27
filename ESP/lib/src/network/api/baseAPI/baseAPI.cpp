@@ -114,6 +114,13 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
                     "{\"msg\":\"Done. Wifi Creds have been set.\"}");
       break;
     }
+    case DELETE: {
+      projectConfig->deleteWifiConfig(request->arg("networkName").c_str(),
+                                      true);
+      request->send(200, MIMETYPE_JSON,
+                    "{\"msg\":\"Done. Wifi Creds have been deleted.\"}");
+      break;
+    }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
       request->redirect("/");
