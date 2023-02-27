@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.4.1](https://github.com/lorow/OpenIris/compare/v1.4.0...v1.4.1) (2023-02-27)
+
+
+### 🐛 Bug Fixes
+
+* fix compiler error if not git repo ([3ca047f](https://github.com/lorow/OpenIris/commit/3ca047f07dac2195970f834771ebc4a47f811b78))
+
 ## [1.4.0](https://github.com/lorow/OpenIris/compare/v1.3.3...v1.4.0) (2023-02-25)
 
 
