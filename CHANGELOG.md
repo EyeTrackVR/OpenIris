@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.7.1](https://github.com/lorow/OpenIris/compare/v1.7.0...v1.7.1) (2023-02-27)
+
+
+### 🔁 Continuous Integration
+
+* **ci-binaries:** fix manifest formatting ([cd9eea6](https://github.com/lorow/OpenIris/commit/cd9eea64cd0fd1519cf6edf079d8d92d621546f6))
+
 ## [1.7.0](https://github.com/lorow/OpenIris/compare/v1.6.0...v1.7.0) (2023-02-27)
 
 
