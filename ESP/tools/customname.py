@@ -104,7 +104,7 @@ def customName(project, version, commit, branch):
             defines[x] = ""  # empty value
             # print("Warning: unknown type for %s" % x)
 
-    #print("Project: %s" % defines)
+    # print("Project: %s" % defines)
     # strip quotes needed for shell escaping
     s = lambda x: x.replace('"', "")
     s = lambda x: x.replace("'", "")
@@ -130,4 +130,14 @@ def customName(project, version, commit, branch):
     )
 
 
-handleGit()
+try:
+    flags = env["BUILD_FLAGS"]
+    my_flags = env.ParseFlags(flags)
+    handleGit()
+except ValueError as ex:
+    # look for apostrophes and warn the user
+    sys.stdout.write(RED)
+    print(
+        "[Warning]: Apostrophes are not allowed in the build flags. Please remove them from the \033[;1m\033[1;36m`user-config.ini` \033[1;31mfile and try again."
+    )
+    raise Exception("Could not parse BUILD_FLAGS - Possible apostrophy used in user configuration", ex)
