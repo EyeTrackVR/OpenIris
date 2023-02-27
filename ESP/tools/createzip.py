@@ -57,7 +57,7 @@ def createZip(source, target, env):
 
                 name = "OpenIris"
                 version = str(defines.get("PIO_SRC_TAG"))
-                new_install_prompt_erase = "true"
+                new_install_prompt_erase = True
 
                 """
                 python esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB
@@ -65,18 +65,22 @@ def createZip(source, target, env):
                 """
                 env.Execute(
                     "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB %s"
-                    % (partition.join(" "))
+                    % (partitions.join(" "))
                 )
 
-                for [offset, path] in partitions:
+                filename = basename("merged-firmware.bin")
+                archive.write("merged-firmware.bin", filename)
 
-                    filename = basename(path)
-                    archive.write(path, filename)
-                    partition = {
-                        "path": filename,
-                        "offset": int(offset, 16),
-                    }
-                    parts.append(partition)
+                partition = {
+                    "path": filename,
+                    "offset": 0,
+                }
+                parts.append(partition)
+
+                """ for [offset, path] in partitions:
+                        filename = basename(path)
+                        archive.write(path, filename)
+                """
 
                 manifest = {
                     "builds": [
