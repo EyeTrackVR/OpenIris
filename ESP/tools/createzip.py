@@ -2,6 +2,7 @@
 Import("env")
 
 import sys
+from colors import *
 import os
 from ntpath import basename
 from zipfile import ZipFile
@@ -11,6 +12,7 @@ import json
 def createZip(source, target, env):
     if os.getenv("OPENIRIS_CI_BUILD", False):
         if sys.platform.lower().startswith(("ubuntu", "linux")):
+            sys.stdout.write(GREEN)
             print("Program has been built, creating zip archive!")
             program_path = target[0].get_abspath()
 
@@ -25,6 +27,7 @@ def createZip(source, target, env):
 
             n = 2
             partitions_arg = array_args[1:]
+            sys.stdout.write(CYAN)
             print(f"partitions_args: {partitions_arg}")
             partitions = final = [
                 partitions_arg[i * n : (i + 1) * n]
@@ -50,10 +53,14 @@ def createZip(source, target, env):
                     "parts": parts,
                 }
                 archive.writestr("manifest.json", json.dumps(manifest))
+                sys.stdout.write(RESET)
         else:
+            sys.stdout.write(BLUE)
             print("Not running on Linux, skipping zip creation")
+            sys.stdout.write(RESET)
     else:
+        sys.stdout.write(BLUE)
         print("CI build not detected, skipping zip creation")
-
+        sys.stdout.write(RESET)
 
 env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", createZip)
