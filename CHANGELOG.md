@@ -3,6 +3,24 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.7.0](https://github.com/lorow/OpenIris/compare/v1.6.0...v1.7.0) (2023-02-27)
+
+
+### 🍕 Features
+
+* merge binaries ([d8980ae](https://github.com/lorow/OpenIris/commit/d8980ae0d4231c11b1ad5ce168dc5a774a5c8466))
+
+
+### 🔁 Continuous Integration
+
+* **ci-binaries:** final touches ([cd8b6b8](https://github.com/lorow/OpenIris/commit/cd8b6b8b8affb7eee97bf932f6cf17e366f7f0b9))
+* **ci-binaries:** fix manifest formatting ([cd9eea6](https://github.com/lorow/OpenIris/commit/cd9eea64cd0fd1519cf6edf079d8d92d621546f6))
+* **ci-binaries:** testing merge ([4dafdbc](https://github.com/lorow/OpenIris/commit/4dafdbc484d3f2a657e22b11fcf58541e2a59bad))
+* **ci-binaries:** testing merge ([92c8a65](https://github.com/lorow/OpenIris/commit/92c8a659113274f757abab2f7635229503db8835))
+* **ci-binaries:** testing merge ([7a7a4d1](https://github.com/lorow/OpenIris/commit/7a7a4d1cc26294b2ce27d0329862808de1e71219))
+* **ci-binaries:** testing merge ([f8de13c](https://github.com/lorow/OpenIris/commit/f8de13c97a1455e60ea4118f9243be2d0d6ffee7))
+* **ci-binaries:** testing merge ([c56e5ec](https://github.com/lorow/OpenIris/commit/c56e5ec7c23753af0c8a8914a702ba07db671f42))
+
 ## [1.7.1](https://github.com/lorow/OpenIris/compare/v1.7.0...v1.7.1) (2023-02-27)
 
 
