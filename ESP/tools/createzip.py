@@ -51,17 +51,12 @@ def createZip(source, target, env):
                 else:
                     defines[x] = ""  # empty value
 
-            # print("Project: %s" % defines)
-            # strip quotes needed for shell escaping
-            s = lambda x: x.replace('"', "")
-            s = lambda x: x.replace("'", "")
-
             with ZipFile(file_name, "w") as archive:
                 print('\nCreating "' + archive.filename + '"', end="\n")
                 parts = []
 
                 name = "OpenIris"
-                version = s(defines.get("PIO_SRC_TAG"))
+                version = str(defines.get("PIO_SRC_TAG"))
                 new_install_prompt_erase = "true"
 
                 """
