@@ -38,25 +38,17 @@ def createZip(source, target, env):
                 str(env["PIOENV"]), env["PROGNAME"]
             )
 
-            my_flags = env.ParseFlags(env["BUILD_FLAGS"])
-            defines = dict()
-            for x in my_flags.get("CPPDEFINES"):
-                if type(x) is tuple:
-                    (k, v) = x
-                    defines[k] = v
-                elif type(x) is list:
-                    k = x[0]
-                    v = x[1]
-                    defines[k] = v
-                else:
-                    defines[x] = ""  # empty value
-
             with ZipFile(file_name, "w") as archive:
                 print('\nCreating "' + archive.filename + '"', end="\n")
                 parts = []
 
+                # parse version from the PROGNAME
+                # version is the second part of the PROGNAME
+                # PROGNAME = OpenIris-v1.3.0-esp32AIThinker-8229a3a-master
+                # version = v1.3.0
+
                 name = "OpenIris"
-                version = str(defines.get("PIO_SRC_TAG"))
+                version = env["PROGNAME"].split("-")[1]
                 new_install_prompt_erase = True
 
                 print("Creating manifest.json")
@@ -92,15 +84,15 @@ def createZip(source, target, env):
                 """
 
                 manifest = {
+                    "name": name,
+                    "version": version,
+                    "new_install_prompt_erase": new_install_prompt_erase,
                     "builds": [
                         {
-                            "name": name,
-                            "version": version,
-                            "new_install_prompt_erase": new_install_prompt_erase,
                             "chipFamily": "ESP32",
                             "parts": parts,
                         }
-                    ]
+                    ],
                 }
                 archive.writestr("manifest.json", json.dumps(manifest))
                 sys.stdout.write(RESET)
