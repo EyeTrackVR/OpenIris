@@ -37,10 +37,44 @@ def createZip(source, target, env):
             file_name = "./build/{0}/{1}.zip".format(
                 str(env["PIOENV"]), env["PROGNAME"]
             )
+
+            my_flags = env.ParseFlags(env["BUILD_FLAGS"])
+            defines = dict()
+            for x in my_flags.get("CPPDEFINES"):
+                if type(x) is tuple:
+                    (k, v) = x
+                    defines[k] = v
+                elif type(x) is list:
+                    k = x[0]
+                    v = x[1]
+                    defines[k] = v
+                else:
+                    defines[x] = ""  # empty value
+
+            # print("Project: %s" % defines)
+            # strip quotes needed for shell escaping
+            s = lambda x: x.replace('"', "")
+            s = lambda x: x.replace("'", "")
+
             with ZipFile(file_name, "w") as archive:
                 print('\nCreating "' + archive.filename + '"', end="\n")
                 parts = []
+
+                name = "OpenIris"
+                version = s(defines.get("PIO_SRC_TAG"))
+                new_install_prompt_erase = "true"
+
+                """
+                python esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB
+                0x1000 bootloader.bin 0x8000 partitions.bin 0xe000 boot.bin 0x10000 OpenIris-v1.3.0-esp32AIThinker-8229a3a-master.bin
+                """
+                env.Execute(
+                    "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB %s"
+                    % (partition.join(" "))
+                )
+
                 for [offset, path] in partitions:
+
                     filename = basename(path)
                     archive.write(path, filename)
                     partition = {
@@ -48,9 +82,17 @@ def createZip(source, target, env):
                         "offset": int(offset, 16),
                     }
                     parts.append(partition)
+
                 manifest = {
-                    "chipFamily": "ESP32",
-                    "parts": parts,
+                    "builds": [
+                        {
+                            "name": name,
+                            "version": version,
+                            "new_install_prompt_erase": new_install_prompt_erase,
+                            "chipFamily": "ESP32",
+                            "parts": parts,
+                        }
+                    ]
                 }
                 archive.writestr("manifest.json", json.dumps(manifest))
                 sys.stdout.write(RESET)
@@ -62,5 +104,6 @@ def createZip(source, target, env):
         sys.stdout.write(BLUE)
         print("CI build not detected, skipping zip creation")
         sys.stdout.write(RESET)
+
 
 env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", createZip)

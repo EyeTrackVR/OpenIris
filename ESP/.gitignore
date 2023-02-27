@@ -4,3 +4,4 @@ build/
 *.log
 /tools/firmware_name.txt
 /tools/version.txt
+/tools/_pycache_/

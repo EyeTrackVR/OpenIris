@@ -78,8 +78,6 @@ def handleGit():
 
 
 def customName(project, version, commit, branch):
-    # Dump global construction environment (for debug purpose)
-    # print(env.Dump())
 
     my_flags = env.ParseFlags(env["BUILD_FLAGS"])
     defines = dict()
@@ -133,6 +131,12 @@ def customName(project, version, commit, branch):
 try:
     flags = env["BUILD_FLAGS"]
     my_flags = env.ParseFlags(flags)
+
+    # Dump global construction environment (for debug purpose)
+    # write env.Dump() to a file
+    #with open("env_dump.txt", "w") as f:
+    #    f.write(env.Dump())
+
     handleGit()
 except ValueError as ex:
     # look for apostrophes and warn the user
@@ -140,4 +144,7 @@ except ValueError as ex:
     print(
         "[Warning]: Apostrophes are not allowed in the build flags. Please remove them from the \033[;1m\033[1;36m`user-config.ini` \033[1;31mfile and try again."
     )
-    raise Exception("Could not parse BUILD_FLAGS - Possible apostrophy used in user configuration", ex)
+    raise Exception(
+        "Could not parse BUILD_FLAGS - Possible apostrophy used in user configuration",
+        ex,
+    )
