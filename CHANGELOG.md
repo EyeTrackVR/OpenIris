@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.5.0](https://github.com/lorow/OpenIris/compare/v1.4.2...v1.5.0) (2023-02-27)
+
+
+### 🍕 Features
+
+* add note about bug for apostrophes ([acad1da](https://github.com/lorow/OpenIris/commit/acad1dafb9c28c07ff53ead0d573f6f7f3729f13))
+
 ## [1.4.2](https://github.com/lorow/OpenIris/compare/v1.4.1...v1.4.2) (2023-02-27)
 
 
