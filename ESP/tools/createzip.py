@@ -65,7 +65,7 @@ def createZip(source, target, env):
                 """
                 env.Execute(
                     "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB %s"
-                    % (partitions.join(" "))
+                    % (' '.join(partitions))
                 )
 
                 filename = basename("merged-firmware.bin")
