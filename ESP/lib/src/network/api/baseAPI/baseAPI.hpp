@@ -51,6 +51,7 @@ protected:
 	void rebootDevice(AsyncWebServerRequest *request);
 	void ping(AsyncWebServerRequest *request);
 	void save(AsyncWebServerRequest *request);
+	void rssi(AsyncWebServerRequest *request);
 
 	/* Camera Handlers */
 	void setCamera(AsyncWebServerRequest *request);
