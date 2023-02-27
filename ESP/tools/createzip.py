@@ -59,10 +59,14 @@ def createZip(source, target, env):
                 version = str(defines.get("PIO_SRC_TAG"))
                 new_install_prompt_erase = True
 
-
                 print("Creating manifest.json")
 
                 print("[PARTITIONS]: {}".format(partitions))
+
+                temp = []
+                for [offset, path] in partitions:
+                    # join the offset and path into a space separated string
+                    temp.append("{} {}".format(offset, path))
 
                 """
                 python esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB
@@ -70,7 +74,7 @@ def createZip(source, target, env):
                 """
                 env.Execute(
                     "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB %s"
-                    % (' '.join(partitions))
+                    % (" ".join(temp))
                 )
 
                 filename = basename("merged-firmware.bin")
