@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.9.2](https://github.com/lorow/OpenIris/compare/v1.9.1...v1.9.2) (2023-03-03)
+
+
+### 🐛 Bug Fixes
+
+* bug in MDNS handler ([1ca7d1f](https://github.com/lorow/OpenIris/commit/1ca7d1f48cfbf6fe636072e23852d7b51e58dd23))
+
 ## [1.9.1](https://github.com/lorow/OpenIris/compare/v1.9.0...v1.9.1) (2023-03-03)
 
 
