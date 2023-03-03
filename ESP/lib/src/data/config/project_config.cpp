@@ -267,8 +267,6 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   // config are the ones we want the esp to connect to, rather than host as AP,
   // and here we're just updating them
   size_t size = this->config.networks.size();
-  int index;
-
   // we're allowing to store up to three additional networks
   if (size == 0) {
     Serial.println("No networks, We're adding a new network");
