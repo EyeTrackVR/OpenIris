@@ -3,6 +3,7 @@
 #define PROJECT_CONFIG_HPP
 #include <Arduino.h>
 #include <Preferences.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 

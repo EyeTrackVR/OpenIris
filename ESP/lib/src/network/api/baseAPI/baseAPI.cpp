@@ -78,11 +78,11 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "networkName") {
-          networkName = param->value().c_str();
+          networkName.assign(param->value().c_str());
         } else if (param->name() == "ssid") {
-          ssid = param->value().c_str();
+          ssid.assign(param->value().c_str());
         } else if (param->name() == "password") {
-          password = param->value().c_str();
+          password.assign(param->value().c_str());
         } else if (param->name() == "channel") {
           channel = (uint8_t)atoi(param->value().c_str());
         } else if (param->name() == "power") {
@@ -178,7 +178,13 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "hostname") {
-          hostname.assign(param->value().c_str());
+          std::string result = param->value().c_str();
+
+          // Convert to lower case using lambda - to  force lower case
+          std::for_each(result.begin(), result.end(),
+                        [](char& c) { c = ::tolower(c); });
+
+          hostname.assign(result);
         } else if (param->name() == "service") {
           service.assign(param->value().c_str());
         } else if (param->name() == "ota_port") {

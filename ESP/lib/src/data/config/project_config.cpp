@@ -267,35 +267,46 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   // config are the ones we want the esp to connect to, rather than host as AP,
   // and here we're just updating them
   size_t size = this->config.networks.size();
+  int index;
 
   // we're allowing to store up to three additional networks
   if (size == 0) {
     Serial.println("No networks, We're adding a new network");
     this->config.networks.emplace_back(networkName, ssid, password, *channel,
                                        *power, false);
+
+    if (shouldNotify)
+      this->notify(ObserverEvent::networksConfigUpdated);
+
+    return;
   }
 
-  int networkToUpdate = -1;
-  for (int i = 0; i < size; i++) {
-    if (this->config.networks[i].name == networkName) {
-      // we've found a preexisting network, let's upate it
-      networkToUpdate = i;
-      break;
+  for (auto it = this->config.networks.begin();
+       it != this->config.networks.end();) {
+    if (it->name == networkName) {
+      log_i("Found network %s, updating it ...", it->name.c_str());
+
+      it->name = networkName;
+      it->ssid = ssid;
+      it->password = password;
+      it->channel = *channel;
+      it->power = *power;
+      it->adhoc = false;
+
+      if (shouldNotify)
+        this->notify(ObserverEvent::networksConfigUpdated);
+
+      return;
+    } else {
+      ++it;
     }
   }
 
-  if (networkToUpdate >= 0) {
-    this->config.networks[networkToUpdate].name = networkName;
-    this->config.networks[networkToUpdate].ssid = ssid;
-    this->config.networks[networkToUpdate].password = password;
-    this->config.networks[networkToUpdate].channel = *channel;
-    this->config.networks[networkToUpdate].power = *power;
-    this->config.networks[networkToUpdate].adhoc = false;
-  } else if (size < 3) {
+  if (size < 3) {
     Serial.println("We're adding a new network");
-    // we don't have that network yet, we can add it as we still have some space
-    // we're using emplace_back as push_back will create a copy of it, we want
-    // to avoid that
+    // we don't have that network yet, we can add it as we still have some
+    // space we're using emplace_back as push_back will create a copy of it,
+    // we want to avoid that
     this->config.networks.emplace_back(networkName, ssid, password, *channel,
                                        *power, false);
   }
@@ -311,18 +322,16 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
     Serial.println("No networks, nothing to delete");
   }
 
-  int networkToDelete = -1;
-  for (int i = 0; i < size; i++) {
-    if (networkName == this->config.networks[i].name) {
-      // we've found a preexisting network, let's upate it
-      networkToDelete = i;
-      break;  // we can break here as we're not allowing duplicate names
-    }
-  }
+  for (auto it = this->config.networks.begin();
+       it != this->config.networks.end();) {
+    if (it->name == networkName) {
+      log_i("Found network %s", it->name.c_str());
+      it = this->config.networks.erase(it);
+      log_i("Deleted network %s", networkName.c_str());
 
-  if (networkToDelete >= 0) {
-    this->config.networks.erase(this->config.networks.begin() +
-                                networkToDelete);
+    } else {
+      ++it;
+    }
   }
 
   if (shouldNotify)
