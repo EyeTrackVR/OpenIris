@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.9.3](https://github.com/lorow/OpenIris/compare/v1.9.2...v1.9.3) (2023-03-03)
+
+
+### 🐛 Bug Fixes
+
+* duplication of wifi network config ([651b7b6](https://github.com/lorow/OpenIris/commit/651b7b62bad2e995d6cc51edaa49712692f3598c))
+
 ## [1.9.2](https://github.com/lorow/OpenIris/compare/v1.9.1...v1.9.2) (2023-03-03)
 
 
