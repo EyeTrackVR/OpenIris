@@ -50,8 +50,9 @@ void setup()
 	deviceConfig.load();
 	wifiHandler._enable_adhoc = ENABLE_ADHOC;
 	wifiHandler.setupWifi();
+    mdnsHandler.startMDNS();
 
-	mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
+    /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
 	switch (mdnsStateManager.getCurrentState())
 	{
 	case MDNSState_e::MDNSState_Starting:
@@ -63,7 +64,7 @@ void setup()
 		break;
 	default:
 		break;
-	}
+	} */
 
 	switch (wifiStateManager.getCurrentState())
 	{
