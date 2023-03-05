@@ -13,8 +13,6 @@
 #include <logo/logo.hpp>
 #include <data/config/project_config.hpp>
 
-// #include <data/utilities/makeunique.hpp>
-
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
 /**
@@ -30,7 +28,7 @@ OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
 LEDManager ledManager(33);
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
-// SerialManager serialManager(&deviceConfig);
+
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
@@ -40,9 +38,12 @@ void setup()
 {
 	setCpuFrequencyMhz(240); // set to 240mhz for performance boost
 	Serial.begin(115200);
-	Serial.setDebugOutput(DEBUG_MODE);
-	Serial.println("\n");
+	//Serial.setDebugOutput(DEBUG_MODE);
+	//Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
 	Logo::printASCII();
+	Serial.flush();
+	//Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
+
 	ledManager.begin();
 	deviceConfig.attach(&cameraHandler);
 	deviceConfig.attach(&mdnsHandler);
@@ -106,15 +107,14 @@ void setup()
 		}
 	}
 #if ENABLE_OTA
-	ota.SetupOTA();
+	ota.begin();
 #endif // ENABLE_OTA
 }
 
 void loop()
 {
 #if ENABLE_OTA
-	ota.HandleOTAUpdate();
+	ota.handleOTAUpdate();
 #endif // ENABLE_OTA
 	ledManager.handleLED(&ledStateManager);
-	//  serialManager.handleSerial();
 }
