@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.1](https://github.com/lorow/OpenIris/compare/v1.10.0...v1.10.1) (2023-03-09)
+
+
+### 🐛 Bug Fixes
+
+* fix pinout for s3 module ([c0d090d](https://github.com/lorow/OpenIris/commit/c0d090de906dbcd3534ca956b77173bb7b7e4ce8))
+
 ## [1.10.0](https://github.com/lorow/OpenIris/compare/v1.9.4...v1.10.0) (2023-03-09)
 
 
