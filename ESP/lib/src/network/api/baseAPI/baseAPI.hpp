@@ -15,8 +15,8 @@
 #define XHTTP_OPTIONS 0b01000000;
 #define XHTTP_ANY 0b01111111; */
 
-#define HTTP_ANY 0b01111111
-#define HTTP_GET 0b00000001
+//constexpr int HTTP_GET = 0b00000001;
+constexpr int HTTP_ANY = 0b01111111;
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>

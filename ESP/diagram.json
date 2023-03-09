@@ -1,0 +1,76 @@
+{
+    "version": 1,
+    "author": "DaOfficialWizard",
+    "editor": "wokwi",
+    "parts": [
+        {
+            "type": "wokwi-esp32-devkit-v1",
+            "id": "esp",
+            "top": 0,
+            "left": 0,
+            "attrs": {}
+        },
+        {
+            "type": "wokwi-led",
+            "id": "led1",
+            "top": 82.91,
+            "left": 128.93,
+            "rotate": 180,
+            "attrs": {
+                "color": "red"
+            }
+        },
+        {
+            "type": "wokwi-resistor",
+            "id": "r1",
+            "top": 149.11,
+            "left": 125.63,
+            "attrs": {
+                "value": "1000"
+            }
+        }
+    ],
+    "connections": [
+        [
+            "esp:TX0",
+            "$serialMonitor:RX",
+            "",
+            []
+        ],
+        [
+            "esp:RX0",
+            "$serialMonitor:TX",
+            "",
+            []
+        ],
+        [
+            "esp:GND.1",
+            "r1:1",
+            "black",
+            [
+                "h0"
+            ]
+        ],
+        [
+            "led1:C",
+            "r1:2",
+            "green",
+            [
+                "v-4.6",
+                "h38.86",
+                "v72.64"
+            ]
+        ],
+        [
+            "led1:A",
+            "esp:D4",
+            "green",
+            [
+                "v-3.11",
+                "h-23.78",
+                "v30.85"
+            ]
+        ]
+    ],
+    "dependencies": {}
+}

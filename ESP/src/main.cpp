@@ -1,17 +1,18 @@
 #include <Arduino.h>
-#include <network/WifiHandler/WifiHandler.hpp>
-#include <network/mDNS/MDNSManager.hpp>
-#include <io/camera/cameraHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
-#include <network/stream/streamServer.hpp>
+#include <io/camera/cameraHandler.hpp>
+#include <network/WifiHandler/WifiHandler.hpp>
 #include <network/api/webserverHandler.hpp>
+#include <network/mDNS/MDNSManager.hpp>
+#include <network/stream/streamServer.hpp>
 
-//! TODO: Setup OTA enabled state to be controllable by API if enabled at compile time
+//! TODO: Setup OTA enabled state to be controllable by API if enabled at
+//! compile time
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
-#endif // ENABLE_OTA
-#include <logo/logo.hpp>
+#endif  // ENABLE_OTA
 #include <data/config/project_config.hpp>
+#include <logo/logo.hpp>
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
@@ -25,96 +26,115 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
-#endif // ENABLE_OTA
+#endif  // ENABLE_OTA
 LEDManager ledManager(33);
+
+#ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
+#endif  // SIM_ENABLED
+WiFiHandler wifiHandler(&deviceConfig,
+                        &wifiStateManager,
+                        WIFI_SSID,
+                        WIFI_PASSWORD,
+                        WIFI_CHANNEL);
 
-WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
-APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
+#ifndef SIM_ENABLED
+APIServer apiServer(CONTROL_SERVER_PORT,
+                    &deviceConfig,
+                    &cameraHandler,
+                    &wifiStateManager,
+                    "/control");
+#else
+APIServer apiServer(CONTROL_SERVER_PORT,
+                    &deviceConfig,
+                    NULL,
+                    &wifiStateManager,
+                    "/control");
+#endif  // SIM_ENABLED
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
+
+#ifndef SIM_ENABLED
 StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
+#endif  // SIM_ENABLED
 
-void setup()
-{
-	setCpuFrequencyMhz(240); // set to 240mhz for performance boost
-	Serial.begin(115200);
-	//Serial.setDebugOutput(DEBUG_MODE);
-	//Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
-	Logo::printASCII();
-	Serial.flush();
-	//Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
+void setup() {
+  setCpuFrequencyMhz(240);  // set to 240mhz for performance boost
+  Serial.begin(115200);
+  // Serial.setDebugOutput(DEBUG_MODE);
+  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
+  Logo::printASCII();
+  Serial.flush();
+  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
 
-	ledManager.begin();
-	deviceConfig.attach(&cameraHandler);
-	deviceConfig.attach(&mdnsHandler);
-	deviceConfig.initConfig();
-	deviceConfig.load();
-	wifiHandler._enable_adhoc = ENABLE_ADHOC;
-	wifiHandler.setupWifi();
-    mdnsHandler.startMDNS();
+  ledManager.begin();
+#ifndef SIM_ENABLED
+  deviceConfig.attach(&cameraHandler);
+#endif  // SIM_ENABLED
+  deviceConfig.attach(&mdnsHandler);
+  deviceConfig.initConfig();
+  deviceConfig.load();
+  wifiHandler._enable_adhoc = ENABLE_ADHOC;
+  wifiHandler.setupWifi();
+  mdnsHandler.startMDNS();
 
-    /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
-	switch (mdnsStateManager.getCurrentState())
-	{
-	case MDNSState_e::MDNSState_Starting:
-		break;
-	case MDNSState_e::MDNSState_Error:
-		break;
-	case MDNSState_e::MDNSState_QueryComplete:
-		mdnsHandler.startMDNS();
-		break;
-	default:
-		break;
-	} */
+  /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
+      switch (mdnsStateManager.getCurrentState())
+      {
+      case MDNSState_e::MDNSState_Starting:
+              break;
+      case MDNSState_e::MDNSState_Error:
+              break;
+      case MDNSState_e::MDNSState_QueryComplete:
+              mdnsHandler.startMDNS();
+              break;
+      default:
+              break;
+      } */
 
-	switch (wifiStateManager.getCurrentState())
-	{
-	case WiFiState_e::WiFiState_Disconnected:
-		{
-			//! TODO: Implement
-			break;
-		}
-	case WiFiState_e::WiFiState_Disconnecting:
-		{
-			//! TODO: Implement
-			break;
-		}
-	case WiFiState_e::WiFiState_ADHOC:
-		{
-			streamServer.startStreamServer();
-			log_d("[SETUP]: Starting Stream Server");
-			apiServer.begin();
-			log_d("[SETUP]: Starting API Server");
-			break;
-		}
-	case WiFiState_e::WiFiState_Connected:
-		{
-			streamServer.startStreamServer();
-			log_d("[SETUP]: Starting Stream Server");
-			apiServer.begin();
-			log_d("[SETUP]: Starting API Server");
-			break;
-		}
-	case WiFiState_e::WiFiState_Connecting:
-		{
-			//! TODO: Implement
-			break;
-		}
-	case WiFiState_e::WiFiState_Error:
-		{
-			//! TODO: Implement
-			break;
-		}
-	}
+  switch (wifiStateManager.getCurrentState()) {
+    case WiFiState_e::WiFiState_Disconnected: {
+      //! TODO: Implement
+      break;
+    }
+    case WiFiState_e::WiFiState_Disconnecting: {
+      //! TODO: Implement
+      break;
+    }
+    case WiFiState_e::WiFiState_ADHOC: {
+#ifndef SIM_ENABLED
+      streamServer.startStreamServer();
+      log_d("[SETUP]: Starting Stream Server");
+#endif  // SIM_ENABLED
+      apiServer.begin();
+      log_d("[SETUP]: Starting API Server");
+      break;
+    }
+    case WiFiState_e::WiFiState_Connected: {
+#ifndef SIM_ENABLED
+      streamServer.startStreamServer();
+      log_d("[SETUP]: Starting Stream Server");
+#endif  // SIM_ENABLED
+      apiServer.begin();
+      log_d("[SETUP]: Starting API Server");
+      break;
+    }
+    case WiFiState_e::WiFiState_Connecting: {
+      //! TODO: Implement
+      break;
+    }
+    case WiFiState_e::WiFiState_Error: {
+      //! TODO: Implement
+      break;
+    }
+  }
 #if ENABLE_OTA
-	ota.begin();
-#endif // ENABLE_OTA
+  ota.begin();
+#endif  // ENABLE_OTA
 }
 
-void loop()
-{
+void loop() {
 #if ENABLE_OTA
-	ota.handleOTAUpdate();
-#endif // ENABLE_OTA
-	ledManager.handleLED(&ledStateManager);
+  ota.handleOTAUpdate();
+#endif  // ENABLE_OTA
+  ledManager.handleLED(&ledStateManager);
 }
