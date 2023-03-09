@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.0](https://github.com/lorow/OpenIris/compare/v1.9.4...v1.10.0) (2023-03-09)
+
+
+### 🍕 Features
+
+* add esp32s3 support ([3eeae18](https://github.com/lorow/OpenIris/commit/3eeae182ee8f85785724aac4177df1ea12c2e407))
+
 ## [1.9.4](https://github.com/lorow/OpenIris/compare/v1.9.3...v1.9.4) (2023-03-05)
 
 
