@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.2](https://github.com/lorow/OpenIris/compare/v1.10.1...v1.10.2) (2023-03-11)
+
+
+### 🐛 Bug Fixes
+
+* bug in customname ([fea596e](https://github.com/lorow/OpenIris/commit/fea596e529b0f93ee40791ae507d8f5415acbee7))
+
 ## [1.10.1](https://github.com/lorow/OpenIris/compare/v1.10.0...v1.10.1) (2023-03-09)
 
 
