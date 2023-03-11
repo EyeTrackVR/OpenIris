@@ -25,8 +25,6 @@ def onError():
 
     customName(project, version, commit, branch)
 
-    exit(1)
-
 
 def handleGit():
     try:
