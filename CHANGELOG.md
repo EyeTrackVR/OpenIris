@@ -3,6 +3,16 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.3](https://github.com/lorow/OpenIris/compare/v1.10.2...v1.10.3) (2023-03-12)
+
+
+### 🔁 Continuous Integration
+
+* **ci-test-docker:** test new docker container ([87bc5b3](https://github.com/lorow/OpenIris/commit/87bc5b3f7f83a8f5cabc71a64016befa466ed166))
+* **ci-test-docker:** test new docker container ([b8a40f1](https://github.com/lorow/OpenIris/commit/b8a40f133f9fb75e3d1c9922779c0c846d2545a6))
+* **ci-test-docker:** test new docker container ([16eefb8](https://github.com/lorow/OpenIris/commit/16eefb86f4853bd6a0d05051fc5fdd58bfbcd3f8))
+* **test-docker-container:** test new docker container ([2463aac](https://github.com/lorow/OpenIris/commit/2463aac8c87d30c0ae90461adc8fdcbe273b0341))
+
 ## [1.10.2](https://github.com/lorow/OpenIris/compare/v1.10.1...v1.10.2) (2023-03-11)
 
 
