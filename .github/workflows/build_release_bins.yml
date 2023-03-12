@@ -54,8 +54,9 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/zanzythebar/piodocker:latest
-          options: -v ${{ github.workspace }}/ESP:/workspace
+          options: -v ${{ github.workspace }}:/workspace
           run: |
+            cd /ESP
             export OPENIRIS_CI_BUILD=1
             mkdir build 
             mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
@@ -63,7 +64,7 @@ jobs:
             pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
             echo "::endgroup::"
             echo "::group::create zip"
-            unzip -l './build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
+            unzip -l './ESP/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
             echo "::endgroup::"
             echo "::group::copy firmware name file"
             cp ./ESP/tools/firmware_name.txt ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt
@@ -71,7 +72,7 @@ jobs:
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
-          echo "FIRMWARE_NAME=$(cat ./build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt)" >> $GITHUB_ENV
+          echo "FIRMWARE_NAME=$(cat ./ESP/build/${{ matrix.target_name }}${{ matrix.target_build_type }}/firmware_name.txt)" >> $GITHUB_ENV
       - name: Archive Firmware Binaries
         uses: actions/upload-artifact@v3
         with:
