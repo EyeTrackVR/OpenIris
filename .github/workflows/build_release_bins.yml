@@ -21,48 +21,48 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-      - name: Cache PlatformIO
-        uses: actions/cache@v3
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          restore-keys: |
-            ${{ runner.os }}-pio-
-      - name: Setup Python install
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-      - name: Install PlatformIO with Pip
-        run: |
-
-          python -m pip install --upgrade pip
-          pip install distro
-          pip install --upgrade platformio
-          pio upgrade --dev
-          pio pkg update --global
-      - name: Update build command
-        working-directory: ./ESP
-        run: |
-          sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
+      #- name: Cache pip
+      #  uses: actions/cache@v3
+      #  with:
+      #    path: ~/.cache/pip
+      #    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+      #    restore-keys: ${{ runner.os }}-pip-
+      #- name: Cache PlatformIO
+      #  uses: actions/cache@v3
+      #  with:
+      #    path: ~/.platformio
+      #    key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      #    restore-keys: |
+      #      ${{ runner.os }}-pio-
+      #- name: Setup Python install
+      #  uses: actions/setup-python@v4
+      #  with:
+      #    python-version: "3.x"
+      #- name: Install PlatformIO with Pip
+      #  run: |
+#
+      #    python -m pip install --upgrade pip
+      #    pip install distro
+      #    pip install --upgrade platformio
+      #    pio upgrade --dev
+      #    pio pkg update --global
+      #- name: Update build command
+      #  working-directory: ./ESP
+      #  run: |
+      #    sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
       - name: Build OpenIris Firmware
-        working-directory: ./ESP
-        run: |
-          export OPENIRIS_CI_BUILD=1
-          mkdir build 
-          mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
-          echo "::group::platformio.ini"
-          cat platformio.ini
-          echo "::endgroup::"
-          echo "::group::pio run"
-          pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
-          echo "::endgroup::"
-          unzip -l './build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ghcr.io/zanzythebar/piodocker:latest
+          options: -v ${{ github.workspace }}/ESP:/workspace
+          run: |
+            export OPENIRIS_CI_BUILD=1
+            mkdir build 
+            mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
+            echo "::group::pio run"
+            pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
+            echo "::endgroup::"
+            unzip -l './build/${{ matrix.target_name }}${{ matrix.target_build_type }}/*.zip'
       - name: Archive Firmware name File
         # create an environment variable with the name of the firmware file by catting the firmware_name.txt file
         run: |
