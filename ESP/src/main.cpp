@@ -28,6 +28,7 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
 LEDManager ledManager(33);
+AsyncWebServer webserver = AsyncWebServer(CONTROL_SERVER_PORT);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
@@ -39,13 +40,13 @@ WiFiHandler wifiHandler(&deviceConfig,
                         WIFI_CHANNEL);
 
 #ifndef SIM_ENABLED
-APIServer apiServer(CONTROL_SERVER_PORT,
+APIServer apiServer(&webserver,
                     &deviceConfig,
                     &cameraHandler,
                     &wifiStateManager,
                     "/control");
 #else
-APIServer apiServer(CONTROL_SERVER_PORT,
+APIServer apiServer(&webserver,
                     &deviceConfig,
                     NULL,
                     &wifiStateManager,
@@ -60,11 +61,9 @@ StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
 void setup() {
   setCpuFrequencyMhz(240);  // set to 240mhz for performance boost
   Serial.begin(115200);
-  // Serial.setDebugOutput(DEBUG_MODE);
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
+
   Logo::printASCII();
   Serial.flush();
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
 
   ledManager.begin();
 #ifndef SIM_ENABLED
@@ -77,19 +76,7 @@ void setup() {
   wifiHandler.setupWifi();
   mdnsHandler.startMDNS();
 
-  /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
-      switch (mdnsStateManager.getCurrentState())
-      {
-      case MDNSState_e::MDNSState_Starting:
-              break;
-      case MDNSState_e::MDNSState_Error:
-              break;
-      case MDNSState_e::MDNSState_QueryComplete:
-              mdnsHandler.startMDNS();
-              break;
-      default:
-              break;
-      } */
+  ota.setup(&webserver);
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
@@ -105,7 +92,8 @@ void setup() {
       streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
 #endif  // SIM_ENABLED
-      apiServer.begin();
+      apiServer.setup();
+      webserver.begin();
       log_d("[SETUP]: Starting API Server");
       break;
     }
@@ -114,7 +102,8 @@ void setup() {
       streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
 #endif  // SIM_ENABLED
-      apiServer.begin();
+      apiServer.setup();
+      webserver.begin();
       log_d("[SETUP]: Starting API Server");
       break;
     }
@@ -127,14 +116,8 @@ void setup() {
       break;
     }
   }
-#if ENABLE_OTA
-  ota.begin();
-#endif  // ENABLE_OTA
 }
 
 void loop() {
-#if ENABLE_OTA
-  ota.handleOTAUpdate();
-#endif  // ENABLE_OTA
   ledManager.handleLED(&ledStateManager);
 }

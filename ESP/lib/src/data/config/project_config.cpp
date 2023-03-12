@@ -31,8 +31,9 @@ void ProjectConfig::initConfig() {
   ! as it will create a blank network which breaks the WiFiManager
    */
   this->config.device = {
-      "12345678",
-      3232,
+      OTA_LOGIN,
+      OTA_PASSWORD,
+      3232
   };
 
   if (_mdnsName.empty()) {
@@ -113,6 +114,7 @@ void ProjectConfig::wifiConfigSave() {
 void ProjectConfig::deviceConfigSave() {
   /* Device Config */
   putString("OTAPassword", this->config.device.OTAPassword.c_str());
+  putString("OTALogin", this->config.device.OTALogin.c_str());
   putInt("OTAPort", this->config.device.OTAPort);
 }
 
@@ -149,6 +151,7 @@ void ProjectConfig::load() {
   }
 
   /* Device Config */
+  this->config.device.OTALogin = getString("OTALogin", "openiris").c_str();
   this->config.device.OTAPassword =
       getString("OTAPassword", "12345678").c_str();
   this->config.device.OTAPort = getInt("OTAPort", 3232);
@@ -210,11 +213,13 @@ void ProjectConfig::load() {
 //!                                                DeviceConfig
 //*
 //**********************************************************************************************************************
-void ProjectConfig::setDeviceConfig(const std::string& OTAPassword,
+void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
+                                    const std::string& OTAPassword,
                                     int OTAPort,
                                     const std::string& binaryName,
                                     bool shouldNotify) {
   log_d("Updating device config");
+  this->config.device.OTALogin.assign(OTALogin);
   this->config.device.OTAPassword.assign(OTAPassword);
   this->config.device.OTAPort = OTAPort;
   // check if binary name is empty

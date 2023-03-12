@@ -10,12 +10,12 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(int CONTROL_PORT,
+BaseAPI::BaseAPI(AsyncWebServer *server,
                  ProjectConfig* projectConfig,
                  CameraHandler* camera,
                  StateManager<WiFiState_e>* WiFiStateManager,
                  const std::string& api_url)
-    : server(CONTROL_PORT),
+    : _server(server),
       projectConfig(projectConfig),
       camera(camera),
       wiFiStateManager(wiFiStateManager),
@@ -26,11 +26,11 @@ BaseAPI::~BaseAPI() {}
 void BaseAPI::begin() {
   //! i have changed this to use lambdas instead of std::bind to avoid the
   //! overhead. Lambdas are always more preferable.
-  server.on("/", 0b00000001,
+  this->_server->on("/", 0b00000001,
             [&](AsyncWebServerRequest* request) { request->send(200); });
 
   // preflight cors check
-  server.on("/", 0b01000000, [&](AsyncWebServerRequest* request) {
+  this->_server->on("/", 0b01000000, [&](AsyncWebServerRequest* request) {
     AsyncWebServerResponse* response = request->beginResponse(204);
     response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
     response->addHeader("Access-Control-Allow-Headers",
@@ -42,7 +42,7 @@ void BaseAPI::begin() {
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
   // std::bind(&BaseAPI::notFound, &std::placeholders::_1);
-  server.onNotFound([&](AsyncWebServerRequest* request) { notFound(request); });
+  this->_server->onNotFound([&](AsyncWebServerRequest* request) { notFound(request); });
 }
 
 void BaseAPI::notFound(AsyncWebServerRequest* request) const {
@@ -172,6 +172,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string hostname;
       std::string service;
       std::string ota_password;
+      std::string ota_login;
       std::string firmware_name;
       int ota_port;
 
@@ -189,6 +190,8 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
           service.assign(param->value().c_str());
         } else if (param->name() == "ota_port") {
           ota_port = atoi(param->value().c_str());
+        } else if (param->name() == "ota_login") {
+          ota_login.assign(param->value().c_str());
         } else if (param->name() == "ota_password") {
           ota_password.assign(param->value().c_str());
         } else if (param->name() == "firmware_name") {
@@ -197,7 +200,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setDeviceConfig(ota_password, ota_port, firmware_name,
+      projectConfig->setDeviceConfig(ota_login, ota_password, ota_port, firmware_name,
                                      true);
       projectConfig->setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,

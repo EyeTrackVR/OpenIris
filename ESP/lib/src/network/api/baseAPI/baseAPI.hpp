@@ -97,12 +97,13 @@ protected:
 
 	ProjectConfig *projectConfig;
 	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-	AsyncWebServer server;
+	AsyncWebServer *_server;
 	CameraHandler *camera;
 	StateManager<WiFiState_e> *wiFiStateManager;
 
 public:
-	BaseAPI(int CONTROL_PORT,
+	BaseAPI(
+			AsyncWebServer *server,
 			ProjectConfig *projectConfig,
 			CameraHandler *camera,
 			StateManager<WiFiState_e> *wiFiStateManager,

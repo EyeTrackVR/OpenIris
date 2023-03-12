@@ -27,6 +27,7 @@ class ProjectConfig : public Preferences, public ISubject {
   void initConfig();
 
   struct DeviceConfig_t {
+    std::string OTALogin;
     std::string OTAPassword;
     int OTAPort;
     std::string binaryName;
@@ -102,7 +103,8 @@ class ProjectConfig : public Preferences, public ISubject {
   MDNSConfig_t* getMDNSConfig();
   WiFiTxPower_t* getWiFiTxPowerConfig();
 
-  void setDeviceConfig(const std::string& OTAPassword,
+  void setDeviceConfig(const std::string& OTALogin,
+                       const std::string& OTAPassword,
                        int OTAPort,
                        const std::string& binaryName,
                        bool shouldNotify);

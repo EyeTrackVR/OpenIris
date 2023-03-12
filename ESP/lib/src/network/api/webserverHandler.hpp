@@ -7,14 +7,15 @@
 class APIServer : public BaseAPI
 {
 public:
-	APIServer(int CONTROL_PORT,
+	APIServer(
+			  AsyncWebServer *server,
 			  ProjectConfig *projectConfig,
 			  CameraHandler *camera,
 			  StateManager<WiFiState_e> *wiFiStateManager,
 			  const std::string &api_url);
 
 	virtual ~APIServer();
-	void begin();
+	void setup();
 	void setupServer();
 	void findParam(AsyncWebServerRequest *request, const char *param, std::string &value);
 	void addRouteMap(const std::string &index, route_t route, std::vector<std::string> &indexes);

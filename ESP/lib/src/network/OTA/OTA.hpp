@@ -1,7 +1,8 @@
 #ifndef OTA_HPP
 #define OTA_HPP
-#include <ArduinoOTA.h>
-#include <HTTPClient.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
+
 #include "data/config/project_config.hpp"
 
 class OTA
@@ -9,12 +10,8 @@ class OTA
 public:
     OTA(ProjectConfig *_deviceConfig);
     virtual ~OTA();
-    void begin();
-    void handleOTAUpdate();
-
+    void setup(AsyncWebServer* APIServer);
 private:
     ProjectConfig *_deviceConfig;
-    unsigned long _bootTimestamp;
-    bool _isOtaEnabled;
 };
 #endif // OTA_HPP
