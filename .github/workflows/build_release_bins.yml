@@ -114,7 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover]
+        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
         target_build_type: ["", _release, _OTA]
     name: Cleanup actions
     needs:
