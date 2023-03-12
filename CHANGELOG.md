@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.5](https://github.com/lorow/OpenIris/compare/v1.10.4...v1.10.5) (2023-03-12)
+
+
+### 🐛 Bug Fixes
+
+* add s3 env to cleanup step ([78e5cbf](https://github.com/lorow/OpenIris/commit/78e5cbfd8fb3f25ba13dce2dbc3206d10944d5f9))
+
 ## [1.10.4](https://github.com/lorow/OpenIris/compare/v1.10.3...v1.10.4) (2023-03-12)
 
 
