@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.10.6](https://github.com/lorow/OpenIris/compare/v1.10.5...v1.10.6) (2023-03-12)
+
+
+### 🐛 Bug Fixes
+
+* remove ota env from cleanup step ([fafd35d](https://github.com/lorow/OpenIris/commit/fafd35d19e8b7e9028ca3f09bdb9689c4ab1a165))
+
 ## [1.10.5](https://github.com/lorow/OpenIris/compare/v1.10.4...v1.10.5) (2023-03-12)
 
 
