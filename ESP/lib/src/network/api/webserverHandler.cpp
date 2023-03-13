@@ -4,12 +4,11 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(AsyncWebServer *server,
-                     ProjectConfig* projectConfig,
+APIServer::APIServer(ProjectConfig* projectConfig,
                      CameraHandler* camera,
                      StateManager<WiFiState_e>* wiFiStateManager,
-                     const std::string &api_url)
-    : BaseAPI(server, projectConfig, camera, wiFiStateManager, api_url) {}
+                     const std::string& api_url)
+    : BaseAPI(projectConfig, camera, wiFiStateManager, api_url) {}
 
 APIServer::~APIServer() {}
 
@@ -24,8 +23,21 @@ void APIServer::setup() {
            this->api_url.c_str());
   log_d("API URL: %s", buffer);
 
-  this->_server->on(buffer, 0b01111111,
-            [&](AsyncWebServerRequest* request) { handleRequest(request); });
+  this->server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
+    handleRequest(request);
+  });
+
+  // Note: Start OTA after all routes have been added
+
+  auto device_config = projectConfig->getDeviceConfig();
+
+  log_d("[OTA Server]: Username: %s, Password: %s",
+        device_config->OTALogin.c_str(), device_config->OTAPassword.c_str());
+#ifndef SIM_ENABLED
+  //this->_authRequired = true;
+#endif  // SIM_ENABLED
+  this->beginOTA();
+  server.begin();
 }
 
 void APIServer::setupServer() {

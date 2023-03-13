@@ -30,7 +30,6 @@ class ProjectConfig : public Preferences, public ISubject {
     std::string OTALogin;
     std::string OTAPassword;
     int OTAPort;
-    std::string binaryName;
     std::string toRepresentation();
   };
 
@@ -106,7 +105,6 @@ class ProjectConfig : public Preferences, public ISubject {
   void setDeviceConfig(const std::string& OTALogin,
                        const std::string& OTAPassword,
                        int OTAPort,
-                       const std::string& binaryName,
                        bool shouldNotify);
   void setMDNSConfig(const std::string& hostname,
                      const std::string& service,

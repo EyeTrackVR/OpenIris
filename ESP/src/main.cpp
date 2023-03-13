@@ -9,13 +9,12 @@
 //! TODO: Setup OTA enabled state to be controllable by API if enabled at
 //! compile time
 #if ENABLE_OTA
-#include <network/OTA/OTA.hpp>
+// #include <network/OTA/OTA.hpp>
 #endif  // ENABLE_OTA
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
 int STREAM_SERVER_PORT = 80;
-int CONTROL_SERVER_PORT = 81;
 /**
  * @brief ProjectConfig object
  * @brief This is the main configuration object for the project
@@ -25,10 +24,9 @@ int CONTROL_SERVER_PORT = 81;
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
-OTA ota(&deviceConfig);
+// OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
 LEDManager ledManager(33);
-AsyncWebServer webserver = AsyncWebServer(CONTROL_SERVER_PORT);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
@@ -40,17 +38,12 @@ WiFiHandler wifiHandler(&deviceConfig,
                         WIFI_CHANNEL);
 
 #ifndef SIM_ENABLED
-APIServer apiServer(&webserver,
-                    &deviceConfig,
+APIServer apiServer(&deviceConfig,
                     &cameraHandler,
                     &wifiStateManager,
                     "/control");
 #else
-APIServer apiServer(&webserver,
-                    &deviceConfig,
-                    NULL,
-                    &wifiStateManager,
-                    "/control");
+APIServer apiServer(&deviceConfig, NULL, &wifiStateManager, "/control");
 #endif  // SIM_ENABLED
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 
@@ -76,7 +69,7 @@ void setup() {
   wifiHandler.setupWifi();
   mdnsHandler.startMDNS();
 
-  ota.setup(&webserver);
+  // ota.begin(&webserver);
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
@@ -89,22 +82,20 @@ void setup() {
     }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.setup();
-      webserver.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connected: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.setup();
-      webserver.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connecting: {

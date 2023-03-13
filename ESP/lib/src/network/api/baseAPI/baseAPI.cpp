@@ -10,27 +10,28 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(AsyncWebServer *server,
-                 ProjectConfig* projectConfig,
+BaseAPI::BaseAPI(ProjectConfig* projectConfig,
                  CameraHandler* camera,
                  StateManager<WiFiState_e>* WiFiStateManager,
-                 const std::string& api_url)
-    : _server(server),
-      projectConfig(projectConfig),
+                 const std::string& api_url,
+                 int port)
+    : projectConfig(projectConfig),
       camera(camera),
       wiFiStateManager(wiFiStateManager),
-      api_url(api_url) {}
+      server(port),
+      api_url(api_url),
+      _authRequired(false) {}
 
 BaseAPI::~BaseAPI() {}
 
 void BaseAPI::begin() {
   //! i have changed this to use lambdas instead of std::bind to avoid the
   //! overhead. Lambdas are always more preferable.
-  this->_server->on("/", 0b00000001,
+  server.on("/", 0b00000001,
             [&](AsyncWebServerRequest* request) { request->send(200); });
 
   // preflight cors check
-  this->_server->on("/", 0b01000000, [&](AsyncWebServerRequest* request) {
+  server.on("/", 0b01000000, [&](AsyncWebServerRequest* request) {
     AsyncWebServerResponse* response = request->beginResponse(204);
     response->addHeader("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS");
     response->addHeader("Access-Control-Allow-Headers",
@@ -42,7 +43,7 @@ void BaseAPI::begin() {
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
   // std::bind(&BaseAPI::notFound, &std::placeholders::_1);
-  this->_server->onNotFound([&](AsyncWebServerRequest* request) { notFound(request); });
+  server.onNotFound([&](AsyncWebServerRequest* request) { notFound(request); });
 }
 
 void BaseAPI::notFound(AsyncWebServerRequest* request) const {
@@ -173,7 +174,6 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string service;
       std::string ota_password;
       std::string ota_login;
-      std::string firmware_name;
       int ota_port;
 
       for (int i = 0; i < params; i++) {
@@ -194,14 +194,11 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
           ota_login.assign(param->value().c_str());
         } else if (param->name() == "ota_password") {
           ota_password.assign(param->value().c_str());
-        } else if (param->name() == "firmware_name") {
-          firmware_name.assign(param->value().c_str());
         }
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setDeviceConfig(ota_login, ota_password, ota_port, firmware_name,
-                                     true);
+      projectConfig->setDeviceConfig(ota_login, ota_password, ota_port, true);
       projectConfig->setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
@@ -347,4 +344,130 @@ void BaseAPI::rssi(AsyncWebServerRequest* request) {
   char _rssiBuffer[20];
   snprintf(_rssiBuffer, sizeof(_rssiBuffer), "{\"rssi\": %d }", rssi);
   request->send(200, MIMETYPE_JSON, _rssiBuffer);
+}
+
+//*********************************************************************************************
+//!                                     OTA Command Functions
+//*********************************************************************************************
+
+void BaseAPI::beginOTA() {
+  auto device_config = projectConfig->getDeviceConfig();
+  auto mdns_config = projectConfig->getMDNSConfig();
+
+  if (device_config->OTAPassword.empty()) {
+    log_e(
+        "Password is empty, you need to provide a password in order to setup "
+        "the OTA server");
+    return;
+  }
+
+  log_i("[OTA Server]: Started.");
+  log_i(
+      "[OTA Server]: Navigate to http://%s.local:81/update to update the firmware",
+      mdns_config->hostname.c_str());
+
+  // Note: HTT_GET
+  server.on(
+      "/update/identity", 0b00000001, [&](AsyncWebServerRequest* request) {
+        if (_authRequired) {
+          if (!request->authenticate(device_config->OTALogin.c_str(),
+                                     device_config->OTAPassword.c_str())) {
+            return request->requestAuthentication();
+          }
+        }
+        // std::string _id = Network_Utilities::generateDeviceID();
+        String _id = String((uint32_t)ESP.getEfuseMac(), HEX);
+        _id.toUpperCase();
+        // char _buffer[400];
+        // snprintf(_buffer, sizeof(_buffer),
+        //          "{\"id\": \"%s\", \"hardware\": \"%s\"}", _id.c_str(),
+        //          CAMERA_MODULE_NAME);
+        //
+        // request->send(200, "application/json", _buffer);
+        request->send(200, "application/json",
+                      "{\"id\": \"" + _id + "\", \"hardware\": \"ESP32\"}");
+      });
+
+  // Note: HTT_GET
+  server.on("/update", 0b00000001, [&](AsyncWebServerRequest* request) {
+    if (_authRequired) {
+      if (!request->authenticate(device_config->OTALogin.c_str(),
+                                 device_config->OTAPassword.c_str())) {
+        return request->requestAuthentication();
+      }
+    }
+
+    // turn off the camera and stop the stream
+    esp_camera_deinit(); // deinitialize the camera driver
+    digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
+
+    AsyncWebServerResponse* response = request->beginResponse_P(
+        200, "text/html", ELEGANT_HTML, ELEGANT_HTML_SIZE);
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
+  // Note: HTT_POST
+  server.on(
+      "/update", 0b00000010,
+      [&](AsyncWebServerRequest* request) {
+        if (_authRequired) {
+          if (!request->authenticate(device_config->OTALogin.c_str(),
+                                     device_config->OTAPassword.c_str())) {
+            return request->requestAuthentication();
+          }
+        }
+        // the request handler is triggered after the upload has finished...
+        // create the response, add header, and send response
+        AsyncWebServerResponse* response = request->beginResponse(
+            (Update.hasError()) ? 500 : 200, "text/plain",
+            (Update.hasError()) ? "FAIL" : "OK");
+        response->addHeader("Connection", "close");
+        response->addHeader("Access-Control-Allow-Origin", "*");
+        request->send(response);
+        this->save(request);
+       },
+      [&](AsyncWebServerRequest* request, String filename, size_t index,
+          uint8_t* data, size_t len, bool final) {
+        // Upload handler chunks in data
+        if (_authRequired) {
+          if (!request->authenticate(device_config->OTALogin.c_str(),
+                                     device_config->OTAPassword.c_str())) {
+            return request->requestAuthentication();
+          }
+        }
+
+        if (!index) {
+          if (!request->hasParam("MD5", true)) {
+            return request->send(400, "text/plain", "MD5 parameter missing");
+          }
+
+          if (!Update.setMD5(request->getParam("MD5", true)->value().c_str())) {
+            return request->send(400, "text/plain", "MD5 parameter invalid");
+          }
+          int cmd = (filename == "filesystem") ? U_SPIFFS : U_FLASH;
+          if (!Update.begin(UPDATE_SIZE_UNKNOWN,
+                            cmd)) {  // Start with max available size
+            Update.printError(Serial);
+            return request->send(400, "text/plain", "OTA could not begin");
+          }
+        }
+
+        // Write chunked data to the free sketch space
+        if (len) {
+          if (Update.write(data, len) != len) {
+            return request->send(400, "text/plain", "OTA could not begin");
+          }
+        }
+
+        if (final) {  // if the final flag is set then this is the last frame of
+                      // data
+          if (!Update.end(
+                  true)) {  // true to set the size to the current progress
+            Update.printError(Serial);
+            return request->send(400, "text/plain", "Could not end OTA");
+          }
+        } else {
+          return;
+        }
+      });
 }
