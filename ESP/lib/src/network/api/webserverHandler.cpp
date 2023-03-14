@@ -28,11 +28,6 @@ void APIServer::setup() {
   });
 
   // Note: Start OTA after all routes have been added
-
-  auto device_config = projectConfig->getDeviceConfig();
-
-  log_d("[OTA Server]: Username: %s, Password: %s",
-        device_config->OTALogin.c_str(), device_config->OTAPassword.c_str());
 #ifndef SIM_ENABLED
   //this->_authRequired = true;
 #endif  // SIM_ENABLED

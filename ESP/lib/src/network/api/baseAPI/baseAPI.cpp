@@ -350,6 +350,21 @@ void BaseAPI::rssi(AsyncWebServerRequest* request) {
 //!                                     OTA Command Functions
 //*********************************************************************************************
 
+void BaseAPI::checkAuthentication(AsyncWebServerRequest* request,
+                                  const char* login,
+                                  const char* password) {
+  log_d("Free Heap: %d", ESP.getFreeHeap());
+  if (_authRequired) {
+    log_d("Free Heap: %d", ESP.getFreeHeap());
+    log_i("Auth required");
+    log_d("Free Heap: %d", ESP.getFreeHeap());
+    if (!request->authenticate(login, password, NULL, false)) {
+      log_d("Free Heap: %d", ESP.getFreeHeap());
+      return request->requestAuthentication(NULL, false);
+    }
+  }
+}
+
 void BaseAPI::beginOTA() {
   auto device_config = projectConfig->getDeviceConfig();
   auto mdns_config = projectConfig->getMDNSConfig();
@@ -363,18 +378,21 @@ void BaseAPI::beginOTA() {
 
   log_i("[OTA Server]: Started.");
   log_i(
-      "[OTA Server]: Navigate to http://%s.local:81/update to update the firmware",
+      "[OTA Server]: Navigate to http://%s.local:81/update to update the "
+      "firmware",
       mdns_config->hostname.c_str());
 
+  log_d("[OTA Server]: Username: %s, Password: %s",
+        device_config->OTALogin.c_str(), device_config->OTAPassword.c_str());
+  log_d("Free Heap: %d", ESP.getFreeHeap());
+  const char* login = device_config->OTALogin.c_str();
+  const char* password = device_config->OTAPassword.c_str();
+  log_d("Free Heap: %d", ESP.getFreeHeap());
   // Note: HTT_GET
   server.on(
       "/update/identity", 0b00000001, [&](AsyncWebServerRequest* request) {
-        if (_authRequired) {
-          if (!request->authenticate(device_config->OTALogin.c_str(),
-                                     device_config->OTAPassword.c_str())) {
-            return request->requestAuthentication();
-          }
-        }
+        checkAuthentication(request, login, password);
+
         // std::string _id = Network_Utilities::generateDeviceID();
         String _id = String((uint32_t)ESP.getEfuseMac(), HEX);
         _id.toUpperCase();
@@ -390,16 +408,12 @@ void BaseAPI::beginOTA() {
 
   // Note: HTT_GET
   server.on("/update", 0b00000001, [&](AsyncWebServerRequest* request) {
-    if (_authRequired) {
-      if (!request->authenticate(device_config->OTALogin.c_str(),
-                                 device_config->OTAPassword.c_str())) {
-        return request->requestAuthentication();
-      }
-    }
+    log_d("Free Heap: %d", ESP.getFreeHeap());
+    checkAuthentication(request, login, password);
 
     // turn off the camera and stop the stream
-    esp_camera_deinit(); // deinitialize the camera driver
-    digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
+    esp_camera_deinit();                // deinitialize the camera driver
+    digitalWrite(PWDN_GPIO_NUM, HIGH);  // turn power off to camera module
 
     AsyncWebServerResponse* response = request->beginResponse_P(
         200, "text/html", ELEGANT_HTML, ELEGANT_HTML_SIZE);
@@ -410,12 +424,7 @@ void BaseAPI::beginOTA() {
   server.on(
       "/update", 0b00000010,
       [&](AsyncWebServerRequest* request) {
-        if (_authRequired) {
-          if (!request->authenticate(device_config->OTALogin.c_str(),
-                                     device_config->OTAPassword.c_str())) {
-            return request->requestAuthentication();
-          }
-        }
+        checkAuthentication(request, login, password);
         // the request handler is triggered after the upload has finished...
         // create the response, add header, and send response
         AsyncWebServerResponse* response = request->beginResponse(
@@ -425,16 +434,11 @@ void BaseAPI::beginOTA() {
         response->addHeader("Access-Control-Allow-Origin", "*");
         request->send(response);
         this->save(request);
-       },
+      },
       [&](AsyncWebServerRequest* request, String filename, size_t index,
           uint8_t* data, size_t len, bool final) {
         // Upload handler chunks in data
-        if (_authRequired) {
-          if (!request->authenticate(device_config->OTALogin.c_str(),
-                                     device_config->OTAPassword.c_str())) {
-            return request->requestAuthentication();
-          }
-        }
+        checkAuthentication(request, login, password);
 
         if (!index) {
           if (!request->hasParam("MD5", true)) {

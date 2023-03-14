@@ -118,6 +118,9 @@ class BaseAPI {
 
   virtual ~BaseAPI();
   virtual void begin();
+  void checkAuthentication(AsyncWebServerRequest* request,
+                           const char* login,
+                           const char* password);
   void beginOTA();
   void notFound(AsyncWebServerRequest* request) const;
 };
