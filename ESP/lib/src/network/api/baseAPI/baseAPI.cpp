@@ -96,8 +96,8 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setWifiConfig(networkName, ssid, password, &channel,
-                                   &power, adhoc, true);
+      projectConfig->setWifiConfig(networkName, ssid, password, channel,
+                                   power, adhoc, true);
 
       /* if (WiFiStateManager->getCurrentState() ==
       WiFiState_e::WiFiState_ADHOC)
@@ -219,7 +219,7 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
           txPower = atoi(param->value().c_str());
         }
       }
-      projectConfig->setWiFiTxPower(&txPower, true);
+      projectConfig->setWiFiTxPower(txPower, true);
       projectConfig->wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
@@ -236,7 +236,7 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
           txPower = atoi(param->value().c_str());
         }
       }
-      projectConfig->setWiFiTxPower(&txPower, true);
+      projectConfig->setWiFiTxPower(txPower, true);
       projectConfig->wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
@@ -305,9 +305,9 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setCameraConfig(&temp_camera_vflip, &temp_camera_framesize,
-                                     &temp_camera_hflip, &temp_camera_quality,
-                                     &temp_camera_brightness, true);
+      projectConfig->setCameraConfig(temp_camera_vflip, temp_camera_framesize,
+                                     temp_camera_hflip, temp_camera_quality,
+                                     temp_camera_brightness, true);
 
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Camera Settings have been set.\"}");

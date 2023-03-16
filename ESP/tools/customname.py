@@ -125,6 +125,9 @@ def customName(project, version, commit, branch):
         "echo %s > %s" % (env["PROGNAME"], env.subst("./tools/firmware_name.txt"))
     )
 
+    # replace the VERSION macro with the version from Git
+    env.Replace(VERSION="%s" % (s(defines.get("PIO_SRC_TAG"))))
+
 
 try:
     flags = env["BUILD_FLAGS"]

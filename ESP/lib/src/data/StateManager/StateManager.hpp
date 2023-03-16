@@ -20,7 +20,10 @@ struct DeviceStates
     enum LEDStates_e
     {
         _LedStateNone,
-        _SerialManager_Error,
+        _Improv_Start,
+        _Improv_Stop,
+        _Improv_Processing,
+        _Improv_Error,
         _WebServerState_Error,
         _WiFiState_Error,
         _MDNSState_Error,

@@ -11,7 +11,13 @@
 
 LEDManager::ledStateMap_t LEDManager::ledStateMap = {
     {LEDStates_e::_LedStateNone, {{0, 500}}},
-    {LEDStates_e::_SerialManager_Error,
+    {LEDStates_e::_Improv_Error,
+     {{1, 1000}, {0, 500}, {0, 1000}, {0, 500}, {1, 1000}}},
+    {LEDStates_e::_Improv_Start,
+     {{1, 500}, {0, 300}, {0, 300}, {0, 300}, {1, 500}}},
+    {LEDStates_e::_Improv_Stop,
+     {{1, 300}, {0, 500}, {0, 500}, {0, 500}, {1, 300}}},
+    {LEDStates_e::_Improv_Processing,
      {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
     {LEDStates_e::_WebServerState_Error,
      {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
@@ -105,7 +111,7 @@ void LEDManager::handleLED() {
     this->toggleLED(false);
     return;
   }
-  // we can safely adnace it and display the next stage
+  // we can safely advance it and display the next stage
   BlinkPatterns_t pattern =
       this->ledStateMap[this->currentState][this->currentPatternIndex];
   this->toggleLED(pattern.state);

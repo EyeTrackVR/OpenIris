@@ -238,18 +238,18 @@ void ProjectConfig::setMDNSConfig(const std::string& hostname,
     this->notify(ObserverEvent::mdnsConfigUpdated);
 }
 
-void ProjectConfig::setCameraConfig(uint8_t* vflip,
-                                    uint8_t* framesize,
-                                    uint8_t* href,
-                                    uint8_t* quality,
-                                    uint8_t* brightness,
+void ProjectConfig::setCameraConfig(uint8_t vflip,
+                                    uint8_t framesize,
+                                    uint8_t href,
+                                    uint8_t quality,
+                                    uint8_t brightness,
                                     bool shouldNotify) {
   log_d("Updating camera config");
-  this->config.camera.vflip = *vflip;
-  this->config.camera.href = *href;
-  this->config.camera.framesize = *framesize;
-  this->config.camera.quality = *quality;
-  this->config.camera.brightness = *brightness;
+  this->config.camera.vflip = vflip;
+  this->config.camera.href = href;
+  this->config.camera.framesize = framesize;
+  this->config.camera.quality = quality;
+  this->config.camera.brightness = brightness;
 
   log_d("Updating Camera config");
   if (shouldNotify)
@@ -259,8 +259,8 @@ void ProjectConfig::setCameraConfig(uint8_t* vflip,
 void ProjectConfig::setWifiConfig(const std::string& networkName,
                                   const std::string& ssid,
                                   const std::string& password,
-                                  uint8_t* channel,
-                                  uint8_t* power,
+                                  uint8_t channel,
+                                  uint8_t power,
                                   bool adhoc,
                                   bool shouldNotify) {
   // we store the ADHOC flag as false because the networks we store in the
@@ -270,8 +270,8 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   // we're allowing to store up to three additional networks
   if (size == 0) {
     Serial.println("No networks, We're adding a new network");
-    this->config.networks.emplace_back(networkName, ssid, password, *channel,
-                                       *power, false);
+    this->config.networks.emplace_back(networkName, ssid, password, channel,
+                                       power, false);
 
     if (shouldNotify)
       this->notify(ObserverEvent::networksConfigUpdated);
@@ -287,8 +287,8 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
       it->name = networkName;
       it->ssid = ssid;
       it->password = password;
-      it->channel = *channel;
-      it->power = *power;
+      it->channel = channel;
+      it->power = power;
       it->adhoc = false;
 
       if (shouldNotify)
@@ -305,8 +305,8 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
     // we don't have that network yet, we can add it as we still have some
     // space we're using emplace_back as push_back will create a copy of it,
     // we want to avoid that
-    this->config.networks.emplace_back(networkName, ssid, password, *channel,
-                                       *power, false);
+    this->config.networks.emplace_back(networkName, ssid, password, channel,
+                                       power, false);
   }
 
   if (shouldNotify)
@@ -336,8 +336,8 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
     this->notify(ObserverEvent::networksConfigUpdated);
 }
 
-void ProjectConfig::setWiFiTxPower(uint8_t* power, bool shouldNotify) {
-  this->config.txpower.power = *power;
+void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
+  this->config.txpower.power = power;
 
   log_d("Updating wifi tx power");
   if (shouldNotify)
@@ -346,12 +346,12 @@ void ProjectConfig::setWiFiTxPower(uint8_t* power, bool shouldNotify) {
 
 void ProjectConfig::setAPWifiConfig(const std::string& ssid,
                                     const std::string& password,
-                                    uint8_t* channel,
+                                    uint8_t channel,
                                     bool adhoc,
                                     bool shouldNotify) {
   this->config.ap_network.ssid.assign(ssid);
   this->config.ap_network.password.assign(password);
-  this->config.ap_network.channel = *channel;
+  this->config.ap_network.channel = channel;
   this->config.ap_network.adhoc = adhoc;
 
   log_d("Updating access point config");

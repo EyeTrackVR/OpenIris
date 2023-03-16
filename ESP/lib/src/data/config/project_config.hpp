@@ -109,25 +109,25 @@ class ProjectConfig : public Preferences, public ISubject {
   void setMDNSConfig(const std::string& hostname,
                      const std::string& service,
                      bool shouldNotify);
-  void setCameraConfig(uint8_t* vflip,
-                       uint8_t* framesize,
-                       uint8_t* href,
-                       uint8_t* quality,
-                       uint8_t* brightness,
+  void setCameraConfig(uint8_t vflip,
+                       uint8_t framesize,
+                       uint8_t href,
+                       uint8_t quality,
+                       uint8_t brightness,
                        bool shouldNotify);
   void setWifiConfig(const std::string& networkName,
                      const std::string& ssid,
                      const std::string& password,
-                     uint8_t* channel,
-                     uint8_t* power,
+                     uint8_t channel,
+                     uint8_t power,
                      bool adhoc,
                      bool shouldNotify);
   void setAPWifiConfig(const std::string& ssid,
                        const std::string& password,
-                       uint8_t* channel,
+                       uint8_t channel,
                        bool adhoc,
                        bool shouldNotify);
-  void setWiFiTxPower(uint8_t* power, bool shouldNotify);
+  void setWiFiTxPower(uint8_t power, bool shouldNotify);
 
   void deleteWifiConfig(const std::string& networkName, bool shouldNotify);
 
