@@ -18,16 +18,15 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
   switch (cmd.command) {
     case improv::Command::GET_CURRENT_STATE: {
       auto wifiConfigs = projectConfig->getWifiConfigs();
-      if (wifiConfigs->size() > 0) {
+      if (!wifiConfigs->empty()) {
         this->set_state(improv::State::STATE_PROVISIONED);
-      } else {
-        this->set_state(improv::State::STATE_AUTHORIZED);
+        return;
       }
+      this->set_state(improv::State::STATE_AUTHORIZED);
       break;
     }
 
     case improv::Command::WIFI_SETTINGS: {
-      auto mdnsConfig = projectConfig->getMDNSConfig();
       stateManager->setState(LEDStates_e::_Improv_Start);
 
       set_state(improv::STATE_PROVISIONING);
@@ -37,9 +36,7 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       projectConfig->wifiConfigSave();
       set_state(improv::STATE_PROVISIONED);
 
-      // construct url
-      std::string root_url = "http://" + mdnsConfig->hostname + ".local";
-      std::vector<std::string> url = {root_url};
+      std::vector<std::string> url = {WiFi.localIP().toString().c_str()};
       std::vector<uint8_t> data =
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
