@@ -6,8 +6,6 @@
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 
-//! TODO: Setup OTA enabled state to be controllable by API if enabled at
-//! compile time
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
 #endif  // ENABLE_OTA
@@ -26,31 +24,15 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
-#endif  // ENABLE_OTA
-LEDManager ledManager(33);
+#endif // ENABLE_OTA
+
+LEDManager ledManager(33, &ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(&deviceConfig,
-                        &wifiStateManager,
-                        WIFI_SSID,
-                        WIFI_PASSWORD,
-                        WIFI_CHANNEL);
-
-#ifndef SIM_ENABLED
-APIServer apiServer(CONTROL_SERVER_PORT,
-                    &deviceConfig,
-                    &cameraHandler,
-                    &wifiStateManager,
-                    "/control");
-#else
-APIServer apiServer(CONTROL_SERVER_PORT,
-                    &deviceConfig,
-                    NULL,
-                    &wifiStateManager,
-                    "/control");
-#endif  // SIM_ENABLED
+WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, &ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 
 #ifndef SIM_ENABLED
@@ -65,7 +47,6 @@ void setup() {
   Logo::printASCII();
   Serial.flush();
   // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
-
   ledManager.begin();
 #ifndef SIM_ENABLED
   deviceConfig.attach(&cameraHandler);
@@ -93,10 +74,6 @@ void setup() {
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_Disconnecting: {
       //! TODO: Implement
       break;
     }
@@ -136,5 +113,5 @@ void loop() {
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
-  ledManager.handleLED(&ledStateManager);
+  ledManager.handleLED();
 }
