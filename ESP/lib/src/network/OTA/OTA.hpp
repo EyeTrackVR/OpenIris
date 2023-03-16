@@ -9,8 +9,8 @@ class OTA
 public:
     OTA(ProjectConfig *_deviceConfig);
     virtual ~OTA();
-    void SetupOTA();
-    void HandleOTAUpdate();
+    void begin();
+    void handleOTAUpdate();
 
 private:
     ProjectConfig *_deviceConfig;

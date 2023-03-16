@@ -158,7 +158,7 @@
                 "addReleases": "bottom",
                 "assets": [
                     {
-                        "path": "./build/**/*.bin"
+                        "path": "./build/**/*.zip"
                     }
                 ]
             }

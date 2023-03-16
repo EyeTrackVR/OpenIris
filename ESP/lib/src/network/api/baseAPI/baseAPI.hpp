@@ -15,13 +15,14 @@
 #define XHTTP_OPTIONS 0b01000000;
 #define XHTTP_ANY 0b01111111; */
 
-#define HTTP_ANY 0b01111111
-#define HTTP_GET 0b00000001
+//constexpr int HTTP_GET = 0b00000001;
+constexpr int HTTP_ANY = 0b01111111;
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
 #include "data/utilities/network_utilities.hpp"
+#include "tasks/tasks.hpp"
 
 #include "data/config/project_config.hpp"
 #include "data/StateManager/StateManager.hpp"
@@ -50,6 +51,7 @@ protected:
 	void rebootDevice(AsyncWebServerRequest *request);
 	void ping(AsyncWebServerRequest *request);
 	void save(AsyncWebServerRequest *request);
+	void rssi(AsyncWebServerRequest *request);
 
 	/* Camera Handlers */
 	void setCamera(AsyncWebServerRequest *request);

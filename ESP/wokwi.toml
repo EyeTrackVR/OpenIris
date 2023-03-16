@@ -1,0 +1,7 @@
+[wokwi]
+version = 1
+elf = ".pio/build/esp32AIThinker_sim/OpenIris-v1.9.4-esp32AIThinker_sim-b4d56af-master.elf"
+firmware = ".pio/build/esp32AIThinker_sim/OpenIris-v1.9.4-esp32AIThinker_sim-b4d56af-master.bin"
+[[net.forward]]
+from = "localhost:8180"
+to = "target:80"
