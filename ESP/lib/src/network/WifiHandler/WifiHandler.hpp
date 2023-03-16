@@ -23,7 +23,7 @@ public:
 
 	ProjectConfig *configManager;
 	StateManager<WiFiState_e> *stateManager;
-	StateManager<LEDStates_e> *ledStateManger;
+	StateManager<LEDStates_e> *ledStateManager;
 
 	bool _enable_adhoc;
 

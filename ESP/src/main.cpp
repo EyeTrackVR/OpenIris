@@ -6,8 +6,6 @@
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 
-//! TODO: Setup OTA enabled state to be controllable by API if enabled at
-//! compile time
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
 #endif  // ENABLE_OTA
@@ -27,8 +25,12 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
 #endif // ENABLE_OTA
+
 LEDManager ledManager(33, &ledStateManager);
+
+#ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
+#endif  // SIM_ENABLED
 WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, &ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
@@ -75,10 +77,6 @@ void setup() {
       //! TODO: Implement
       break;
     }
-    case WiFiState_e::WiFiState_Disconnecting: {
-      //! TODO: Implement
-      break;
-    }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
       streamServer.startStreamServer();
@@ -115,5 +113,5 @@ void loop() {
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
-  ledManager.handleLED(&ledStateManager);
+  ledManager.handleLED();
 }
