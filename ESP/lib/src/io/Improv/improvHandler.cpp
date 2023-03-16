@@ -31,7 +31,10 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       stateManager->setState(LEDStates_e::_Improv_Start);
 
       set_state(improv::STATE_PROVISIONING);
-      delay(1000);  // Try to connect to wifi here
+      //* Save the config to flash
+      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
+                                   false, true);
+      projectConfig->wifiConfigSave();
       set_state(improv::STATE_PROVISIONED);
 
       // construct url
@@ -42,10 +45,6 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       this->send_response(data);
       stateManager->setState(LEDStates_e::_Improv_Processing);
 
-      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
-                                   false, true);
-      projectConfig->wifiConfigSave();
-      //* Save the config to flash
       stateManager->setState(LEDStates_e::_Improv_Stop);
       break;
     }
