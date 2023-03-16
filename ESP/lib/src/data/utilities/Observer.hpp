@@ -40,7 +40,7 @@ public:
 
   void notify(ObserverEvent::Event event)
   {
-    for (auto observer : this->observers)
+    for (auto&observer : this->observers)
     {
       observer->update(event);
     }

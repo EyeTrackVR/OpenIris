@@ -8,8 +8,9 @@
 #include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
 #include "data/utilities/helpers.hpp"
+#include "data/utilities/Observer.hpp"
 
-class WiFiHandler
+class WiFiHandler : public IObserver
 {
 public:
 	WiFiHandler(ProjectConfig *configManager,
@@ -19,7 +20,8 @@ public:
 				const std::string &password,
 				uint8_t channel);
 	virtual ~WiFiHandler();
-	void setupWifi();
+	void begin();
+	void update(ObserverEvent::Event event);
 
 	ProjectConfig *configManager;
 	StateManager<WiFiState_e> *stateManager;

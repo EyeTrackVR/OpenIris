@@ -17,7 +17,7 @@ WiFiHandler::WiFiHandler(ProjectConfig* configManager,
 
 WiFiHandler::~WiFiHandler() {}
 
-void WiFiHandler::setupWifi() {
+void WiFiHandler::begin() {
   if (this->_enable_adhoc ||
       stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
     this->setUpADHOC();
@@ -152,4 +152,14 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   log_i("Setting TX power to: %d \n\r", (uint8_t)power);
   WiFi.setTxPower(power);
   return true;
+}
+
+void WiFiHandler::update(ObserverEvent::Event event) {
+  switch (event) {
+    case ObserverEvent::Event::networksConfigUpdated:
+      this->begin();
+      break;
+    default:
+      break;
+  }
 }

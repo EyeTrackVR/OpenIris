@@ -18,10 +18,10 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
   switch (cmd.command) {
     case improv::Command::GET_CURRENT_STATE: {
       auto wifiConfigs = projectConfig->getWifiConfigs();
-      if (wifiConfigs->size() == 0) {
-        this->set_state(improv::State::STATE_AUTHORIZED);
-      } else {
+      if (wifiConfigs->size() > 0) {
         this->set_state(improv::State::STATE_PROVISIONED);
+      } else {
+        this->set_state(improv::State::STATE_AUTHORIZED);
       }
       break;
     }
@@ -30,10 +30,11 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       auto mdnsConfig = projectConfig->getMDNSConfig();
       stateManager->setState(LEDStates_e::_Improv_Start);
 
+      set_state(improv::STATE_PROVISIONING);
       projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
                                    false, true);
-      set_state(improv::STATE_PROVISIONING);
-
+      projectConfig->wifiConfigSave();
+      //delay(1000);  // Try to connect to wifi here
       set_state(improv::STATE_PROVISIONED);
 
       stateManager->setState(LEDStates_e::_Improv_Processing);
@@ -44,7 +45,6 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
       //* Save the config to flash
-      projectConfig->wifiConfigSave();
       stateManager->setState(LEDStates_e::_Improv_Stop);
       break;
     }
@@ -73,10 +73,8 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
 }
 
 void ImprovHandler::getNetworks() {
-  if (wifiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
-    Network_Utilities::setupWifiScan();
-  }
-  int networkNum = WiFi.scanNetworks(true, true);
+  Network_Utilities::setupWifiScan();
+  int networkNum = WiFi.scanNetworks(false, true);
   for (int id = 0; id < networkNum; ++id) {
     std::vector<uint8_t> data = improv::build_rpc_response(
         improv::GET_WIFI_NETWORKS,
@@ -84,7 +82,7 @@ void ImprovHandler::getNetworks() {
          (WiFi.encryptionType(id) == WIFI_AUTH_OPEN ? "NO" : "YES")},
         false);
     this->send_response(data);
-    Network_Utilities::my_delay(0.01);
+    delay(1);
   }
   // final response
   std::vector<uint8_t> data = improv::build_rpc_response(
