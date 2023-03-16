@@ -31,19 +31,20 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       stateManager->setState(LEDStates_e::_Improv_Start);
 
       set_state(improv::STATE_PROVISIONING);
-      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
-                                   false, true);
-      projectConfig->wifiConfigSave();
-      //delay(1000);  // Try to connect to wifi here
+      delay(1000);  // Try to connect to wifi here
       set_state(improv::STATE_PROVISIONED);
 
-      stateManager->setState(LEDStates_e::_Improv_Processing);
       // construct url
       std::string root_url = "http://" + mdnsConfig->hostname + ".local";
       std::vector<std::string> url = {root_url};
       std::vector<uint8_t> data =
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
+      stateManager->setState(LEDStates_e::_Improv_Processing);
+
+      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
+                                   false, true);
+      projectConfig->wifiConfigSave();
       //* Save the config to flash
       stateManager->setState(LEDStates_e::_Improv_Stop);
       break;

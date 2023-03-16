@@ -122,10 +122,10 @@ void setup() {
 }
 
 void loop() {
+  improvHandler.loop();
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
   ledManager.handleLED();
   //* Handle Improv
-  improvHandler.loop();
 }
