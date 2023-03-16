@@ -28,7 +28,7 @@ OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
 
 LEDManager ledManager(33, &ledStateManager);
-ImprovHandler improvHandler(&deviceConfig, &ledStateManager);
+ImprovHandler improvHandler(&deviceConfig, &wifiStateManager,&ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);

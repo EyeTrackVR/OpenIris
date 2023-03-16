@@ -1,6 +1,7 @@
 #include "improvHandler.hpp"
 
 ImprovHandler::ImprovHandler(ProjectConfig* projectConfig,
+                             StateManager<WiFiState_e>* wifiStateManager,
                              StateManager<LEDStates_e>* stateManager)
     : projectConfig(projectConfig), _buffer{0}, _position(0) {}
 
@@ -18,9 +19,9 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
     case improv::Command::GET_CURRENT_STATE: {
       auto wifiConfigs = projectConfig->getWifiConfigs();
       if (wifiConfigs->size() == 0) {
-        this->set_state(improv::State::STATE_PROVISIONED);
-      } else {
         this->set_state(improv::State::STATE_AUTHORIZED);
+      } else {
+        this->set_state(improv::State::STATE_PROVISIONED);
       }
       break;
     }
@@ -72,11 +73,9 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
 }
 
 void ImprovHandler::getNetworks() {
-  //* Disconnect from AP if connected and force STA mode
-  Network_Utilities::setupWifiScan();
-  //* Scan for networks without blocking the main loop
-  Network_Utilities::loopWifiScan();
-
+  if (wifiStateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
+    Network_Utilities::setupWifiScan();
+  }
   int networkNum = WiFi.scanNetworks(true, true);
   for (int id = 0; id < networkNum; ++id) {
     std::vector<uint8_t> data = improv::build_rpc_response(
@@ -84,13 +83,13 @@ void ImprovHandler::getNetworks() {
         {WiFi.SSID(id), String(WiFi.RSSI(id)),
          (WiFi.encryptionType(id) == WIFI_AUTH_OPEN ? "NO" : "YES")},
         false);
-    send_response(data);
+    this->send_response(data);
     Network_Utilities::my_delay(0.01);
   }
   // final response
   std::vector<uint8_t> data = improv::build_rpc_response(
       improv::GET_WIFI_NETWORKS, std::vector<std::string>{}, false);
-  send_response(data);
+  this->send_response(data);
 }
 
 void ImprovHandler::set_state(improv::State state) {

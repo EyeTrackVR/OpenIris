@@ -10,6 +10,7 @@ class ImprovHandler : public IObserver
 {
   ProjectConfig *projectConfig;
   StateManager<LEDStates_e> *stateManager;
+  StateManager<WiFiState_e> *wifiStateManager;
   uint8_t _buffer[15]; // TODO: is 15 enough?
   uint8_t _position;
 
@@ -22,6 +23,7 @@ class ImprovHandler : public IObserver
 
  public:
   ImprovHandler(ProjectConfig *projectConfig,
+                StateManager<WiFiState_e> *wifiStateManager,
                 StateManager<LEDStates_e> *stateManager);
   ~ImprovHandler();
 
