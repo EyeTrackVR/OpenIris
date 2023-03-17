@@ -18,9 +18,9 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
   switch (cmd.command) {
     case improv::Command::GET_CURRENT_STATE: {
       auto wifiConfigs = projectConfig->getWifiConfigs();
-      if (!wifiConfigs->empty()) {
+      if (WiFi.status() == WL_CONNECTED) {
         this->set_state(improv::State::STATE_PROVISIONED);
-        return;
+        break;
       }
       this->set_state(improv::State::STATE_AUTHORIZED);
       break;
@@ -29,14 +29,22 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
     case improv::Command::WIFI_SETTINGS: {
       stateManager->setState(LEDStates_e::_Improv_Start);
 
-      set_state(improv::STATE_PROVISIONING);
-      //* Save the config to flash
-      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
-                                   false, true);
-      projectConfig->wifiConfigSave();
-      set_state(improv::STATE_PROVISIONED);
+      if (cmd.ssid.empty()) {
+        set_error(improv::Error::ERROR_INVALID_RPC);
+        break;
+      }
 
-      std::vector<std::string> url = {WiFi.localIP().toString().c_str()};
+      this->set_state(improv::STATE_PROVISIONING);
+      //* Save the config to flash
+      connectWifi(cmd.ssid, cmd.password);
+
+      this->set_state(improv::STATE_PROVISIONED);
+
+      //* Construct URL
+      std::string root_url("http://");
+      root_url.append(WiFi.localIP().toString().c_str());
+      std::vector<std::string> url = {root_url};
+      //* Build response
       std::vector<uint8_t> data =
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
@@ -138,19 +146,24 @@ void ImprovHandler::set_error(improv::Error error) {
 void ImprovHandler::loop() {
   if (Serial.available() > 0) {
     uint8_t b = Serial.read();
-    bool valid = improv::parse_improv_serial_byte(
-        _position, b, _buffer,
-        [&](improv::ImprovCommand cmd) -> bool {
-          return this->onCommandCallback(cmd);
-        },
-        [&](improv::Error error) { this->onErrorCallback(error); });
 
-    if (valid) {
+    if (improv::parse_improv_serial_byte(
+            _position, b, _buffer,
+            [&](improv::ImprovCommand cmd) -> bool {
+              return this->onCommandCallback(cmd);
+            },
+            [&](improv::Error error) { this->onErrorCallback(error); })) {
       _buffer[_position++] = b;
       return;
     }
     _position = 0;
   }
+}
+
+void ImprovHandler::connectWifi(const std::string& ssid,
+                                const std::string& password) {
+  projectConfig->setWifiConfig(ssid, ssid, password, 10, 52, false, true);
+  projectConfig->wifiConfigSave();
 }
 
 void ImprovHandler::update(ObserverEvent::Event event) {

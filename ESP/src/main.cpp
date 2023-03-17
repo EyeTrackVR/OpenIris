@@ -28,7 +28,6 @@ OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
 
 LEDManager ledManager(33, &ledStateManager);
-ImprovHandler improvHandler(&deviceConfig, &wifiStateManager,&ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
@@ -39,6 +38,9 @@ WiFiHandler wifiHandler(&deviceConfig,
                         WIFI_SSID,
                         WIFI_PASSWORD,
                         WIFI_CHANNEL);
+
+ImprovHandler improvHandler(&deviceConfig, &wifiHandler,&wifiStateManager,&ledStateManager);
+
 APIServer apiServer(CONTROL_SERVER_PORT,
                     &deviceConfig,
                     &cameraHandler,
@@ -122,10 +124,10 @@ void setup() {
 }
 
 void loop() {
+  ledManager.handleLED();
   improvHandler.loop();
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
-  ledManager.handleLED();
   //* Handle Improv
 }

@@ -6,12 +6,11 @@
 #include "data/utilities/network_utilities.hpp"
 #include "improv.h"
 
-class ImprovHandler : public IObserver
-{
-  ProjectConfig *projectConfig;
-  StateManager<LEDStates_e> *stateManager;
-  StateManager<WiFiState_e> *wifiStateManager;
-  uint8_t _buffer[15]; // TODO: is 15 enough?
+class ImprovHandler : public IObserver {
+  ProjectConfig* projectConfig;
+  StateManager<LEDStates_e>* stateManager;
+  StateManager<WiFiState_e>* wifiStateManager;
+  uint8_t _buffer[15];  // TODO: is 15 enough?
   uint8_t _position;
 
   void onErrorCallback(improv::Error err);
@@ -22,13 +21,14 @@ class ImprovHandler : public IObserver
   void set_error(improv::Error error);
 
  public:
-  ImprovHandler(ProjectConfig *projectConfig,
-                StateManager<WiFiState_e> *wifiStateManager,
-                StateManager<LEDStates_e> *stateManager);
+  ImprovHandler(ProjectConfig* projectConfig,
+                StateManager<WiFiState_e>* wifiStateManager,
+                StateManager<LEDStates_e>* stateManager);
   ~ImprovHandler();
 
   void loop();
+  void connectWifi(const std::string& ssid, const std::string& password);
   void update(ObserverEvent::Event event);
 };
 
-#endif // IMPROV_HANDLER_HPP
+#endif  // IMPROV_HANDLER_HPP

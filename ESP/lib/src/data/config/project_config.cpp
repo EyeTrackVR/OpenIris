@@ -267,17 +267,6 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   // config are the ones we want the esp to connect to, rather than host as AP,
   // and here we're just updating them
   size_t size = this->config.networks.size();
-  // we're allowing to store up to three additional networks
-  if (size == 0) {
-    Serial.println("No networks, We're adding a new network");
-    this->config.networks.emplace_back(networkName, ssid, password, channel,
-                                       power, false);
-
-    if (shouldNotify)
-      this->notify(ObserverEvent::networksConfigUpdated);
-
-    return;
-  }
 
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
@@ -300,11 +289,18 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
     }
   }
 
-  if (size < 3) {
+  if (size < 3 && size > 0) {
     Serial.println("We're adding a new network");
     // we don't have that network yet, we can add it as we still have some
     // space we're using emplace_back as push_back will create a copy of it,
     // we want to avoid that
+    this->config.networks.emplace_back(networkName, ssid, password, channel,
+                                       power, false);
+  }
+
+  // we're allowing to store up to three additional networks
+  if (size == 0) {
+    Serial.println("No networks, We're adding a new network");
     this->config.networks.emplace_back(networkName, ssid, password, channel,
                                        power, false);
   }
