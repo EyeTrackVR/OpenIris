@@ -34,6 +34,7 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
         break;
       }
 
+      stateManager->setState(LEDStates_e::_Improv_Processing);
       this->set_state(improv::STATE_PROVISIONING);
       //* Save the config to flash
       connectWifi(cmd.ssid, cmd.password);
@@ -48,7 +49,6 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       std::vector<uint8_t> data =
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
-      stateManager->setState(LEDStates_e::_Improv_Processing);
 
       stateManager->setState(LEDStates_e::_Improv_Stop);
       break;
