@@ -329,6 +329,10 @@ void BaseAPI::restartCamera(AsyncWebServerRequest* request) {
                 "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
 
+//*********************************************************************************************
+//!                                     General Command Functions
+//*********************************************************************************************
+
 void BaseAPI::ping(AsyncWebServerRequest* request) {
   request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
@@ -353,19 +357,21 @@ void BaseAPI::rssi(AsyncWebServerRequest* request) {
 void BaseAPI::checkAuthentication(AsyncWebServerRequest* request,
                                   const char* login,
                                   const char* password) {
-  log_d("Free Heap: %d", ESP.getFreeHeap());
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
   if (_authRequired) {
-    log_d("Free Heap: %d", ESP.getFreeHeap());
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
     log_i("Auth required");
-    log_d("Free Heap: %d", ESP.getFreeHeap());
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
     if (!request->authenticate(login, password, NULL, false)) {
-      log_d("Free Heap: %d", ESP.getFreeHeap());
+      log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
       return request->requestAuthentication(NULL, false);
     }
   }
 }
 
 void BaseAPI::beginOTA() {
+  // NOTE: Code adapted from: https://github.com/ayushsharma82/AsyncElegantOTA/
+
   auto device_config = projectConfig->getDeviceConfig();
   auto mdns_config = projectConfig->getMDNSConfig();
 
@@ -376,7 +382,7 @@ void BaseAPI::beginOTA() {
     return;
   }
 
-  log_i("[OTA Server]: Started.");
+  log_i("[OTA Server]: Initializing OTA Server");
   log_i(
       "[OTA Server]: Navigate to http://%s.local:81/update to update the "
       "firmware",
@@ -384,31 +390,25 @@ void BaseAPI::beginOTA() {
 
   log_d("[OTA Server]: Username: %s, Password: %s",
         device_config->OTALogin.c_str(), device_config->OTAPassword.c_str());
-  log_d("Free Heap: %d", ESP.getFreeHeap());
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
   const char* login = device_config->OTALogin.c_str();
   const char* password = device_config->OTAPassword.c_str();
-  log_d("Free Heap: %d", ESP.getFreeHeap());
-  // Note: HTT_GET
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+
+  // Note: HTTP_GET
   server.on(
       "/update/identity", 0b00000001, [&](AsyncWebServerRequest* request) {
         checkAuthentication(request, login, password);
 
-        // std::string _id = Network_Utilities::generateDeviceID();
         String _id = String((uint32_t)ESP.getEfuseMac(), HEX);
         _id.toUpperCase();
-        // char _buffer[400];
-        // snprintf(_buffer, sizeof(_buffer),
-        //          "{\"id\": \"%s\", \"hardware\": \"%s\"}", _id.c_str(),
-        //          CAMERA_MODULE_NAME);
-        //
-        // request->send(200, "application/json", _buffer);
         request->send(200, "application/json",
                       "{\"id\": \"" + _id + "\", \"hardware\": \"ESP32\"}");
       });
 
   // Note: HTT_GET
   server.on("/update", 0b00000001, [&](AsyncWebServerRequest* request) {
-    log_d("Free Heap: %d", ESP.getFreeHeap());
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
     checkAuthentication(request, login, password);
 
     // turn off the camera and stop the stream
