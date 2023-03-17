@@ -1,14 +1,10 @@
 #include "WifiHandler.hpp"
 
 WiFiHandler::WiFiHandler(ProjectConfig* configManager,
-                         StateManager<WiFiState_e>* stateManager,
-                         StateManager<LEDStates_e>* ledStateManger,
                          const std::string& ssid,
                          const std::string& password,
                          uint8_t channel)
     : configManager(configManager),
-      stateManager(stateManager),
-      ledStateManager(ledStateManager),
       ssid(ssid),
       password(password),
       channel(channel),
@@ -19,7 +15,7 @@ WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
   if (this->_enable_adhoc ||
-      stateManager->getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
+      wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
     this->setUpADHOC();
     return;
   }
@@ -28,7 +24,7 @@ void WiFiHandler::begin() {
   WiFi.setSleep(WIFI_PS_NONE);
 
   log_i("Initializing connection to wifi \n\r");
-  stateManager->setState(WiFiState_e::WiFiState_Connecting);
+  wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
 
   std::vector<ProjectConfig::WiFiConfig_t>* networks =
       configManager->getWifiConfigs();
@@ -38,13 +34,12 @@ void WiFiHandler::begin() {
     if (this->iniSTA(this->ssid, this->password, this->channel,
                      (wifi_power_t)txpower->power)) {
       return;
-    } else {
-      log_i(
-          "Could not connect to the hardcoded network, setting up ADHOC "
-          "network \n\r");
-      this->setUpADHOC();
-      return;
     }
+    log_i(
+        "Could not connect to the hardcoded network, setting up ADHOC "
+        "network \n\r");
+    this->setUpADHOC();
+    return;
   }
 
   for (auto networkIterator = networks->begin();
@@ -64,18 +59,19 @@ void WiFiHandler::begin() {
   if (this->iniSTA(this->ssid, this->password, this->channel,
                    (wifi_power_t)txpower->power)) {
     log_i("Successfully connected to the hardcoded network. \n\r");
-  } else {
-    log_i(
-        "Could not connect to the hardcoded network, setting up adhoc. "
-        "\n\r");
-    this->setUpADHOC();
+    return;
   }
+
+  log_i(
+      "Could not connect to the hardcoded network, setting up adhoc. "
+      "\n\r");
+  this->setUpADHOC();
 }
 
 void WiFiHandler::adhoc(const std::string& ssid,
                         uint8_t channel,
                         const std::string& password) {
-  stateManager->setState(WiFiState_e::WiFiState_ADHOC);
+  wifiStateManager.setState(WiFiState_e::WiFiState_ADHOC);
 
   log_i("\n[INFO]: Configuring access point...\n");
   WiFi.mode(WIFI_AP);
@@ -128,7 +124,7 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   int connectionTimeout = 30000;  // 30 seconds
   int progress = 0;
 
-  stateManager->setState(WiFiState_e::WiFiState_Connecting);
+  wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
   log_i("Trying to connect to: %s \n\r", ssid.c_str());
 
   auto mdnsConfig = configManager->getMDNSConfig();
@@ -142,24 +138,28 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
     Helpers::update_progress_bar(progress, 100);
     delay(301);
     if ((currentMillis - startingMillis) >= connectionTimeout) {
-      stateManager->setState(WiFiState_e::WiFiState_Error);
+      wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
       return false;
     }
   }
-  stateManager->setState(WiFiState_e::WiFiState_Connected);
+  wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
   log_i("Successfully connected to %s \n\r", ssid.c_str());
   log_i("Setting TX power to: %d \n\r", (uint8_t)power);
   WiFi.setTxPower(power);
   return true;
 }
 
-void WiFiHandler::update(ObserverEvent::Event event) {
+void WiFiHandler::update(ConfigState_e event) {
   switch (event) {
-    case ObserverEvent::Event::networksConfigUpdated:
+    case ConfigState_e::networksConfigUpdated:
       this->begin();
       break;
     default:
       break;
   }
+}
+
+std::string WiFiHandler::getName() {
+  return "WiFiHandler";
 }

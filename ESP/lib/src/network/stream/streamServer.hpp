@@ -23,11 +23,9 @@ class StreamServer
 private:
 	httpd_handle_t camera_stream = nullptr;
 	int STREAM_SERVER_PORT;
-	StateManager<WiFiState_e> *stateManager;
 
 public:
-	StreamServer(int STREAM_PORT,
-				 StateManager<WiFiState_e> *stateManager);
+	StreamServer(int STREAM_PORT = 80);
 	int startStreamServer();
 };
 

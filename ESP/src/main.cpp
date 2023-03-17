@@ -2,7 +2,7 @@
 #include <io/Improv/improvHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <io/camera/cameraHandler.hpp>
-#include <network/WifiHandler/WifiHandler.hpp>
+#include <network/wifihandler/wifiHandler.hpp>
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
@@ -13,8 +13,6 @@
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
-int STREAM_SERVER_PORT = 80;
-int CONTROL_SERVER_PORT = 81;
 /**
  * @brief ProjectConfig object
  * @brief This is the main configuration object for the project
@@ -27,29 +25,22 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
 
-LEDManager ledManager(33, &ledStateManager);
+LEDManager ledManager(33);
 
 #ifndef SIM_ENABLED
-CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
+CameraHandler cameraHandler(&deviceConfig);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(&deviceConfig,
-                        &wifiStateManager,
-                        &ledStateManager,
-                        WIFI_SSID,
-                        WIFI_PASSWORD,
-                        WIFI_CHANNEL);
+WiFiHandler wifiHandler(&deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 
-ImprovHandler improvHandler(&deviceConfig, &wifiHandler,&wifiStateManager,&ledStateManager);
+ImprovHandler improvHandler(&deviceConfig);
 
-APIServer apiServer(CONTROL_SERVER_PORT,
-                    &deviceConfig,
+APIServer apiServer(&deviceConfig,
                     &cameraHandler,
-                    &wifiStateManager,
                     "/control");
-MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
+MDNSHandler mdnsHandler(&deviceConfig);
 
 #ifndef SIM_ENABLED
-StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
+StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void setup() {

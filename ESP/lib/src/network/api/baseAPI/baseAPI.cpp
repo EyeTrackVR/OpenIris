@@ -10,15 +10,13 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(int CONTROL_PORT,
-                 ProjectConfig* projectConfig,
+BaseAPI::BaseAPI(ProjectConfig* projectConfig,
                  CameraHandler* camera,
-                 StateManager<WiFiState_e>* WiFiStateManager,
-                 const std::string& api_url)
+                 const std::string& api_url,
+                 int CONTROL_PORT)
     : server(CONTROL_PORT),
       projectConfig(projectConfig),
       camera(camera),
-      wiFiStateManager(wiFiStateManager),
       api_url(api_url) {}
 
 BaseAPI::~BaseAPI() {}
@@ -96,8 +94,8 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setWifiConfig(networkName, ssid, password, channel,
-                                   power, adhoc, true);
+      projectConfig->setWifiConfig(networkName, ssid, password, channel, power,
+                                   adhoc, true);
 
       /* if (WiFiStateManager->getCurrentState() ==
       WiFiState_e::WiFiState_ADHOC)

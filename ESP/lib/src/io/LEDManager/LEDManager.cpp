@@ -52,15 +52,14 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
 std::vector<LEDStates_e> LEDManager::keepAliveStates = {
     LEDStates_e::_WebServerState_Error, LEDStates_e::_Camera_Error};
 
-LEDManager::LEDManager(byte pin, StateManager<LEDStates_e>* stateManager)
-    : _ledPin(pin), _stateManager(stateManager), _ledState(false) {}
+LEDManager::LEDManager(byte pin) : _ledPin(pin), _ledState(false) {}
 
 LEDManager::~LEDManager() {}
 
 void LEDManager::begin() {
   pinMode(_ledPin, OUTPUT);
   // the defualt state is _LedStateNone so we're fine
-  this->currentState = this->_stateManager->getCurrentState();
+  this->currentState = ledStateManager.getCurrentState();
   this->currentPatternIndex = 0;
   BlinkPatterns_t pattern =
       this->ledStateMap[this->currentState][this->currentPatternIndex];
@@ -87,7 +86,7 @@ void LEDManager::handleLED() {
   // start displaying it, or if we need to keep displaying the current one
   if (this->currentPatternIndex >
       this->ledStateMap[this->currentState].size() - 1) {
-    auto nextState = this->_stateManager->getCurrentState();
+    auto nextState = ledStateManager.getCurrentState();
     // we want to keep displaying the same state only if its an keepAlive one,
     // but we should change if the incoming one is also an errours state, maybe
     // more serious one this time <- this may be a bad idea
@@ -104,7 +103,7 @@ void LEDManager::handleLED() {
       BlinkPatterns_t pattern =
           this->ledStateMap[this->currentState][this->currentPatternIndex];
       this->nextStateChangeMillis = millis() + pattern.delayTime;
-	  return;
+      return;
     }
     // it wasn't a keepAlive state, nor did we have another one ready,
     // we're done for now

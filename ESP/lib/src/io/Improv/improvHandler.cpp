@@ -1,8 +1,6 @@
 #include "improvHandler.hpp"
 
-ImprovHandler::ImprovHandler(ProjectConfig* projectConfig,
-                             StateManager<WiFiState_e>* wifiStateManager,
-                             StateManager<LEDStates_e>* stateManager)
+ImprovHandler::ImprovHandler(ProjectConfig* projectConfig)
     : projectConfig(projectConfig), _buffer{0}, _position(0) {}
 
 ImprovHandler::~ImprovHandler() {
@@ -11,7 +9,7 @@ ImprovHandler::~ImprovHandler() {
 }
 
 void ImprovHandler::onErrorCallback(improv::Error err) {
-  stateManager->setState(LEDStates_e::_Improv_Error);
+  ledStateManager.setState(LEDStates_e::_Improv_Error);
 }
 
 bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
@@ -27,17 +25,17 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
     }
 
     case improv::Command::WIFI_SETTINGS: {
-      stateManager->setState(LEDStates_e::_Improv_Start);
+      ledStateManager.setState(LEDStates_e::_Improv_Start);
 
       if (cmd.ssid.empty()) {
         set_error(improv::Error::ERROR_INVALID_RPC);
         break;
       }
 
-      stateManager->setState(LEDStates_e::_Improv_Processing);
+      ledStateManager.setState(LEDStates_e::_Improv_Processing);
       this->set_state(improv::STATE_PROVISIONING);
       //* Save the config to flash
-      connectWifi(cmd.ssid, cmd.password);
+      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52, false, true);
 
       this->set_state(improv::STATE_PROVISIONED);
 
@@ -50,7 +48,7 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
           improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
       this->send_response(data);
 
-      stateManager->setState(LEDStates_e::_Improv_Stop);
+      ledStateManager.setState(LEDStates_e::_Improv_Stop);
       break;
     }
 
@@ -160,14 +158,8 @@ void ImprovHandler::loop() {
   }
 }
 
-void ImprovHandler::connectWifi(const std::string& ssid,
-                                const std::string& password) {
-  projectConfig->setWifiConfig(ssid, ssid, password, 10, 52, false, true);
-  projectConfig->wifiConfigSave();
-}
-
-void ImprovHandler::update(ObserverEvent::Event event) {
-  /* switch (event) {
+/* void ImprovHandler::update(ObserverEvent::Event event) {
+  switch (event) {
     case ObserverEvent::Event::WIFI_CONNECTED:
       set_state(improv::STATE_AUTHORIZED);
       break;
@@ -176,5 +168,5 @@ void ImprovHandler::update(ObserverEvent::Event event) {
       break;
     default:
       break;
-  } */
-}
+  }
+} */

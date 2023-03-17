@@ -7,11 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "data/StateManager/StateManager.hpp"
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/helpers.hpp"
+#include "data/utilities/network_utilities.hpp"
 #include "tasks/tasks.hpp"
 
-class ProjectConfig : public Preferences, public ISubject {
+class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
  public:
   ProjectConfig(const std::string& name = std::string(),
                 const std::string& mdnsName = std::string());

@@ -202,7 +202,7 @@ void ProjectConfig::load() {
   this->config.camera.brightness = getInt("brightness", 2);
 
   this->_already_loaded = true;
-  this->notify(ObserverEvent::configLoaded);
+  this->notifyAll(ConfigState_e::configLoaded);
 }
 
 //**********************************************************************************************************************
@@ -224,7 +224,7 @@ void ProjectConfig::setDeviceConfig(const std::string& OTAPassword,
     this->config.device.binaryName.assign(binaryName);
 
   if (shouldNotify)
-    this->notify(ObserverEvent::deviceConfigUpdated);
+    this->notifyAll(ConfigState_e::deviceConfigUpdated);
 }
 
 void ProjectConfig::setMDNSConfig(const std::string& hostname,
@@ -235,7 +235,7 @@ void ProjectConfig::setMDNSConfig(const std::string& hostname,
   this->config.mdns.service.assign(service);
 
   if (shouldNotify)
-    this->notify(ObserverEvent::mdnsConfigUpdated);
+    this->notifyAll(ConfigState_e::mdnsConfigUpdated);
 }
 
 void ProjectConfig::setCameraConfig(uint8_t vflip,
@@ -253,7 +253,7 @@ void ProjectConfig::setCameraConfig(uint8_t vflip,
 
   log_d("Updating Camera config");
   if (shouldNotify)
-    this->notify(ObserverEvent::cameraConfigUpdated);
+    this->notifyAll(ConfigState_e::cameraConfigUpdated);
 }
 
 void ProjectConfig::setWifiConfig(const std::string& networkName,
@@ -280,8 +280,12 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
       it->power = power;
       it->adhoc = false;
 
-      if (shouldNotify)
-        this->notify(ObserverEvent::networksConfigUpdated);
+      if (shouldNotify) {
+        wifiStateManager.setState(WiFiState_e::WiFiState_None);
+        WiFi.disconnect();
+        this->wifiConfigSave();
+        this->notifyAll(ConfigState_e::networksConfigUpdated);
+      }
 
       return;
     } else {
@@ -305,8 +309,12 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
                                        power, false);
   }
 
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+  if (shouldNotify) {
+    wifiStateManager.setState(WiFiState_e::WiFiState_None);
+    WiFi.disconnect();
+    this->wifiConfigSave();
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
 void ProjectConfig::deleteWifiConfig(const std::string& networkName,
@@ -328,8 +336,9 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
     }
   }
 
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+  if (shouldNotify) {
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
 void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
@@ -337,7 +346,7 @@ void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
 
   log_d("Updating wifi tx power");
   if (shouldNotify)
-    this->notify(ObserverEvent::wifiTxPowerUpdated);
+    this->notifyAll(ConfigState_e::wifiTxPowerUpdated);
 }
 
 void ProjectConfig::setAPWifiConfig(const std::string& ssid,
@@ -351,8 +360,13 @@ void ProjectConfig::setAPWifiConfig(const std::string& ssid,
   this->config.ap_network.adhoc = adhoc;
 
   log_d("Updating access point config");
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+
+  if (shouldNotify) {
+    wifiStateManager.setState(WiFiState_e::WiFiState_None);
+    WiFi.disconnect();
+    this->wifiConfigSave();
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
 std::string ProjectConfig::DeviceConfig_t::toRepresentation() {

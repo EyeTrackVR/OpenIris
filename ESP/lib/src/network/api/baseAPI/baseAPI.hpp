@@ -99,18 +99,16 @@ protected:
 	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
 	AsyncWebServer server;
 	CameraHandler *camera;
-	StateManager<WiFiState_e> *wiFiStateManager;
 
 public:
-	BaseAPI(int CONTROL_PORT,
-			ProjectConfig *projectConfig,
-			CameraHandler *camera,
-			StateManager<WiFiState_e> *wiFiStateManager,
-			const std::string &api_url);
+ BaseAPI(ProjectConfig* projectConfig,
+         CameraHandler* camera,
+         const std::string& api_url,
+         int CONTROL_PORT);
 
-	virtual ~BaseAPI();
-	virtual void begin();
-	void notFound(AsyncWebServerRequest *request) const;
+ virtual ~BaseAPI();
+ virtual void begin();
+ void notFound(AsyncWebServerRequest* request) const;
 };
 
 #endif // BASEAPI_HPP

@@ -10,21 +10,18 @@
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/helpers.hpp"
 
-class WiFiHandler : public IObserver {
+class WiFiHandler : public IObserver<ConfigState_e> {
  public:
   WiFiHandler(ProjectConfig* configManager,
-              StateManager<WiFiState_e>* stateManager,
-              StateManager<LEDStates_e>* ledStateManger,
               const std::string& ssid,
               const std::string& password,
               uint8_t channel);
   virtual ~WiFiHandler();
   void begin();
-  void update(ObserverEvent::Event event);
+  void update(ConfigState_e event) override;
+  std::string getName() override;
 
   ProjectConfig* configManager;
-  StateManager<WiFiState_e>* stateManager;
-  StateManager<LEDStates_e>* ledStateManager;
 
   bool _enable_adhoc;
 

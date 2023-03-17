@@ -4,12 +4,11 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(int CONTROL_PORT,
-                     ProjectConfig* projectConfig,
+APIServer::APIServer(ProjectConfig* projectConfig,
                      CameraHandler* camera,
-                     StateManager<WiFiState_e>* wiFiStateManager,
-                     const std::string& api_url)
-    : BaseAPI(CONTROL_PORT, projectConfig, camera, wiFiStateManager, api_url) {}
+                     const std::string& api_url,
+                     int CONTROL_PORT)
+    : BaseAPI(projectConfig, camera, api_url, CONTROL_PORT) {}
 
 APIServer::~APIServer() {}
 
@@ -48,14 +47,6 @@ void APIServer::setupServer() {
                                    // memory and copying of data
   addRouteMap("builtin", routes,
               indexes);  // add new route map to the route_map
-}
-
-void APIServer::findParam(AsyncWebServerRequest* request,
-                          const char* param,
-                          std::string& value) {
-  if (request->hasParam(param)) {
-    value = request->getParam(param)->value().c_str();
-  }
 }
 
 /**

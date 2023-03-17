@@ -1,50 +1,60 @@
-#pragma once
 #ifndef OBSERVER_HPP
 #define OBSERVER_HPP
-#include <set>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
-namespace ObserverEvent
-{
-  enum Event
-  {
-    configLoaded = 1,
-    deviceConfigUpdated = 2,
-    cameraConfigUpdated = 3,
-    networksConfigUpdated = 4,
-    mdnsConfigUpdated = 5,
-    wifiTxPowerUpdated = 6,
-  };
-}
-
-class IObserver
-{
-public:
-  virtual void update(ObserverEvent::Event event) = 0;
+template <typename EnumT>
+class IObserver {
+ public:
+  virtual void update(EnumT event) = 0;
+  virtual std::string getName() = 0;
 };
 
-class ISubject
-{
-private:
-  std::set<IObserver *> observers;
+template <typename EnumT>
+class ISubject {
+ private:
+  typedef IObserver<EnumT>* Observer_t;
+  typedef std::unordered_map<std::string, Observer_t> Observers_t;
 
-public:
-  void attach(IObserver *observer)
-  {
-    this->observers.insert(observer);
+  Observers_t observers;
+
+ public:
+  void attach(Observer_t observer) {
+    this->observers.emplace(observer->getName(), observer);
   }
 
-  void detach(IObserver *observer)
-  {
-    this->observers.erase(observer);
+  void detach(Observer_t observer) {
+    // Note: delete pointer
+    delete (*this->observers.find(observer->getName())).second;
+    this->observers.erase(observer->getName());
   }
 
-  void notify(ObserverEvent::Event event)
-  {
-    for (auto&observer : this->observers)
-    {
-      observer->update(event);
+  void detachAll() {
+    // Note: delete pointers
+    for (auto observer = observers.begin(); observer != observers.end();
+         ++observer) {
+      delete (*observer).second;
+    }
+    // Note: clear map
+    this->observers.clear();
+  }
+
+  void notifyAll(EnumT event) {
+    for (auto observer = observers.begin(); observer != observers.end();
+         ++observer) {
+      (*observer).second->update(event);
     }
   }
-};
 
-#endif // !OBSERVER_HPP
+  void notify(EnumT event, const std::string& observerName) {
+    auto it_map = observers.find(observerName);
+    if (it_map != observers.end()) {
+      (*it_map).second->update(event);
+      return;
+    }
+    log_e("Invalid Map Index");
+    return;
+  }
+};
+#endif  // OBSERVER_HPP
