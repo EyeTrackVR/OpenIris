@@ -21,8 +21,8 @@ void ProjectConfig::initConfig() {
 
   bool success = begin(_name.c_str());
 
-  log_i("Config name: %s", _name.c_str());
-  log_i("Config loaded: %s", success ? "true" : "false");
+  log_i("[Project Config]: Config name: %s", _name.c_str());
+  log_i("[Project Config]: Config loaded: %s", success ? "true" : "false");
 
   /*
   * If the config is not loaded,
@@ -44,7 +44,7 @@ void ProjectConfig::initConfig() {
       "openiristracker",
   };
 
-  log_i("MDNS name: %s", _mdnsName.c_str());
+  log_i("[Project Config]: MDNS name: %s", _mdnsName.c_str());
 
   this->config.ap_network = {
       "",
@@ -107,7 +107,7 @@ void ProjectConfig::wifiConfigSave() {
   putString("apPass", this->config.ap_network.password.c_str());
   putUInt("apChannel", this->config.ap_network.channel);
 
-  log_i("Project config saved and system is rebooting");
+  log_i("[Project Config]: Wifi configs saved");
 }
 
 void ProjectConfig::deviceConfigSave() {
@@ -271,7 +271,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
     if (it->name == networkName) {
-      log_i("Found network %s, updating it ...", it->name.c_str());
+      log_i("[Project Config]: Found network %s, updating it ...", it->name.c_str());
 
       it->name = networkName;
       it->ssid = ssid;
@@ -327,9 +327,9 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
     if (it->name == networkName) {
-      log_i("Found network %s", it->name.c_str());
+      log_i("[Project Config]: Found network %s", it->name.c_str());
       it = this->config.networks.erase(it);
-      log_i("Deleted network %s", networkName.c_str());
+      log_i("[Project Config]: Deleted network %s", networkName.c_str());
 
     } else {
       ++it;
