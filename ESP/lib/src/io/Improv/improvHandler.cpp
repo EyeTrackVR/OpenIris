@@ -16,7 +16,7 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
   switch (cmd.command) {
     case improv::Command::GET_CURRENT_STATE: {
       auto wifiConfigs = projectConfig->getWifiConfigs();
-      if (WiFi.status() == WL_CONNECTED) {
+      if (wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_Connected) {
         this->set_state(improv::State::STATE_PROVISIONED);
         break;
       }
