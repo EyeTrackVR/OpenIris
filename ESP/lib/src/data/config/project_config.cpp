@@ -337,6 +337,7 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
   }
 
   if (shouldNotify) {
+    this->wifiConfigSave();
     this->notifyAll(ConfigState_e::networksConfigUpdated);
   }
 }

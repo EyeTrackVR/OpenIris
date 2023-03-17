@@ -115,8 +115,8 @@ void setup() {
 }
 
 void loop() {
-  ledManager.handleLED();
   improvHandler.loop();
+  ledManager.handleLED();
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
