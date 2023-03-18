@@ -19,69 +19,42 @@ struct DeviceStates
 
     enum LEDStates_e
     {
-        _LEDOff,
-        _LEDOn,
-        _LEDBlink,
-        _LEDBlinkFast,
-        _SerialManager_Start,
-        _SerialManager_Stop,
+        _LedStateNone,
         _SerialManager_Error,
-        _WiFiState_None,
-        _WiFiState_Connecting,
-        _WiFiState_Connected,
-        _WiFiState_Disconnected,
-        _WiFiState_Disconnecting,
-        _WiFiState_ADHOC,
-        _WiFiState_Error,
-        _WebServerState_None,
-        _WebServerState_Starting,
-        _WebServerState_Started,
-        _WebServerState_Stopping,
-        _WebServerState_Stopped,
         _WebServerState_Error,
-        _MDNSState_None,
-        _MDNSState_Starting,
-        _MDNSState_Started,
-        _MDNSState_Stopping,
-        _MDNSState_Stopped,
+        _WiFiState_Error,
         _MDNSState_Error,
-        _Camera_Success,
-        _Camera_Connected,
-        _Camera_Disconnected,
         _Camera_Error,
-        _Stream_OFF,
-        _Stream_ON,
-        _Stream_Error,
+        _WiFiState_Connecting,
+        _WiFiState_Connected
     };
 
     enum WiFiState_e
     {
         WiFiState_None,
+        WiFiState_Idle,
+        WiFiState_Disconnected,
         WiFiState_Connecting,
         WiFiState_Connected,
-        WiFiState_Disconnected,
-        WiFiState_Disconnecting,
         WiFiState_ADHOC,
         WiFiState_Error
     };
 
     enum WebServerState_e
     {
-        WebServerState_None,
+        WebServerState_Stopped,
         WebServerState_Starting,
         WebServerState_Started,
         WebServerState_Stopping,
-        WebServerState_Stopped,
         WebServerState_Error
     };
 
     enum MDNSState_e
     {
-        MDNSState_None,
+        MDNSState_Stopped,
         MDNSState_Starting,
         MDNSState_Started,
         MDNSState_Stopping,
-        MDNSState_Stopped,
         MDNSState_Error,
         MDNSState_QueryStarted,
         MDNSState_QueryComplete
@@ -89,9 +62,9 @@ struct DeviceStates
 
     enum CameraState_e
     {
+        Camera_Disconnected,
         Camera_Success,
         Camera_Connected,
-        Camera_Disconnected,
         Camera_Error
     };
 
@@ -111,18 +84,23 @@ template <class T>
 class StateManager
 {
 public:
-    StateManager() {}
+    StateManager() {
+        this->_current_state = static_cast<T>(0);
+    }
 
     virtual ~StateManager() {}
 
+    /*
+     * @brief Sets the  state of the stateManager
+     * @param T state - the state to be set
+     */
     void setState(T state)
     {
         _current_state = state;
     }
 
     /*
-     * Get States
-     * Returns the current state of the device
+     * @brief Returns the current state of the stateManager
      */
     T getCurrentState()
     {

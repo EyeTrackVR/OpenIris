@@ -6,8 +6,8 @@
 #include <data/StateManager/StateManager.hpp>
 #include <unordered_map>
 namespace Network_Utilities {
-  bool LoopWifiScan();
-  void SetupWifiScan();
+  bool loopWifiScan();
+  void setupWifiScan();
   void my_delay(volatile long delay_time);
   void checkWifiState();
   std::string generateDeviceID();

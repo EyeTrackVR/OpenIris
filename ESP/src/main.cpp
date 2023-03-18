@@ -26,13 +26,14 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 #if ENABLE_OTA
 // OTA ota(&deviceConfig);
 #endif  // ENABLE_OTA
-LEDManager ledManager(33);
+LEDManager ledManager(33, &ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 #endif  // SIM_ENABLED
 WiFiHandler wifiHandler(&deviceConfig,
                         &wifiStateManager,
+                        &ledStateManager,
                         WIFI_SSID,
                         WIFI_PASSWORD,
                         WIFI_CHANNEL);
@@ -76,10 +77,6 @@ void setup() {
       //! TODO: Implement
       break;
     }
-    case WiFiState_e::WiFiState_Disconnecting: {
-      //! TODO: Implement
-      break;
-    }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
       log_d("[SETUP]: Starting Stream Server");
@@ -110,5 +107,5 @@ void setup() {
 }
 
 void loop() {
-  ledManager.handleLED(&ledStateManager);
+  ledManager.handleLED();
 }

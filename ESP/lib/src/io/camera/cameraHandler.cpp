@@ -134,7 +134,6 @@ bool CameraHandler::setupCamera()
 	}
 
 	this->setupCameraSensor();
-	stateManager->setState(LEDStates_e::_Camera_Success);
 	return true;
 }
 
