@@ -9,7 +9,7 @@ namespace Network_Utilities {
   bool loopWifiScan();
   void setupWifiScan();
   void my_delay(volatile long delay_time);
-  void checkWifiState();
+  void checkWiFiState();
   std::string generateDeviceID();
   int getStrength(int points);
 }  // namespace Network_Utilities
