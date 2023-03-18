@@ -6,11 +6,6 @@
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 
-//! TODO: Setup OTA enabled state to be controllable by API if enabled at
-//! compile time
-#if ENABLE_OTA
-// #include <network/OTA/OTA.hpp>
-#endif  // ENABLE_OTA
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
@@ -23,9 +18,6 @@ int STREAM_SERVER_PORT = 80;
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
-#if ENABLE_OTA
-// OTA ota(&deviceConfig);
-#endif  // ENABLE_OTA
 LEDManager ledManager(33, &ledStateManager);
 
 #ifndef SIM_ENABLED
