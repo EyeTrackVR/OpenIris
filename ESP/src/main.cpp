@@ -59,7 +59,7 @@ void setup() {
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
   deviceConfig.attach(mdnsHandler);
-  deviceConfig.attach(wifiHandler);
+  //deviceConfig.attach(wifiHandler);
   deviceConfig.initConfig();
   deviceConfig.load();
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
