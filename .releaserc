@@ -1,7 +1,11 @@
 {
     "branches": [
         "main",
-        "master"
+        "master",
+        {
+            "name": "feature/improv",
+            "prerelease": true
+        }
     ],
     "plugins": [
         [

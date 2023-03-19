@@ -3,7 +3,7 @@
 #include "data/utilities/network_utilities.hpp"
 
 ImprovHandler::ImprovHandler(ProjectConfig& projectConfig)
-    : projectConfig(projectConfig), _buffer{0}, _position(0) {}
+    : projectConfig(projectConfig), _position(0) {}
 
 ImprovHandler::~ImprovHandler() {}
 

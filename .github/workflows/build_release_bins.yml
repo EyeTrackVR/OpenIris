@@ -4,6 +4,7 @@ on:
     branches:
       - "master"
       - "main"
+      - "feature/improv"
   pull_request:
     branches:
       - "master"
