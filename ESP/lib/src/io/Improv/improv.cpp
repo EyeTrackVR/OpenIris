@@ -1,47 +1,39 @@
 #include "improv.h"
 
-namespace improv
-{
+namespace improv {
 
-  ImprovCommand parse_improv_data(const std::vector<uint8_t> &data,
-                                  bool check_checksum)
-  {
+  ImprovCommand parse_improv_data(const std::vector<uint8_t>& data,
+                                  bool check_checksum) {
     return parse_improv_data(data.data(), data.size(), check_checksum);
   }
 
-  ImprovCommand parse_improv_data(const uint8_t *data,
+  ImprovCommand parse_improv_data(const uint8_t* data,
                                   size_t length,
-                                  bool check_checksum)
-  {
+                                  bool check_checksum) {
     ImprovCommand improv_command;
     Command command = (Command)data[0];
     uint8_t data_length = data[1];
 
-    if (data_length != length - 2 - check_checksum)
-    {
+    if (data_length != length - 2 - check_checksum) {
       improv_command.command = UNKNOWN;
       return improv_command;
     }
 
-    if (check_checksum)
-    {
+    if (check_checksum) {
       uint8_t checksum = data[length - 1];
 
       uint32_t calculated_checksum = 0;
-      for (uint8_t i = 0; i < length - 1; i++)
-      {
+      for (uint8_t i = 0; i < length - 1; i++) {
         calculated_checksum += data[i];
       }
 
-      if ((uint8_t)calculated_checksum != checksum)
-      {
+      if ((uint8_t)calculated_checksum != checksum) {
         improv_command.command = BAD_CHECKSUM;
         return improv_command;
       }
     }
 
-    if (command == WIFI_SETTINGS)
-    {
+    if (command == WIFI_SETTINGS) {
       uint8_t ssid_length = data[2];
       uint8_t ssid_start = 3;
       size_t ssid_end = ssid_start + ssid_length;
@@ -61,10 +53,9 @@ namespace improv
 
   bool parse_improv_serial_byte(size_t position,
                                 uint8_t byte,
-                                const uint8_t *buffer,
-                                std::function<bool(ImprovCommand)> &&callback,
-                                std::function<void(Error)> &&on_error)
-  {
+                                const uint8_t* buffer,
+                                std::function<bool(ImprovCommand)>&& callback,
+                                std::function<void(Error)>&& on_error) {
     if (position == 0)
       return byte == 'I';
     if (position == 1)
@@ -90,20 +81,17 @@ namespace improv
     if (position <= 8 + data_len)
       return true;
 
-    if (position == 8 + data_len + 1)
-    {
+    if (position == 8 + data_len + 1) {
       uint8_t checksum = 0x00;
       for (size_t i = 0; i < position; i++)
         checksum += buffer[i];
 
-      if (checksum != byte)
-      {
+      if (checksum != byte) {
         on_error(ERROR_INVALID_RPC);
         return false;
       }
 
-      if (type == TYPE_RPC)
-      {
+      if (type == TYPE_RPC) {
         auto command = parse_improv_data(&buffer[9], data_len, false);
         return callback(command);
       }
@@ -113,14 +101,12 @@ namespace improv
   }
 
   std::vector<uint8_t> build_rpc_response(Command command,
-                                          const std::vector<std::string> &datum,
-                                          bool add_checksum)
-  {
+                                          const std::vector<std::string>& datum,
+                                          bool add_checksum) {
     std::vector<uint8_t> out;
     uint32_t length = 0;
     out.push_back(command);
-    for (const auto &str : datum)
-    {
+    for (const auto& str : datum) {
       uint8_t len = str.length();
       length += len + 1;
       out.push_back(len);
@@ -128,12 +114,10 @@ namespace improv
     }
     out.insert(out.begin() + 1, length);
 
-    if (add_checksum)
-    {
+    if (add_checksum) {
       uint32_t calculated_checksum = 0;
 
-      for (uint8_t byte : out)
-      {
+      for (uint8_t byte : out) {
         calculated_checksum += byte;
       }
       out.push_back(calculated_checksum);
@@ -143,14 +127,12 @@ namespace improv
 
 #ifdef ARDUINO
   std::vector<uint8_t> build_rpc_response(Command command,
-                                          const std::vector<String> &datum,
-                                          bool add_checksum)
-  {
+                                          const std::vector<String>& datum,
+                                          bool add_checksum) {
     std::vector<uint8_t> out;
     uint32_t length = 0;
     out.push_back(command);
-    for (const auto &str : datum)
-    {
+    for (const auto& str : datum) {
       uint8_t len = str.length();
       length += len;
       out.push_back(len);
@@ -158,18 +140,16 @@ namespace improv
     }
     out.insert(out.begin() + 1, length);
 
-    if (add_checksum)
-    {
+    if (add_checksum) {
       uint32_t calculated_checksum = 0;
 
-      for (uint8_t byte : out)
-      {
+      for (uint8_t byte : out) {
         calculated_checksum += byte;
       }
       out.push_back(calculated_checksum);
     }
     return out;
   }
-#endif // ARDUINO
+#endif  // ARDUINO
 
-} // namespace improv
+}  // namespace improv

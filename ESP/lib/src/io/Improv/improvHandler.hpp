@@ -5,7 +5,7 @@
 
 class ImprovHandler {
   ProjectConfig& projectConfig;
-  uint8_t _buffer[15];  // TODO: is 15 enough?
+  uint8_t _buffer[16];
   uint8_t _position;
 
   void onErrorCallback(improv::Error err);
@@ -14,6 +14,8 @@ class ImprovHandler {
   void send_response(std::vector<uint8_t>& response);
   void set_state(improv::State state);
   void set_error(improv::Error error);
+  std::vector<std::string> getLocalUrl();
+  bool connectToNetwork(const std::string ssid, const std::string password);
 
  public:
   ImprovHandler(ProjectConfig& projectConfig);

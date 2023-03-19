@@ -5,10 +5,7 @@
 ImprovHandler::ImprovHandler(ProjectConfig& projectConfig)
     : projectConfig(projectConfig), _buffer{0}, _position(0) {}
 
-ImprovHandler::~ImprovHandler() {
-  if (_buffer)
-    free(_buffer);
-}
+ImprovHandler::~ImprovHandler() {}
 
 void ImprovHandler::onErrorCallback(improv::Error err) {
   ledStateManager.setState(LEDStates_e::_Improv_Error);
@@ -21,6 +18,9 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       if (wifiStateManager.getCurrentState() ==
           WiFiState_e::WiFiState_Connected) {
         this->set_state(improv::State::STATE_PROVISIONED);
+        std::vector<uint8_t> data = improv::build_rpc_response(
+            improv::GET_CURRENT_STATE, this->getLocalUrl(), false);
+        this->send_response(data);
         break;
       }
       this->set_state(improv::State::STATE_AUTHORIZED);
@@ -30,29 +30,25 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
     case improv::Command::WIFI_SETTINGS: {
       ledStateManager.setState(LEDStates_e::_Improv_Start);
 
-      if (cmd.ssid.empty()) {
-        set_error(improv::Error::ERROR_INVALID_RPC);
+      if (cmd.ssid.empty() || cmd.ssid.size() == 0) {
+        this->set_error(improv::Error::ERROR_INVALID_RPC);
         break;
       }
 
       ledStateManager.setState(LEDStates_e::_Improv_Processing);
       this->set_state(improv::STATE_PROVISIONING);
-      //* Save the config to flash
-      projectConfig.setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
-                                   false, true);
+      Network_Utilities::my_delay(0.5);
+      if (this->connectToNetwork(cmd.ssid, cmd.password)) {
+        this->set_state(improv::State::STATE_PROVISIONED);
+        std::vector<uint8_t> data = improv::build_rpc_response(
+            improv::GET_CURRENT_STATE, this->getLocalUrl(), false);
+        this->send_response(data);
 
-      this->set_state(improv::STATE_PROVISIONED);
-
-      //* Construct URL
-      std::string root_url("http://");
-      root_url.append(WiFi.localIP().toString().c_str());
-      std::vector<std::string> url = {root_url};
-      //* Build response
-      std::vector<uint8_t> data =
-          improv::build_rpc_response(improv::WIFI_SETTINGS, url, false);
-      this->send_response(data);
-
-      ledStateManager.setState(LEDStates_e::_Improv_Stop);
+        ledStateManager.setState(LEDStates_e::_Improv_Stop);
+      } else {
+        this->set_state(improv::STATE_STOPPED);
+        this->set_error(improv::Error::ERROR_UNABLE_TO_CONNECT);
+      }
       break;
     }
 
@@ -145,6 +141,22 @@ void ImprovHandler::set_error(improv::Error error) {
   Serial.write(data.data(), data.size());
 }
 
+std::vector<std::string> ImprovHandler::getLocalUrl() {
+  //* Construct URL
+  std::string root_url("http://" +
+                       std::string(WiFi.localIP().toString().c_str()));
+  std::vector<std::string> url = {root_url};
+  return url;
+}
+
+bool ImprovHandler::connectToNetwork(const std::string ssid,
+                                     const std::string password) {
+  //* Save the config to flash
+  projectConfig.setWifiConfig(ssid, ssid, password, 10, 52, false, true);
+  return (wifiStateManager.getCurrentState() ==
+          WiFiState_e::WiFiState_Connected);
+}
+
 void ImprovHandler::loop() {
   if (Serial.available() > 0) {
     uint8_t b = Serial.read();
@@ -156,21 +168,8 @@ void ImprovHandler::loop() {
             },
             [&](improv::Error error) { this->onErrorCallback(error); })) {
       _buffer[_position++] = b;
-      return;
+    } else {
+      _position = 0;
     }
-    _position = 0;
   }
 }
-
-/* void ImprovHandler::update(ObserverEvent::Event event) {
-  switch (event) {
-    case ObserverEvent::Event::WIFI_CONNECTED:
-      set_state(improv::STATE_AUTHORIZED);
-      break;
-    case ObserverEvent::Event::WIFI_DISCONNECTED:
-      set_state(improv::STATE_PROVISIONED);
-      break;
-    default:
-      break;
-  }
-} */
