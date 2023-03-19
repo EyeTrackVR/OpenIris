@@ -5,7 +5,7 @@
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
-#include <network/wifihandler/wifiHandler.hpp>
+#include <network/wifihandler/WifiHandler.hpp>
 
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
