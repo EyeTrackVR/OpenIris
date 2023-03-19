@@ -16,17 +16,12 @@ private:
 
 public:
 	CameraHandler(ProjectConfig *configManager, StateManager<LEDStates_e> *stateManager);
-	int setCameraResolution(framesize_t frameSize);
-	int setVFlip(int direction);
-	int setHFlip(int direction);
-	int setVieWindow(int offsetX, int offsetY, int outputX, int outputY);
-	void update(ObserverEvent::Event event);
-	void resetCamera(bool type = 0);
+	void update(ObserverEvent::Event event) override;
+	void resetCamera(bool type = false);
 
 private:
-	void loadConfigData();
 	bool setupCamera();
 	void setupCameraPinout();
-	void setupBasicResolution();
+	void setupResolutionConfiguration();
 	void setupCameraSensor();
 };

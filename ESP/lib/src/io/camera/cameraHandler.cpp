@@ -4,8 +4,40 @@ CameraHandler::CameraHandler(ProjectConfig *configManager,
 							 StateManager<LEDStates_e> *stateManager) : configManager(configManager),
 																		stateManager(stateManager) {}
 
-void CameraHandler::setupCameraPinout()
-{
+void CameraHandler::update(ObserverEvent::Event event) {
+    switch (event) {
+        case ObserverEvent::Event::configLoaded:
+            log_d("Setting up the camera");
+            this->setupCamera();
+            log_d("Done setting up the camera");
+            break;
+        case ObserverEvent::Event::cameraConfigUpdated:
+            log_d("Config updated, updating camera settings. Note, change in resolution requires a restart");
+            this->setupCameraSensor();
+            break;
+        default:
+            break;
+    }
+}
+
+bool CameraHandler::setupCamera() {
+	this->setupCameraPinout();
+    this->setupResolutionConfiguration();
+
+    esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+	if (hasCameraBeenInitialized != ESP_OK)
+	{
+		log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
+		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
+		stateManager->setState(LEDStates_e::_Camera_Error);
+		return false;
+	}
+
+	this->setupCameraSensor();
+	return true;
+}
+
+void CameraHandler::setupCameraPinout() {
 	// Workaround for espM5SStack not having a defined camera
 #ifdef CAMERA_MODULE_NAME
 	log_i("Camera module is %s", CAMERA_MODULE_NAME);
@@ -55,31 +87,42 @@ void CameraHandler::setupCameraPinout()
 									// 20000000 max fps
 }
 
-void CameraHandler::setupBasicResolution()
+void CameraHandler::setupResolutionConfiguration()
 {
-	config.pixel_format = PIXFORMAT_JPEG;
-	config.frame_size = FRAMESIZE_240X240;
+    ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
+    config.pixel_format = PIXFORMAT_JPEG;
 
-	if (!psramFound())
-	{
-		log_e("Did not find psram, setting lower image quality");
-		config.fb_location = CAMERA_FB_IN_DRAM;
-		config.jpeg_quality = 9;
-		config.fb_count = 2;
-		return;
-	}
+    log_d("Setting camera frame size to: %d, %d", (framesize_t)cameraConfig->framesize, framesize_t(cameraConfig->framesize) == FRAMESIZE_240X240);
+    config.frame_size = framesize_t(cameraConfig->framesize);
 
-	log_d("Found psram, setting the higher image quality");
-	config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
-	config.fb_count = 3;
+    if (!psramFound())
+    {
+        log_e("Did not find psram, setting lower image quality");
+        config.fb_location = CAMERA_FB_IN_DRAM;
+        config.jpeg_quality = 9;
+        config.fb_count = 2;
+        return;
+    }
+
+    log_d("Found psram, setting the higher image quality");
+    config.jpeg_quality = 7; // 0-63 lower number = higher quality, more latency and less fps   7 for most fps, 5 for best quality
+    config.fb_count = 3;
 }
 
 void CameraHandler::setupCameraSensor()
 {
-	camera_sensor = esp_camera_sensor_get();
+    log_d("Setting up the camera sensor settings");
+	this->camera_sensor = esp_camera_sensor_get();
+    ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
+    camera_sensor->set_hmirror(camera_sensor, cameraConfig->href);
+	camera_sensor->set_vflip(camera_sensor, cameraConfig->vflip);
+
+	camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
+	camera_sensor->set_agc_gain(camera_sensor, cameraConfig->brightness);
+
 	// fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
 	// documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
-	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel, here we're directly writing to the registers. 0xFF==0x00 is the first bank, there's also 0xFF==0x01 
+	camera_sensor->set_reg(camera_sensor, 0xff, 0xff, 0x00);		 // banksel, here we're directly writing to the registers. 0xFF==0x00 is the first bank, there's also 0xFF==0x01
 	camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);			 // clock
 	camera_sensor->set_brightness(camera_sensor, 2);				 // -2 to 2
 	camera_sensor->set_contrast(camera_sensor, 2);					 // -2 to 2
@@ -89,7 +132,7 @@ void CameraHandler::setupCameraSensor()
 	camera_sensor->set_whitebal(camera_sensor, 1);					 // 0 = disable , 1 = enable
 	camera_sensor->set_awb_gain(camera_sensor, 0);					 // 0 = disable , 1 = enable
 	camera_sensor->set_wb_mode(camera_sensor, 0);                    // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-	
+
 	// controls the exposure
 	camera_sensor->set_exposure_ctrl(camera_sensor, 0);				 // 0 = disable , 1 = enable
 	camera_sensor->set_aec2(camera_sensor, 0);						 // 0 = disable , 1 = enable
@@ -98,8 +141,8 @@ void CameraHandler::setupCameraSensor()
 
 	// controls the gain
 	camera_sensor->set_gain_ctrl(camera_sensor, 0);					 // 0 = disable , 1 = enable
-	
-	// automatic gain control gain, controls by how much the resulting image should be amplified 
+
+	// automatic gain control gain, controls by how much the resulting image should be amplified
 	camera_sensor->set_agc_gain(camera_sensor, 2);					 // 0 to 30
 	camera_sensor->set_gainceiling(camera_sensor, (gainceiling_t)6); // 0 to 6
 
@@ -111,90 +154,18 @@ void CameraHandler::setupCameraSensor()
 
 	//gamma correction
 	camera_sensor->set_raw_gma(camera_sensor, 1);					 // 0 = disable , 1 = enable (makes much lighter and noisy)
-	
+
 	camera_sensor->set_lenc(camera_sensor, 0);						 // 0 = disable , 1 = enable                // 0 = disable , 1 = enable
-	
+
 	camera_sensor->set_colorbar(camera_sensor, 0);					 // 0 = disable , 1 = enable
-	
+
 	camera_sensor->set_special_effect(camera_sensor, 2);			 // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-}
-
-bool CameraHandler::setupCamera()
-{
-	this->setupCameraPinout();
-	this->setupBasicResolution();
-	esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
-
-	if (hasCameraBeenInitialized != ESP_OK)
-	{
-		log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
-		log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
-		stateManager->setState(LEDStates_e::_Camera_Error);
-		return false;
-	}
-
-	this->setupCameraSensor();
-	return true;
-}
-
-void CameraHandler::loadConfigData()
-{
-	ProjectConfig::CameraConfig_t *cameraConfig = configManager->getCameraConfig();
-	this->setHFlip(cameraConfig->href);
-	this->setVFlip(cameraConfig->vflip);
-	this->setCameraResolution((framesize_t)cameraConfig->framesize);
-	camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
-	camera_sensor->set_agc_gain(camera_sensor, cameraConfig->brightness);
-}
-
-void CameraHandler::update(ObserverEvent::Event event)
-{
-	switch (event)
-	{
-	case ObserverEvent::Event::configLoaded:
-		this->setupCamera();
-		this->loadConfigData();
-		break;
-	case ObserverEvent::Event::cameraConfigUpdated:
-		this->loadConfigData();
-		break;
-	default:
-		break;
-	}
-}
-
-int CameraHandler::setCameraResolution(framesize_t frameSize)
-{
-	if (camera_sensor->pixformat == PIXFORMAT_JPEG)
-	{
-		try
-		{
-			return camera_sensor->set_framesize(camera_sensor, frameSize);
-		}
-		catch (...)
-		{
-			// they sent us a malformed or unsupported frameSize - rather than crash - tell them about it
-			return -1;
-		}
-	}
-	return -1;
-}
-
-int CameraHandler::setVFlip(int direction)
-{
-	return camera_sensor->set_vflip(camera_sensor, direction);
-}
-
-int CameraHandler::setHFlip(int direction)
-{
-	return camera_sensor->set_hmirror(camera_sensor, direction);
 }
 
 //! either hardware(1) or software(0)
 void CameraHandler::resetCamera(bool type)
 {
-	if (type)
-	{
+	if (type) {
 		// power cycle the camera module (handy if camera stops responding)
 		digitalWrite(PWDN_GPIO_NUM, HIGH); // turn power off to camera module
 		Network_Utilities::my_delay(0.3);  // a for loop with a delay of 300ms
@@ -202,8 +173,7 @@ void CameraHandler::resetCamera(bool type)
 		Network_Utilities::my_delay(0.3);
 		setupCamera();
 	}
-	else
-	{
+	else {
 		// reset via software (handy if you wish to change resolution or image type etc. - see test procedure)
 		esp_camera_deinit();
 		Network_Utilities::my_delay(0.05);

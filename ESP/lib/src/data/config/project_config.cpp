@@ -56,7 +56,7 @@ void ProjectConfig::initConfig() {
   this->config.camera = {
       .vflip = 0,
       .href = 0,
-      .framesize = 4,
+      .framesize = 5,
       .quality = 7,
       .brightness = 2,
   };
@@ -197,7 +197,7 @@ void ProjectConfig::load() {
   /* Camera Config */
   this->config.camera.vflip = getInt("vflip", 0);
   this->config.camera.href = getInt("href", 0);
-  this->config.camera.framesize = getInt("framesize", 4);
+  this->config.camera.framesize = getInt("framesize", 5);
   this->config.camera.quality = getInt("quality", 7);
   this->config.camera.brightness = getInt("brightness", 2);
 

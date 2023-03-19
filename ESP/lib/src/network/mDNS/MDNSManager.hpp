@@ -16,7 +16,7 @@ public:
 	MDNSHandler(StateManager<MDNSState_e> *stateManager,
 				ProjectConfig *configManager);
 	bool startMDNS();
-	void update(ObserverEvent::Event event);
+	void update(ObserverEvent::Event event) override;
 };
 
 #endif // MDNSHANDLER_HPP
