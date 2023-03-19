@@ -1,6 +1,8 @@
 #ifndef BASEAPI_HPP
 #define BASEAPI_HPP
 
+//! Warning do not format this file with clang-format or it will break the code
+
 #include <unordered_map>
 #include <string>
 
