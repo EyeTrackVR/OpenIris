@@ -10,14 +10,19 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(ProjectConfig* projectConfig,
-                 CameraHandler* camera,
+BaseAPI::BaseAPI(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+                 CameraHandler& camera,
+#endif  // SIM_ENABLED
                  const std::string& api_url,
-                 int CONTROL_PORT)
+                 const int CONTROL_PORT)
     : server(CONTROL_PORT),
       projectConfig(projectConfig),
+#ifndef SIM_ENABLED
       camera(camera),
-      api_url(api_url) {}
+#endif  // SIM_ENABLED
+      api_url(api_url) {
+}
 
 BaseAPI::~BaseAPI() {}
 
@@ -94,13 +99,13 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setWifiConfig(networkName, ssid, password, channel, power,
+      projectConfig.setWifiConfig(networkName, ssid, password, channel, power,
                                    adhoc, true);
 
       /* if (WiFiStateManager->getCurrentState() ==
       WiFiState_e::WiFiState_ADHOC)
       {
-              projectConfig->setAPWifiConfig(ssid, password, &channel, adhoc,
+              projectConfig.setAPWifiConfig(ssid, password, &channel, adhoc,
       true);
       }
       else
@@ -113,7 +118,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       break;
     }
     case DELETE: {
-      projectConfig->deleteWifiConfig(request->arg("networkName").c_str(),
+      projectConfig.deleteWifiConfig(request->arg("networkName").c_str(),
                                       true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Wifi Creds have been deleted.\"}");
@@ -132,22 +137,22 @@ void BaseAPI::getJsonConfig(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
     case GET: {
       std::string wifiConfigSerialized = "\"wifi_config\": [";
-      auto networksConfigs = projectConfig->getWifiConfigs();
-      for (auto networkIterator = networksConfigs->begin();
-           networkIterator != networksConfigs->end(); networkIterator++) {
-        wifiConfigSerialized +=
-            networkIterator->toRepresentation() +
-            (std::next(networkIterator) != networksConfigs->end() ? "," : "");
+      auto networksConfigs = projectConfig.getWifiConfigs();
+      for (auto& networkConfig : networksConfigs) {
+        wifiConfigSerialized += networkConfig.toRepresentation();
+
+        if (&networkConfig != &networksConfigs.back())
+          wifiConfigSerialized += ",";
       }
       wifiConfigSerialized += "]";
 
       std::string json = Helpers::format_string(
           "{%s, %s, %s, %s, %s}",
-          projectConfig->getDeviceConfig()->toRepresentation().c_str(),
-          projectConfig->getCameraConfig()->toRepresentation().c_str(),
+          projectConfig.getDeviceConfig().toRepresentation().c_str(),
+          projectConfig.getCameraConfig().toRepresentation().c_str(),
           wifiConfigSerialized.c_str(),
-          projectConfig->getMDNSConfig()->toRepresentation().c_str(),
-          projectConfig->getAPWifiConfig()->toRepresentation().c_str());
+          projectConfig.getMDNSConfig().toRepresentation().c_str(),
+          projectConfig.getAPWifiConfig().toRepresentation().c_str());
       request->send(200, MIMETYPE_JSON, json.c_str());
       break;
     }
@@ -195,9 +200,9 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setDeviceConfig(ota_password, ota_port, firmware_name,
+      projectConfig.setDeviceConfig(ota_password, ota_port, firmware_name,
                                      true);
-      projectConfig->setMDNSConfig(hostname, service, true);
+      projectConfig.setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
     }
@@ -217,8 +222,8 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
           txPower = atoi(param->value().c_str());
         }
       }
-      projectConfig->setWiFiTxPower(txPower, true);
-      projectConfig->wifiTxPowerConfigSave();
+      projectConfig.setWiFiTxPower(txPower, true);
+      projectConfig.wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
       break;
@@ -234,8 +239,8 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
           txPower = atoi(param->value().c_str());
         }
       }
-      projectConfig->setWiFiTxPower(txPower, true);
-      projectConfig->wifiTxPowerConfigSave();
+      projectConfig.setWiFiTxPower(txPower, true);
+      projectConfig.wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
     }
@@ -259,7 +264,7 @@ void BaseAPI::factoryReset(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
     case GET: {
       log_d("Factory Reset");
-      projectConfig->reset();
+      projectConfig.reset();
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Factory Reset\"}");
     }
     default: {
@@ -272,7 +277,7 @@ void BaseAPI::factoryReset(AsyncWebServerRequest* request) {
 //*********************************************************************************************
 //!                                     Camera Command Functions
 //*********************************************************************************************
-
+#ifndef SIM_ENABLED
 void BaseAPI::setCamera(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
     case GET: {
@@ -303,7 +308,7 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setCameraConfig(temp_camera_vflip, temp_camera_framesize,
+      projectConfig.setCameraConfig(temp_camera_vflip, temp_camera_framesize,
                                      temp_camera_hflip, temp_camera_quality,
                                      temp_camera_brightness, true);
 
@@ -321,18 +326,19 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
 
 void BaseAPI::restartCamera(AsyncWebServerRequest* request) {
   bool mode = (bool)atoi(request->arg("mode").c_str());
-  camera->resetCamera(mode);
+  camera.resetCamera(mode);
 
   request->send(200, MIMETYPE_JSON,
                 "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
+#endif // SIM_ENABLED
 
 void BaseAPI::ping(AsyncWebServerRequest* request) {
   request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
 
 void BaseAPI::save(AsyncWebServerRequest* request) {
-  projectConfig->save();
+  projectConfig.save();
   request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
 

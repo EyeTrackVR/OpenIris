@@ -97,12 +97,12 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     WiFiTxPower_t txpower;
   };
 
-  DeviceConfig_t* getDeviceConfig();
-  CameraConfig_t* getCameraConfig();
-  std::vector<WiFiConfig_t>* getWifiConfigs();
-  AP_WiFiConfig_t* getAPWifiConfig();
-  MDNSConfig_t* getMDNSConfig();
-  WiFiTxPower_t* getWiFiTxPowerConfig();
+  DeviceConfig_t& getDeviceConfig();
+  CameraConfig_t& getCameraConfig();
+  std::vector<WiFiConfig_t>& getWifiConfigs();
+  AP_WiFiConfig_t& getAPWifiConfig();
+  MDNSConfig_t& getMDNSConfig();
+  WiFiTxPower_t& getWiFiTxPowerConfig();
 
   void setDeviceConfig(const std::string& OTAPassword,
                        int OTAPort,

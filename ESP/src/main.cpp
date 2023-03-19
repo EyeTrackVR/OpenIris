@@ -2,10 +2,10 @@
 #include <io/Improv/improvHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <io/camera/cameraHandler.hpp>
-#include <network/wifihandler/wifiHandler.hpp>
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
+#include <network/wifihandler/wifiHandler.hpp>
 
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
@@ -22,22 +22,25 @@
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
-OTA ota(&deviceConfig);
+OTA ota(deviceConfig);
 #endif  // ENABLE_OTA
 
 LEDManager ledManager(33);
 
 #ifndef SIM_ENABLED
-CameraHandler cameraHandler(&deviceConfig);
+CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(&deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 
-ImprovHandler improvHandler(&deviceConfig);
+ImprovHandler improvHandler(deviceConfig);
 
-APIServer apiServer(&deviceConfig,
-                    &cameraHandler,
-                    "/control");
-MDNSHandler mdnsHandler(&deviceConfig);
+#ifndef SIM_ENABLED
+APIServer apiServer(deviceConfig, cameraHandler, "/control", 81);
+#else
+APIServer apiServer(deviceConfig, "/control", 80);
+#endif  // SIM_ENABLED
+
+MDNSHandler mdnsHandler(deviceConfig);
 
 #ifndef SIM_ENABLED
 StreamServer streamServer;
@@ -53,10 +56,10 @@ void setup() {
   // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
   ledManager.begin();
 #ifndef SIM_ENABLED
-  deviceConfig.attach(&cameraHandler);
+  deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-  deviceConfig.attach(&mdnsHandler);
-  deviceConfig.attach(&wifiHandler);
+  deviceConfig.attach(mdnsHandler);
+  deviceConfig.attach(wifiHandler);
   deviceConfig.initConfig();
   deviceConfig.load();
   wifiHandler._enable_adhoc = ENABLE_ADHOC;

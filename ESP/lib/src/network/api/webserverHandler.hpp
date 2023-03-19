@@ -6,10 +6,12 @@
 
 class APIServer : public BaseAPI {
  public:
-  APIServer(ProjectConfig* projectConfig,
-            CameraHandler* camera,
+  APIServer(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+            CameraHandler& camera,
+#endif  // SIM_ENABLED
             const std::string& api_url,
-            int CONTROL_PORT = 81);
+            const int CONTROL_PORT);
 
   virtual ~APIServer();
   void begin();

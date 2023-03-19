@@ -8,10 +8,10 @@
 
 class MDNSHandler : public IObserver<ConfigState_e> {
  private:
-  ProjectConfig* configManager;
+  ProjectConfig& configManager;
 
  public:
-  MDNSHandler(ProjectConfig* configManager);
+  MDNSHandler(ProjectConfig& configManager);
   bool startMDNS();
   void update(ConfigState_e event) override;
   std::string getName() override;

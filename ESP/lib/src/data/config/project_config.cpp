@@ -271,7 +271,8 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
     if (it->name == networkName) {
-      log_i("[Project Config]: Found network %s, updating it ...", it->name.c_str());
+      log_i("[Project Config]: Found network %s, updating it ...",
+            it->name.c_str());
 
       it->name = networkName;
       it->ssid = ssid;
@@ -424,21 +425,21 @@ std::string ProjectConfig::WiFiTxPower_t::toRepresentation() {
 //*
 //**********************************************************************************************************************
 
-ProjectConfig::DeviceConfig_t* ProjectConfig::getDeviceConfig() {
-  return &this->config.device;
+ProjectConfig::DeviceConfig_t& ProjectConfig::getDeviceConfig() {
+  return this->config.device;
 }
-ProjectConfig::CameraConfig_t* ProjectConfig::getCameraConfig() {
-  return &this->config.camera;
+ProjectConfig::CameraConfig_t& ProjectConfig::getCameraConfig() {
+  return this->config.camera;
 }
-std::vector<ProjectConfig::WiFiConfig_t>* ProjectConfig::getWifiConfigs() {
-  return &this->config.networks;
+std::vector<ProjectConfig::WiFiConfig_t>& ProjectConfig::getWifiConfigs() {
+  return this->config.networks;
 }
-ProjectConfig::AP_WiFiConfig_t* ProjectConfig::getAPWifiConfig() {
-  return &this->config.ap_network;
+ProjectConfig::AP_WiFiConfig_t& ProjectConfig::getAPWifiConfig() {
+  return this->config.ap_network;
 }
-ProjectConfig::MDNSConfig_t* ProjectConfig::getMDNSConfig() {
-  return &this->config.mdns;
+ProjectConfig::MDNSConfig_t& ProjectConfig::getMDNSConfig() {
+  return this->config.mdns;
 }
-ProjectConfig::WiFiTxPower_t* ProjectConfig::getWiFiTxPowerConfig() {
-  return &this->config.txpower;
+ProjectConfig::WiFiTxPower_t& ProjectConfig::getWiFiTxPowerConfig() {
+  return this->config.txpower;
 }

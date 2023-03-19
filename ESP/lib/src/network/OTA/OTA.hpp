@@ -4,17 +4,16 @@
 #include <HTTPClient.h>
 #include "data/config/project_config.hpp"
 
-class OTA
-{
-public:
-    OTA(ProjectConfig *_deviceConfig);
-    virtual ~OTA();
-    void begin();
-    void handleOTAUpdate();
+class OTA {
+ public:
+  OTA(ProjectConfig& _deviceConfig);
+  virtual ~OTA();
+  void begin();
+  void handleOTAUpdate();
 
-private:
-    ProjectConfig *_deviceConfig;
-    unsigned long _bootTimestamp;
-    bool _isOtaEnabled;
+ private:
+  ProjectConfig& _deviceConfig;
+  unsigned long _bootTimestamp;
+  bool _isOtaEnabled;
 };
-#endif // OTA_HPP
+#endif  // OTA_HPP

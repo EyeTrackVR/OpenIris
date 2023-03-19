@@ -25,7 +25,7 @@ private:
 	int STREAM_SERVER_PORT;
 
 public:
-	StreamServer(int STREAM_PORT = 80);
+	StreamServer(const int STREAM_PORT = 80);
 	int startStreamServer();
 };
 

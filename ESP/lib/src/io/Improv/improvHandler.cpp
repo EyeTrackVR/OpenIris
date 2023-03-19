@@ -1,6 +1,8 @@
 #include "improvHandler.hpp"
+#include "data/StateManager/StateManager.hpp"
+#include "data/utilities/network_utilities.hpp"
 
-ImprovHandler::ImprovHandler(ProjectConfig* projectConfig)
+ImprovHandler::ImprovHandler(ProjectConfig& projectConfig)
     : projectConfig(projectConfig), _buffer{0}, _position(0) {}
 
 ImprovHandler::~ImprovHandler() {
@@ -15,8 +17,9 @@ void ImprovHandler::onErrorCallback(improv::Error err) {
 bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
   switch (cmd.command) {
     case improv::Command::GET_CURRENT_STATE: {
-      auto wifiConfigs = projectConfig->getWifiConfigs();
-      if (wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_Connected) {
+      auto wifiConfigs = projectConfig.getWifiConfigs();
+      if (wifiStateManager.getCurrentState() ==
+          WiFiState_e::WiFiState_Connected) {
         this->set_state(improv::State::STATE_PROVISIONED);
         break;
       }
@@ -35,7 +38,8 @@ bool ImprovHandler::onCommandCallback(improv::ImprovCommand cmd) {
       ledStateManager.setState(LEDStates_e::_Improv_Processing);
       this->set_state(improv::STATE_PROVISIONING);
       //* Save the config to flash
-      projectConfig->setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52, false, true);
+      projectConfig.setWifiConfig(cmd.ssid, cmd.ssid, cmd.password, 10, 52,
+                                   false, true);
 
       this->set_state(improv::STATE_PROVISIONED);
 

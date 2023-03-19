@@ -95,16 +95,20 @@ protected:
 
 	typedef std::unordered_map<std::string, WebRequestMethodComposite> networkMethodsMap_t;
 
-	ProjectConfig *projectConfig;
+	ProjectConfig &projectConfig;
 	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
 	AsyncWebServer server;
-	CameraHandler *camera;
+#ifndef SIM_ENABLED
+        CameraHandler &camera;
+#endif  // SIM_ENABLED
 
-public:
- BaseAPI(ProjectConfig* projectConfig,
-         CameraHandler* camera,
-         const std::string& api_url,
-         int CONTROL_PORT);
+public :
+    BaseAPI(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+            CameraHandler& camera,
+#endif  // SIM_ENABLED
+            const std::string& api_url,
+            const int CONTROL_PORT);
 
  virtual ~BaseAPI();
  virtual void begin();

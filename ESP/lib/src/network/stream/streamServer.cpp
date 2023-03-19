@@ -74,7 +74,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
     return res;
 }
 
-StreamServer::StreamServer(int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
+StreamServer::StreamServer(const int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
 
 int StreamServer::startStreamServer()
 {

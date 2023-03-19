@@ -1,6 +1,6 @@
 #include "cameraHandler.hpp"
 
-CameraHandler::CameraHandler(ProjectConfig* configManager)
+CameraHandler::CameraHandler(ProjectConfig& configManager)
     : configManager(configManager) {}
 
 void CameraHandler::setupCameraPinout() {
@@ -148,13 +148,13 @@ bool CameraHandler::setupCamera() {
 }
 
 void CameraHandler::loadConfigData() {
-  ProjectConfig::CameraConfig_t* cameraConfig =
-      configManager->getCameraConfig();
-  this->setHFlip(cameraConfig->href);
-  this->setVFlip(cameraConfig->vflip);
-  this->setCameraResolution((framesize_t)cameraConfig->framesize);
-  camera_sensor->set_quality(camera_sensor, cameraConfig->quality);
-  camera_sensor->set_agc_gain(camera_sensor, cameraConfig->brightness);
+  ProjectConfig::CameraConfig_t cameraConfig =
+      configManager.getCameraConfig();
+  this->setHFlip(cameraConfig.href);
+  this->setVFlip(cameraConfig.vflip);
+  this->setCameraResolution((framesize_t)cameraConfig.framesize);
+  camera_sensor->set_quality(camera_sensor, cameraConfig.quality);
+  camera_sensor->set_agc_gain(camera_sensor, cameraConfig.brightness);
 }
 
 int CameraHandler::setCameraResolution(framesize_t frameSize) {
@@ -176,6 +176,13 @@ int CameraHandler::setVFlip(int direction) {
 
 int CameraHandler::setHFlip(int direction) {
   return camera_sensor->set_hmirror(camera_sensor, direction);
+}
+
+int CameraHandler::setVieWindow(int offsetX,
+                                int offsetY,
+                                int outputX,
+                                int outputY) {
+  return 0;
 }
 
 //! either hardware(1) or software(0)

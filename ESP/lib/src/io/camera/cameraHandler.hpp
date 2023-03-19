@@ -10,10 +10,10 @@ class CameraHandler : public IObserver<ConfigState_e> {
  private:
   sensor_t* camera_sensor;
   camera_config_t config;
-  ProjectConfig* configManager;
+  ProjectConfig& configManager;
 
  public:
-  CameraHandler(ProjectConfig* configManager);
+  CameraHandler(ProjectConfig& configManager);
   int setCameraResolution(framesize_t frameSize);
   int setVFlip(int direction);
   int setHFlip(int direction);

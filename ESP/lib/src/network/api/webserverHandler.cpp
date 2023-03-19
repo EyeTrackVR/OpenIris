@@ -4,11 +4,19 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(ProjectConfig* projectConfig,
-                     CameraHandler* camera,
+APIServer::APIServer(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+                     CameraHandler& camera,
+#endif  // SIM_ENABLED
                      const std::string& api_url,
-                     int CONTROL_PORT)
-    : BaseAPI(projectConfig, camera, api_url, CONTROL_PORT) {}
+                     const int CONTROL_PORT)
+    : BaseAPI(projectConfig,
+#ifndef SIM_ENABLED
+              camera,
+#endif  // SIM_ENABLED
+              api_url,
+              CONTROL_PORT) {
+}
 
 APIServer::~APIServer() {}
 
@@ -35,8 +43,10 @@ void APIServer::setupServer() {
   routes.emplace("getStoredConfig", &APIServer::getJsonConfig);
   routes.emplace("setTxPower", &APIServer::setWiFiTXPower);
   // Camera Routes
+#ifndef SIM_ENABLED
   routes.emplace("setCamera", &APIServer::setCamera);
   routes.emplace("restartCamera", &APIServer::restartCamera);
+#endif  // SIM_ENABLED
   routes.emplace("ping", &APIServer::ping);
   routes.emplace("save", &APIServer::save);
   routes.emplace("wifiStrength", &APIServer::rssi);

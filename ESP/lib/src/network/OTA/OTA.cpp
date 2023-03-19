@@ -1,19 +1,19 @@
 #include "OTA.hpp"
 
-OTA::OTA(ProjectConfig* _deviceConfig)
+OTA::OTA(ProjectConfig& _deviceConfig)
     : _deviceConfig(_deviceConfig), _bootTimestamp(0), _isOtaEnabled(true) {}
 
 OTA::~OTA() {}
 
 void OTA::begin() {
   log_i("Setting up OTA updates");
-  auto localConfig = _deviceConfig->getDeviceConfig();
+  auto localConfig = _deviceConfig.getDeviceConfig();
 
-  if (localConfig->OTAPassword.empty()) {
+  if (localConfig.OTAPassword.empty()) {
     log_e("THE PASSWORD IS REQUIRED, [[ABORTING]]");
     return;
   }
-  ArduinoOTA.setPort(localConfig->OTAPort);
+  ArduinoOTA.setPort(localConfig.OTAPort);
   ArduinoOTA
       .onStart([]() {
         String type;
@@ -50,8 +50,8 @@ void OTA::begin() {
   log_i(
       "OTA will be live for 5 minutes, after which it will be disabled until "
       "restart");
-  auto mdnsConfig = _deviceConfig->getMDNSConfig();
-  ArduinoOTA.setHostname(mdnsConfig->hostname.c_str());
+  auto mdnsConfig = _deviceConfig.getMDNSConfig();
+  ArduinoOTA.setHostname(mdnsConfig.hostname.c_str());
   ArduinoOTA.begin();
   _bootTimestamp = millis();
 }
