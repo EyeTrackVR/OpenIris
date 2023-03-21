@@ -68,38 +68,26 @@ printf "[prepareCMD.sh]: Mass renaming files in the ./build sub folders \n"
 #create an array of all the sub folders in the build folder
 buildPaths=($(ls ./build))
 
-printf "[prepareCMD.sh]: buildPaths: ${buildPaths[@]} \n"
 
 # loop through all the sub folders in the build folder
 for buildPath in "${buildPaths[@]}"
 do
+    printf "[prepareCMD.sh]: Build Path: ${buildPath} \n"
     # create a variable to hold the path to the sub folder
     buildPath="./build/${buildPath}"
     
-    # create a vari able to hold the path to the sub folder's files
+    # create a variable to hold the path to the sub folder's files
     buildPathFiles=($(ls ${buildPath}))
-
-    # loop through all the files in the sub folder and rename them to the next release version
-    for buildPathFile in "${buildPathFiles[@]}"
-    do
-        # create a variable to hold the path to the file
-        buildPathFile="${buildPath}/${buildPathFile}"
-        
-        # rename the file to the next release version
-        # parse out the sub  folder name and append it to the next release version
-        # this is to ensure that the file name is unique
-
-        #create a variable that holds the current directory
-        currentDir=$(pwd)
-
-        #parse out the parent folder name and store it in a variable
-        buildPathFileSubFolder=$(basename $(dirname ${buildPathFile}))
-
-        # append the sub folder name to the next release version
-        nextReleaseVersion="${buildPathFileSubFolder}-v${nextReleaseVersion}-master"
-
-        mv ${buildPathFile} ${buildPath}/${nextReleaseVersion}.zip
-    done    
+    #create a variable that holds the current directory
+    currentDir=$(pwd)
+    
+    #parse out the parent folder name and store it in a variable
+    buildPathFileSubFolder=$(basename $(dirname ${buildPathFiles}))
+    
+    # append the sub folder name to the next release version
+    nextReleaseVersion="${buildPathFileSubFolder}-v${nextReleaseVersion}-master"
+    
+    mv ${buildPathFile} ${buildPath}/${nextReleaseVersion}.zip
 done
 
 printf "[prepareCMD.sh]: Done \n"

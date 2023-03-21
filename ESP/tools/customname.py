@@ -116,15 +116,24 @@ def customName(project, version, commit, branch):
         )
     ) """
 
+    firm_version = env.GetProjectOption("custom_firmware_version")
+
+    # strip quotes needed for shell escaping in the firmware version
+
+    if firm_version is None:
+        firm_version = "0.0.0"
+    else:
+        firm_version = firm_version.replace('"', "")
+        firm_version = firm_version.replace("'", "")
+
     env.Replace(
         PROGNAME="%s-%s-%s"
         % (
             str(env["PIOENV"]),
-            env.GetProjectOption("custom_firmware_version"),
+            firm_version,
             s(defines.get("PIO_SRC_BRH")),
         )
     )
-
 
     # detect if there is a forward slash in the PROGNAME and replace it with an underscore
     if "/" in env["PROGNAME"]:
@@ -142,7 +151,7 @@ try:
 
     # Dump global construction environment (for debug purpose)
     # write env.Dump() to a file
-    #with open("env_dump.txt", "w") as f:
+    # with open("env_dump.txt", "w") as f:
     #    f.write(env.Dump())
 
     handleGit()
