@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.0.6](https://github.com/lorow/OpenIris/compare/v1.0.5...v1.0.6) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* prepareCMD  skipping rename due to missing v ([2170f33](https://github.com/lorow/OpenIris/commit/2170f336439e85f4d57ddd76c1c08a8cabeda7cf))
+
 ## [1.0.5](https://github.com/lorow/OpenIris/compare/v1.0.4...v1.0.5) (2023-03-21)
 
 
