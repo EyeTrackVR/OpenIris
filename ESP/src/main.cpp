@@ -14,12 +14,7 @@
 
 int STREAM_SERVER_PORT = 80;
 int CONTROL_SERVER_PORT = 81;
-/**
- * @brief ProjectConfig object
- * @brief This is the main configuration object for the project
- * @param name The name of the project config partition
- * @param mdnsName The mDNS hostname to use
- */
+
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
@@ -51,11 +46,8 @@ StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
 void setup() {
   setCpuFrequencyMhz(240);  // set to 240mhz for performance boost
   Serial.begin(115200);
-  // Serial.setDebugOutput(DEBUG_MODE);
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
   Logo::printASCII();
   Serial.flush();
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
   ledManager.begin();
 #ifndef SIM_ENABLED
   deviceConfig.attach(&cameraHandler);
@@ -66,20 +58,6 @@ void setup() {
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
   wifiHandler.setupWifi();
   mdnsHandler.startMDNS();
-
-  /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
-      switch (mdnsStateManager.getCurrentState())
-      {
-      case MDNSState_e::MDNSState_Starting:
-              break;
-      case MDNSState_e::MDNSState_Error:
-              break;
-      case MDNSState_e::MDNSState_QueryComplete:
-              mdnsHandler.startMDNS();
-              break;
-      default:
-              break;
-      } */
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
