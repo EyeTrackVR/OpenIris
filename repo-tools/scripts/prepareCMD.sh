@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# create a vairable to hold a passed in argument
-# this argument is the next release version
-# this is passed in from the .releaserc file
-
 sudo apt-get install -y jq
 
 nextReleaseVersion=$1
@@ -34,13 +30,8 @@ if [[ $nextReleaseVersion =~ [a-zA-Z] ]]; then
     fi
 fi
 
-# print the next release version
-
 printf "[prepareCMD.sh]: Next version: ${nextReleaseVersion}\n"
-
-# This script is used to execute the prepareCMD.sh script on the remote host
 printf "[prepareCMD.sh]: Executing prepareCMD.sh on remote host \n"
-
 printf "[prepareCMD.sh]: Updating the version in the library.json file \n"
 
 # make a temp file
@@ -52,43 +43,20 @@ printf "[prepareCMD.sh]: Done, moving on to next files \n"
 
 sed -i -e "/^\[env\]/,/^\[.*\]/ s|^\(custom_firmware_version[ \t]*=[ \t]*\).*$|\1$nextReleaseVersion|" "./ESP/ini/dev_config.ini"
 
-#pip3 install yq
-#
-#export PATH="~/.local/bin:$PATH"
-#source ~/.bashrc
-#
-#tmp=$(mktemp)
-#tomlq -t --arg version "$nextReleaseVersion" '.env.custom_firmware_version |= $version' ./ESP/ini/dev_config.ini > "$tmp" && mv "$tmp" ./ESP/ini/dev_config.ini -f
-
-printf "[prepareCMD.sh]: Done, continuing with release. \n"
-
-# mass rename files in the ./build sub folders
+printf "[prepareCMD.sh]: Updating the version in the dev_config.ini file \n"
 printf "[prepareCMD.sh]: Mass renaming files in the ./build sub folders \n"
 
-#create an array of all the sub folders in the build folder
 buildPaths=($(ls ./build))
-
 
 # loop through all the sub folders in the build folder
 for buildPath in "${buildPaths[@]}"
 do
     printf "[prepareCMD.sh]: Build Path: ${buildPath} \n"
-    # create a variable to hold the path to the sub folder
-    buildPath="./build/${buildPath}"
-    
-    # create a variable to hold the path to the sub folder's files
-    buildPathFiles=($(ls ${buildPath}))
-    #create a variable that holds the current directory
-    currentDir=$(pwd)
-    
-    #parse out the parent folder name and store it in a variable
-    buildPathFileSubFolder=$(basename $(dirname ${buildPathFiles}))
-    
-    # append the sub folder name to the next release version
-    nextReleaseVersion="${buildPathFileSubFolder}-v${nextReleaseVersion}-master"
-    
-    mv ${buildPathFile} ${buildPath}/${nextReleaseVersion}.zip
+    fileToRename=$(ls ./build/${buildPath})
+    newFileName=$(echo $fileToRename | sed "s/v[0-9]*\.[0-9]*\.[0-9]*/v${nextReleaseVersion}/g")
+    printf "[prepareCMD.sh]: Renaming file: ${fileToRename} to ${newFileName} \n"
+    mv ./build/${buildPath}/${fileToRename} ./build/${buildPath}/${newFileName}
 done
 
-printf "[prepareCMD.sh]: Done \n"
+printf "[prepareCMD.sh]: Done, continuing with release. \n"
 

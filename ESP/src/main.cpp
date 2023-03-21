@@ -24,15 +24,24 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
 #if ENABLE_OTA
 OTA ota(&deviceConfig);
-#endif // ENABLE_OTA
+#endif  // ENABLE_OTA
 
 LEDManager ledManager(33, &ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(&deviceConfig, &wifiStateManager, &ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
-APIServer apiServer(CONTROL_SERVER_PORT, &deviceConfig, &cameraHandler, &wifiStateManager, "/control");
+WiFiHandler wifiHandler(&deviceConfig,
+                        &wifiStateManager,
+                        &ledStateManager,
+                        WIFI_SSID,
+                        WIFI_PASSWORD,
+                        WIFI_CHANNEL);
+APIServer apiServer(CONTROL_SERVER_PORT,
+                    &deviceConfig,
+                    &cameraHandler,
+                    &wifiStateManager,
+                    "/control");
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 
 #ifndef SIM_ENABLED
