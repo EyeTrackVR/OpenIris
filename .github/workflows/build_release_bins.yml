@@ -84,11 +84,6 @@ jobs:
   release-openiris:
     runs-on: ubuntu-latest
     needs: [build]
-    strategy:
-      fail-fast: false
-      matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
-        target_build_type: ["", _release]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
