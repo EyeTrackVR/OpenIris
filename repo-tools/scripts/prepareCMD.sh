@@ -52,10 +52,30 @@ buildPaths=($(ls ./build))
 for buildPath in "${buildPaths[@]}"
 do
     printf "[prepareCMD.sh]: Build Path: ${buildPath} \n"
+    # unzip the fileToRename and rename the bin file inside
     fileToRename=$(ls ./build/${buildPath})
-    newFileName=$(echo $fileToRename | sed "s/v[0-9]*\.[0-9]*\.[0-9]*/v${nextReleaseVersion}/g")
+    unzip -o ./build/${buildPath}/${fileToRename} -d ./build/${buildPath}/
+    rm ./build/${buildPath}/${fileToRename}
+    # create a variable with the name of the bin file
+    binFile=$(ls ./build/${buildPath}/ | grep .bin)
+
+    # rename the bin file
+    newBinFileName=$(echo $binFile | sed "s/v[0-9]*\.[0-9]*\.[0-9]*/v${nextReleaseVersion}/g")
+    mv ./build/${buildPath}/${binFile} ./build/${buildPath}/${newBinFileName}
+
+    # strip the .bin extension from the newBinFileName
+    newFileName=$(echo $newBinFileName | sed 's/.bin//g')
+
     printf "[prepareCMD.sh]: Renaming file: ${fileToRename} to ${newFileName} \n"
-    mv ./build/${buildPath}/${fileToRename} ./build/${buildPath}/${newFileName}
+    # zip the binFile and the manifest.json file
+    zip -j ./build/${buildPath}/${newFileName}.zip ./build/${buildPath}/${newBinFileName} ./build/${buildPath}/manifest.json
+
+    # remove the binFile and the manifest.json file
+    rm ./build/${buildPath}/${newBinFileName}
+    rm ./build/${buildPath}/manifest.json
+
+    # list the contents of the zip file
+    unzip -l ./build/${buildPath}/${newFileName}.zip
 done
 
 printf "[prepareCMD.sh]: Done, continuing with release. \n"
