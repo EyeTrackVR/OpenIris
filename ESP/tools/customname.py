@@ -124,6 +124,7 @@ def customName(project, version, commit, branch):
             s(defines.get("PIO_SRC_BRH")),
         )
     )
+    
 
     # detect if there is a forward slash in the PROGNAME and replace it with an underscore
     if "/" in env["PROGNAME"]:
