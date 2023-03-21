@@ -48,17 +48,17 @@ tmp=$(mktemp)
 
 jq --arg a "$nextReleaseVersion" '.version = $a' ./ESP/lib/library.json > "$tmp" && mv "$tmp" ./ESP/lib/library.json -f
 
-printf "[prepareCMD.sh]: Done \n"
+printf "[prepareCMD.sh]: Done, moving on to next files \n"
 
-printf "[prepareCMD.sh]: Installing the dependencies for the ini file \n"
+sed -i -e "/^\[env\]/,/^\[.*\]/ s|^\(custom_firmware_version[ \t]*=[ \t]*\).*$|\1$nextReleaseVersion|" "./ESP/ini/dev_config.ini"
 
-pip3 install yq
-
-export PATH="~/.local/bin:$PATH"
-source ~/.bashrc
-
-tmp=$(mktemp)
-tomlq -t --arg version "$nextReleaseVersion" '.env.custom_firmware_version |= $version' ./ESP/ini/dev_config.ini > "$tmp" && mv "$tmp" ./ESP/ini/dev_config.ini -f
+#pip3 install yq
+#
+#export PATH="~/.local/bin:$PATH"
+#source ~/.bashrc
+#
+#tmp=$(mktemp)
+#tomlq -t --arg version "$nextReleaseVersion" '.env.custom_firmware_version |= $version' ./ESP/ini/dev_config.ini > "$tmp" && mv "$tmp" ./ESP/ini/dev_config.ini -f
 
 printf "[prepareCMD.sh]: Done, continuing with release. \n"
 
