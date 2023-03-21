@@ -3,6 +3,15 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.0.2](https://github.com/lorow/OpenIris/compare/v1.0.1...v1.0.2) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* permission denied issue with shell script ([6cc8985](https://github.com/lorow/OpenIris/commit/6cc8985413066592d00a1054ca19629f73af6a39))
+* release version out of sync ([78df345](https://github.com/lorow/OpenIris/commit/78df34542f9dad483c38b5e042518083f55cb0f8))
+* release version out of sync ([65ffbbd](https://github.com/lorow/OpenIris/commit/65ffbbd03848c211b186c10f79bddb1a70e4c236))
+
 ## [1.0.1](https://github.com/lorow/OpenIris/compare/v1.0.0...v1.0.1) (2023-03-21)
 
 
