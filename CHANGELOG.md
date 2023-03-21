@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.0.4](https://github.com/lorow/OpenIris/compare/v1.0.3...v1.0.4) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* remove toml parser in favour of sed ([94682d8](https://github.com/lorow/OpenIris/commit/94682d86f8271da49ff84d45167ab05720fb22eb))
+
 ## [1.0.3](https://github.com/lorow/OpenIris/compare/v1.0.2...v1.0.3) (2023-03-21)
 
 
