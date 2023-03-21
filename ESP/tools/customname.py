@@ -105,13 +105,22 @@ def customName(project, version, commit, branch):
     s = lambda x: x.replace('"', "")
     s = lambda x: x.replace("'", "")
 
-    env.Replace(
+    """ env.Replace(
         PROGNAME="%s-%s-%s-%s-%s"
         % (
             s(defines.get("PIO_SRC_NAM")),
             s(defines.get("PIO_SRC_TAG")),
             str(env["PIOENV"]),
             s(defines.get("PIO_SRC_REV")),
+            s(defines.get("PIO_SRC_BRH")),
+        )
+    ) """
+
+    env.Replace(
+        PROGNAME="%s-%s-%s"
+        % (
+            str(env["PIOENV"]),
+            s(defines.get("PIO_SRC_TAG")),
             s(defines.get("PIO_SRC_BRH")),
         )
     )
