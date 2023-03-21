@@ -127,7 +127,7 @@ def customName(project, version, commit, branch):
         firm_version = firm_version.replace("'", "")
 
     env.Replace(
-        PROGNAME="%s-%s-%s"
+        PROGNAME="%s-v%s-%s"
         % (
             str(env["PIOENV"]),
             firm_version,
