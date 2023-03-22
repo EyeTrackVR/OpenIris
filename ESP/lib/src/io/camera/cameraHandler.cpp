@@ -89,7 +89,7 @@ void CameraHandler::setupCameraSensor() {
       0x00);  // banksel, here we're directly writing to the registers.
               // 0xFF==0x00 is the first bank, there's also 0xFF==0x01
   camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);  // clock
-  camera_sensor->set_brightness(camera_sensor, 2);       // -2 to 2
+  camera_sensor->set_brightness(camera_sensor, cameraConfig->brightness);       // -2 to 2
   camera_sensor->set_contrast(camera_sensor, 2);         // -2 to 2
   camera_sensor->set_saturation(camera_sensor, -2);      // -2 to 2
 
@@ -101,14 +101,13 @@ void CameraHandler::setupCameraSensor() {
                                   // Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
 
   // controls the exposure
-  camera_sensor->set_exposure_ctrl(camera_sensor,
-                                   0);               // 0 = disable , 1 = enable
-  camera_sensor->set_aec2(camera_sensor, 0);         // 0 = disable , 1 = enable
-  camera_sensor->set_ae_level(camera_sensor, 0);     // -2 to 2
-  camera_sensor->set_aec_value(camera_sensor, 300);  // 0 to 1200
+  camera_sensor->set_exposure_ctrl(camera_sensor, cameraConfig->simple_auto_exposure_on);               // 0 = disable , 1 = enable
+  camera_sensor->set_aec2(camera_sensor, cameraConfig->fancy_auto_exposure_on);         // 0 = disable , 1 = enable
+  camera_sensor->set_ae_level(camera_sensor, cameraConfig->ae_level);     // -2 to 2
+  camera_sensor->set_aec_value(camera_sensor, cameraConfig->aec_value);  // 0 to 1200
 
   // controls the gain
-  camera_sensor->set_gain_ctrl(camera_sensor, 0);  // 0 = disable , 1 = enable
+  camera_sensor->set_gain_ctrl(camera_sensor, cameraConfig->auto_gain_on);  // 0 = disable , 1 = enable
 
   // automatic gain control gain, controls by how much the resulting image
   // should be amplified
@@ -184,13 +183,6 @@ int CameraHandler::setVFlip(int direction) {
 
 int CameraHandler::setHFlip(int direction) {
   return camera_sensor->set_hmirror(camera_sensor, direction);
-}
-
-int CameraHandler::setVieWindow(int offsetX,
-                                int offsetY,
-                                int outputX,
-                                int outputY) {
-  return 0;
 }
 
 //! either hardware(1) or software(0)

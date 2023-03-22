@@ -55,7 +55,12 @@ void ProjectConfig::initConfig() {
       .href = 0,
       .framesize = 4,
       .quality = 7,
-      .brightness = 2,
+      .brightness = BRIGHTNESS,
+      .simple_auto_exposure_on = SIMPLE_AUTO_EXPOSURE_ON,
+      .fancy_auto_exposure_on = FANCY_AUTO_EXPOSURE_ON,
+      .ae_level = AE_LEVEL,
+      .aec_value = AEC_VALUE,
+      .auto_gain_on = AUTO_GAIN_ON,
   };
 }
 
@@ -132,6 +137,12 @@ void ProjectConfig::cameraConfigSave() {
   putInt("framesize", this->config.camera.framesize);
   putInt("quality", this->config.camera.quality);
   putInt("brightness", this->config.camera.brightness);
+  putInt("brightness", this->config.camera.brightness);
+  putInt("simple_auto_exposure_on", this->config.camera.fancy_auto_exposure_on);
+  putInt("fancy_auto_exposure_on", this->config.camera.fancy_auto_exposure_on);
+  putInt("ae_level", this->config.camera.ae_level);
+  putInt("aec_value", this->config.camera.aec_value);
+  putInt("auto_gain_on ", this->config.camera.auto_gain_on);
 }
 
 bool ProjectConfig::reset() {
@@ -198,7 +209,12 @@ void ProjectConfig::load() {
   this->config.camera.href = getInt("href", 0);
   this->config.camera.framesize = getInt("framesize", 4);
   this->config.camera.quality = getInt("quality", 7);
-  this->config.camera.brightness = getInt("brightness", 2);
+  this->config.camera.brightness = getInt("brightness", BRIGHTNESS);
+  this->config.camera.fancy_auto_exposure_on = getInt("simple_auto_exposure_on", SIMPLE_AUTO_EXPOSURE_ON);
+  this->config.camera.fancy_auto_exposure_on = getInt("fancy_auto_exposure_on", FANCY_AUTO_EXPOSURE_ON);
+  this->config.camera.ae_level = getInt("ae_level", AE_LEVEL);
+  this->config.camera.aec_value = getInt("aec_value", AEC_VALUE);
+  this->config.camera.auto_gain_on = getInt("auto_gain_on ", AUTO_GAIN_ON);
 
   this->_already_loaded = true;
   this->notifyAll(ConfigState_e::configLoaded);
@@ -238,6 +254,11 @@ void ProjectConfig::setCameraConfig(uint8_t vflip,
                                     uint8_t href,
                                     uint8_t quality,
                                     uint8_t brightness,
+                                    bool simple_auto_exposure_on,
+                                    bool fancy_auto_exposure_on,
+                                    int ae_level,
+                                    unsigned int aec_value,
+                                    bool auto_gain_on,
                                     bool shouldNotify) {
   log_d("Updating camera config");
   this->config.camera.vflip = vflip;
@@ -245,6 +266,11 @@ void ProjectConfig::setCameraConfig(uint8_t vflip,
   this->config.camera.framesize = framesize;
   this->config.camera.quality = quality;
   this->config.camera.brightness = brightness;
+  this->config.camera.simple_auto_exposure_on = simple_auto_exposure_on;
+  this->config.camera.fancy_auto_exposure_on = fancy_auto_exposure_on;
+  this->config.camera.ae_level = ae_level;
+  this->config.camera.aec_value = aec_value;
+  this->config.camera.auto_gain_on = auto_gain_on;
 
   log_d("Updating Camera config");
   if (shouldNotify)
@@ -384,9 +410,10 @@ std::string ProjectConfig::MDNSConfig_t::toRepresentation() {
 std::string ProjectConfig::CameraConfig_t::toRepresentation() {
   std::string json = Helpers::format_string(
       "\"camera_config\": {\"vflip\": %d,\"framesize\": %d,\"href\": "
-      "%d,\"quality\": %d,\"brightness\": %d}",
+      "%d,\"quality\": %d,\"brightness\": %d, \"simple_auto_exposure_on\": %d, \"fancy_auto_exposure_on\": %d,\"ae_level\": %d, \"aec_value\": %d, \"auto_gain_on\": %d }",
       this->vflip, this->framesize, this->href, this->quality,
-      this->brightness);
+      this->brightness, this->simple_auto_exposure_on, this->fancy_auto_exposure_on,
+      this->aec_value, this->ae_level, this->auto_gain_on);
   return json;
 }
 
