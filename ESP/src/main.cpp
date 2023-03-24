@@ -1,12 +1,10 @@
 #include <Arduino.h>
-//#include <io/Improv/improvHandler.hpp>
 #include <io/LEDManager/LEDManager.hpp>
 #include <io/camera/cameraHandler.hpp>
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 #include <network/wifihandler/wifihandler.hpp>
-
 
 #if ENABLE_OTA
 #include <network/OTA/OTA.hpp>
@@ -33,7 +31,7 @@ CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
 WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 
-//ImprovHandler improvHandler(deviceConfig);
+// ImprovHandler improvHandler(deviceConfig);
 
 #ifndef SIM_ENABLED
 APIServer apiServer(deviceConfig, cameraHandler, "/control", 81);
@@ -119,10 +117,8 @@ void setup() {
 }
 
 void loop() {
-  //improvHandler.loop();
   ledManager.handleLED();
 #if ENABLE_OTA
   ota.handleOTAUpdate();
 #endif  // ENABLE_OTA
-  //* Handle Improv
 }
