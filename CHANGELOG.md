@@ -3,6 +3,160 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.0.9](https://github.com/lorow/OpenIris/compare/v1.0.8...v1.0.9) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* revert previous changes ([b0aec4c](https://github.com/lorow/OpenIris/commit/b0aec4c09f9fa06dae26b9e341e7e3110f5f658b))
+
+## [1.0.8](https://github.com/lorow/OpenIris/compare/v1.0.7...v1.0.8) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* try and change the name of the binary file ([8b18802](https://github.com/lorow/OpenIris/commit/8b188027e1ef158aa05929f2b0b9a74a52d77edd))
+
+## [1.0.7](https://github.com/lorow/OpenIris/compare/v1.0.6...v1.0.7) (2023-03-21)
+
+
+### 🧑‍💻 Code Refactoring
+
+* minor refactor just to trigger action ([50168a8](https://github.com/lorow/OpenIris/commit/50168a824b66571cf1842df6ea88ddb34d8fc94b))
+
+## [1.0.6](https://github.com/lorow/OpenIris/compare/v1.0.5...v1.0.6) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* prepareCMD  skipping rename due to missing v ([2170f33](https://github.com/lorow/OpenIris/commit/2170f336439e85f4d57ddd76c1c08a8cabeda7cf))
+
+## [1.0.5](https://github.com/lorow/OpenIris/compare/v1.0.4...v1.0.5) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* prepareCMD rename zip files before release ([2ef8b74](https://github.com/lorow/OpenIris/commit/2ef8b7428d4a4bdf4c5db86236cb9bed1bcd19b4))
+
+## [1.0.4](https://github.com/lorow/OpenIris/compare/v1.0.3...v1.0.4) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* remove toml parser in favour of sed ([94682d8](https://github.com/lorow/OpenIris/commit/94682d86f8271da49ff84d45167ab05720fb22eb))
+
+## [1.0.3](https://github.com/lorow/OpenIris/compare/v1.0.2...v1.0.3) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* trying to fix error in release script ([6e627fb](https://github.com/lorow/OpenIris/commit/6e627fb873b7961633644e06ca18d8081e025e0f))
+
+## [1.0.2](https://github.com/lorow/OpenIris/compare/v1.0.1...v1.0.2) (2023-03-21)
+
+
+### 🐛 Bug Fixes
+
+* permission denied issue with shell script ([6cc8985](https://github.com/lorow/OpenIris/commit/6cc8985413066592d00a1054ca19629f73af6a39))
+* release version out of sync ([78df345](https://github.com/lorow/OpenIris/commit/78df34542f9dad483c38b5e042518083f55cb0f8))
+* release version out of sync ([65ffbbd](https://github.com/lorow/OpenIris/commit/65ffbbd03848c211b186c10f79bddb1a70e4c236))
+
+## [1.0.1](https://github.com/lorow/OpenIris/compare/v1.0.0...v1.0.1) (2023-03-21)
+
+
+### 🧑‍💻 Code Refactoring
+
+* intitial release ([f826c17](https://github.com/lorow/OpenIris/commit/f826c17ac836b0bd70423fd88c3a263a11c79a69))
+
+## 1.0.0 (2023-03-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* CHANGE
+* CHANGE
+
+### 🧑‍💻 Code Refactoring
+
+* factor out `autoversioning.py` ([6c8664c](https://github.com/lorow/OpenIris/commit/6c8664c42547b06845a54b278d4895f6940cfd2c))
+* factor out `autoversioning.py` ([09b622b](https://github.com/lorow/OpenIris/commit/09b622b92352fd6ca9de1f12911ba20e69a66fd3))
+* **core-firmwareNaming:** fix firmware naming scheme ([f914778](https://github.com/lorow/OpenIris/commit/f914778d56ca126f99f7cd9572d4c634211fa551))
+* prepare for merging binaries ([14cc1da](https://github.com/lorow/OpenIris/commit/14cc1dad621fcf7129474476ad56b7cd67d6c6aa))
+
+
+### 📝 Documentation
+
+* add warning in ini file ([95fdf81](https://github.com/lorow/OpenIris/commit/95fdf810c850bbe3325b924dee00b5575000a24c))
+* raise exception when user adds apostrophy ([e1577b8](https://github.com/lorow/OpenIris/commit/e1577b87593ae0f626697e57df37c41e926a9c98))
+
+
+### 🍕 Features
+
+* add DELETE method to wifi endpoint ([de3ab8b](https://github.com/lorow/OpenIris/commit/de3ab8b4f53aac624a0340c79e64491c7e595c9e))
+* add esp32s3 support ([3eeae18](https://github.com/lorow/OpenIris/commit/3eeae182ee8f85785724aac4177df1ea12c2e407))
+* add note about bug for apostrophes ([acad1da](https://github.com/lorow/OpenIris/commit/acad1dafb9c28c07ff53ead0d573f6f7f3729f13))
+* add wifi rssi endpoint ([8f2b6db](https://github.com/lorow/OpenIris/commit/8f2b6db65b611b4c82de09e2add5a004426da7ec))
+* clean up config for users ([5fbe5a3](https://github.com/lorow/OpenIris/commit/5fbe5a358b8211d155a64e688932c97af722bd64))
+* Disable auto-exposure, tweak settings to produce a bit cleaner image, document the options ([#38](https://github.com/lorow/OpenIris/issues/38)) ([85094bc](https://github.com/lorow/OpenIris/commit/85094bc3f75e3d8ce16d0039e8c98df0a2875f60))
+* merge binaries ([d8980ae](https://github.com/lorow/OpenIris/commit/d8980ae0d4231c11b1ad5ce168dc5a774a5c8466))
+
+
+### 🔁 Continuous Integration
+
+* **ci-actions:** add autoamated cleanup stage ([3d243fe](https://github.com/lorow/OpenIris/commit/3d243febe6daa82fc6a9734b00c8eb0ce1a0e447))
+* **ci-semver:** add semver release for binaries ([ea85d52](https://github.com/lorow/OpenIris/commit/ea85d524d172ca01eecaa8fdd60331be34c505f0))
+* **ci-semver:** add semver release for binaries ([f27c650](https://github.com/lorow/OpenIris/commit/f27c6505fe99599c6fe96973f880b5198074e948))
+* **ci-semver:** add semver release for binaries ([4073610](https://github.com/lorow/OpenIris/commit/407361099af4077c0f19965243d6baeb75520bd2))
+* **ci-semver:** add semver release for binaries ([9da6e6d](https://github.com/lorow/OpenIris/commit/9da6e6d57c4eb15925fe0831de979639b82edfed))
+* **ci-semver:** add semver release for binaries ([cb2c89c](https://github.com/lorow/OpenIris/commit/cb2c89c2f320fe631a3f00154ad39b2326905cd9))
+* **ci-semver:** add semver release for binaries ([28b5b5a](https://github.com/lorow/OpenIris/commit/28b5b5aa61632d0a5f49d89303507f569c2d4ecb))
+* **ci-semver:** add semver release for binaries ([6dbe055](https://github.com/lorow/OpenIris/commit/6dbe055454a90d6405f02bac74161b2dc9d91d98))
+* **ci-semver:** add semver release for binaries ([2142dfa](https://github.com/lorow/OpenIris/commit/2142dfaaffeaf67f3fd162491b88ba819a7cd1fd))
+* **ci-semver:** add semver release for binaries ([4df943b](https://github.com/lorow/OpenIris/commit/4df943b2c6eed3c4f4f82025a48042f5f9bb9887))
+* **ci-semver:** add semver release for binaries ([443798c](https://github.com/lorow/OpenIris/commit/443798c834dc4baae3e7c1e61fce42822203b4aa))
+* **ci-semver:** add semver release for binaries ([c265d5f](https://github.com/lorow/OpenIris/commit/c265d5f45b8debf2d443636668222ccba88e8cba))
+* **ci-semver:** add semver release for binaries ([e70d092](https://github.com/lorow/OpenIris/commit/e70d092afa1c8aa3df8c41f60ce33198bb9dd859))
+* **ci-semver:** add semver release for binaries ([1e2960f](https://github.com/lorow/OpenIris/commit/1e2960f79318603f5ee5949056650f7cd5d0dff8))
+* **ci-binaries:** final touches ([cd8b6b8](https://github.com/lorow/OpenIris/commit/cd8b6b8b8affb7eee97bf932f6cf17e366f7f0b9))
+* **ci-actions:** fix cleanup step ([5bf7815](https://github.com/lorow/OpenIris/commit/5bf781548c7d03920f100a71f3a2e54ee61f4161))
+* **ci-actions:** fix cleanup ([0f6b299](https://github.com/lorow/OpenIris/commit/0f6b299fc83ab39e51936d454cd5d9c471355b3b))
+* **ci-releaserc:** fix formatting for CHANGELOG.md ([6647d2e](https://github.com/lorow/OpenIris/commit/6647d2eeb119b6bb150d3306855c3a1f5800c405))
+* **ci-binaries:** fix manifest formatting ([cd9eea6](https://github.com/lorow/OpenIris/commit/cd9eea64cd0fd1519cf6edf079d8d92d621546f6))
+* **ci-actions:** fix semver release step ([c8e4bb6](https://github.com/lorow/OpenIris/commit/c8e4bb6fcd7cd7b4a5595848464acd18872a6503))
+* **ci-test-docker:** test new docker container ([87bc5b3](https://github.com/lorow/OpenIris/commit/87bc5b3f7f83a8f5cabc71a64016befa466ed166))
+* **ci-test-docker:** test new docker container ([b8a40f1](https://github.com/lorow/OpenIris/commit/b8a40f133f9fb75e3d1c9922779c0c846d2545a6))
+* **ci-test-docker:** test new docker container ([16eefb8](https://github.com/lorow/OpenIris/commit/16eefb86f4853bd6a0d05051fc5fdd58bfbcd3f8))
+* **test-docker-container:** test new docker container ([2463aac](https://github.com/lorow/OpenIris/commit/2463aac8c87d30c0ae90461adc8fdcbe273b0341))
+* **ci-binaries:** testing merge ([4dafdbc](https://github.com/lorow/OpenIris/commit/4dafdbc484d3f2a657e22b11fcf58541e2a59bad))
+* **ci-binaries:** testing merge ([92c8a65](https://github.com/lorow/OpenIris/commit/92c8a659113274f757abab2f7635229503db8835))
+* **ci-binaries:** testing merge ([7a7a4d1](https://github.com/lorow/OpenIris/commit/7a7a4d1cc26294b2ce27d0329862808de1e71219))
+* **ci-binaries:** testing merge ([f8de13c](https://github.com/lorow/OpenIris/commit/f8de13c97a1455e60ea4118f9243be2d0d6ffee7))
+* **ci-binaries:** testing merge ([c56e5ec](https://github.com/lorow/OpenIris/commit/c56e5ec7c23753af0c8a8914a702ba07db671f42))
+* **ci-semver:** testing semver release of bins ([b51c995](https://github.com/lorow/OpenIris/commit/b51c9953ed3358be500daffacec050d0bde110fc))
+* **ci-semver:** testing semver release of bins ([89767af](https://github.com/lorow/OpenIris/commit/89767aff92d6d4c4db84daa4d17e665a97b8d231))
+* **ci-semver:** testing semver release of bins ([2ad57f2](https://github.com/lorow/OpenIris/commit/2ad57f2ad83dc72de382ef85dfb17fad53878073))
+* **ci-semver:** testing semver release of bins ([c16f7f1](https://github.com/lorow/OpenIris/commit/c16f7f111296c9fd3300eb5c59da4cf2403ecb94))
+* **ci-semver:** update path for github release assets ([3248ded](https://github.com/lorow/OpenIris/commit/3248ded09de3317a232a03ffe42d0579ee7f0e57))
+
+
+### 🐛 Bug Fixes
+
+*  remove OTA builds ([8b29a47](https://github.com/lorow/OpenIris/commit/8b29a47504a533d0728d350c419abf0ab781b4f8))
+* add s3 env to cleanup step ([78e5cbf](https://github.com/lorow/OpenIris/commit/78e5cbfd8fb3f25ba13dce2dbc3206d10944d5f9))
+* bug in customname ([fea596e](https://github.com/lorow/OpenIris/commit/fea596e529b0f93ee40791ae507d8f5415acbee7))
+* bug in MDNS handler ([1ca7d1f](https://github.com/lorow/OpenIris/commit/1ca7d1f48cfbf6fe636072e23852d7b51e58dd23))
+* bug in MDNS handler ([4af73d0](https://github.com/lorow/OpenIris/commit/4af73d037741d7ed180e4f156dd08df8c495c620))
+* cleanup main ini file ([6ba704f](https://github.com/lorow/OpenIris/commit/6ba704f1f80290f7639f376057d3a824c683e61c))
+* duplication of wifi network config ([651b7b6](https://github.com/lorow/OpenIris/commit/651b7b62bad2e995d6cc51edaa49712692f3598c))
+* fix compiler error if not git repo ([1704459](https://github.com/lorow/OpenIris/commit/17044593aba94eb69965b21925f40b2ac66f004b))
+* fix compiler error if not git repo ([3ca047f](https://github.com/lorow/OpenIris/commit/3ca047f07dac2195970f834771ebc4a47f811b78))
+* fix current OTA stack ([c96e3f7](https://github.com/lorow/OpenIris/commit/c96e3f7108a8f776d0251f3fa2823205fa078ce3))
+* fix pinout for s3 module ([c0d090d](https://github.com/lorow/OpenIris/commit/c0d090de906dbcd3534ca956b77173bb7b7e4ce8))
+* remove common environment ([acb5e44](https://github.com/lorow/OpenIris/commit/acb5e44c03e3272e05e003e21b7ffc67be3b4c7c))
+* remove ota env from cleanup step ([fafd35d](https://github.com/lorow/OpenIris/commit/fafd35d19e8b7e9028ca3f09bdb9689c4ab1a165))
+* remove unused libs ([1405ab9](https://github.com/lorow/OpenIris/commit/1405ab9d9e1ecbaba5619bc5aaf0bf475781d3a1))
+* rename custom firmware ([7284908](https://github.com/lorow/OpenIris/commit/728490875bb27db2b00602a615baa615ddec7f0c))
+
 ## [1.10.6](https://github.com/lorow/OpenIris/compare/v1.10.5...v1.10.6) (2023-03-12)
 
 

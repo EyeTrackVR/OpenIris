@@ -105,13 +105,32 @@ def customName(project, version, commit, branch):
     s = lambda x: x.replace('"', "")
     s = lambda x: x.replace("'", "")
 
-    env.Replace(
+    """ env.Replace(
         PROGNAME="%s-%s-%s-%s-%s"
         % (
             s(defines.get("PIO_SRC_NAM")),
             s(defines.get("PIO_SRC_TAG")),
             str(env["PIOENV"]),
             s(defines.get("PIO_SRC_REV")),
+            s(defines.get("PIO_SRC_BRH")),
+        )
+    ) """
+
+    firm_version = env.GetProjectOption("custom_firmware_version")
+
+    # strip quotes needed for shell escaping in the firmware version
+
+    if firm_version is None:
+        firm_version = "0.0.0"
+    else:
+        firm_version = firm_version.replace('"', "")
+        firm_version = firm_version.replace("'", "")
+
+    env.Replace(
+        PROGNAME="%s-v%s-%s"
+        % (
+            str(env["PIOENV"]),
+            firm_version,
             s(defines.get("PIO_SRC_BRH")),
         )
     )
@@ -132,7 +151,7 @@ try:
 
     # Dump global construction environment (for debug purpose)
     # write env.Dump() to a file
-    #with open("env_dump.txt", "w") as f:
+    # with open("env_dump.txt", "w") as f:
     #    f.write(env.Dump())
 
     handleGit()

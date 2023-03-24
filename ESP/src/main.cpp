@@ -47,10 +47,8 @@ StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
 void setup() {
   setCpuFrequencyMhz(240);  // set to 240mhz for performance boost
   Serial.begin(115200);
-
   Logo::printASCII();
   Serial.flush();
-
   ledManager.begin();
 #ifndef SIM_ENABLED
   deviceConfig.attach(&cameraHandler);
@@ -61,8 +59,6 @@ void setup() {
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
   wifiHandler.setupWifi();
   mdnsHandler.startMDNS();
-
-  // ota.begin(&webserver);
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
