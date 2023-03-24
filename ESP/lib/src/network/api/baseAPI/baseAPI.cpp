@@ -10,16 +10,17 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(int CONTROL_PORT,
-                 ProjectConfig* projectConfig,
+BaseAPI::BaseAPI(ProjectConfig* projectConfig,
                  CameraHandler* camera,
                  StateManager<WiFiState_e>* WiFiStateManager,
-                 const std::string& api_url)
-    : server(CONTROL_PORT),
-      projectConfig(projectConfig),
+                 const std::string& api_url,
+                 int port)
+    : projectConfig(projectConfig),
       camera(camera),
       wiFiStateManager(wiFiStateManager),
-      api_url(api_url) {}
+      server(port),
+      api_url(api_url),
+      _authRequired(false) {}
 
 BaseAPI::~BaseAPI() {}
 
@@ -172,7 +173,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string hostname;
       std::string service;
       std::string ota_password;
-      std::string firmware_name;
+      std::string ota_login;
       int ota_port;
 
       for (int i = 0; i < params; i++) {
@@ -189,16 +190,15 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
           service.assign(param->value().c_str());
         } else if (param->name() == "ota_port") {
           ota_port = atoi(param->value().c_str());
+        } else if (param->name() == "ota_login") {
+          ota_login.assign(param->value().c_str());
         } else if (param->name() == "ota_password") {
           ota_password.assign(param->value().c_str());
-        } else if (param->name() == "firmware_name") {
-          firmware_name.assign(param->value().c_str());
         }
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig->setDeviceConfig(ota_password, ota_port, firmware_name,
-                                     true);
+      projectConfig->setDeviceConfig(ota_login, ota_password, ota_port, true);
       projectConfig->setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
@@ -329,6 +329,10 @@ void BaseAPI::restartCamera(AsyncWebServerRequest* request) {
                 "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
 
+//*********************************************************************************************
+//!                                     General Command Functions
+//*********************************************************************************************
+
 void BaseAPI::ping(AsyncWebServerRequest* request) {
   request->send(200, MIMETYPE_JSON, "{\"msg\": \"ok\" }");
 }
@@ -344,4 +348,130 @@ void BaseAPI::rssi(AsyncWebServerRequest* request) {
   char _rssiBuffer[20];
   snprintf(_rssiBuffer, sizeof(_rssiBuffer), "{\"rssi\": %d }", rssi);
   request->send(200, MIMETYPE_JSON, _rssiBuffer);
+}
+
+//*********************************************************************************************
+//!                                     OTA Command Functions
+//*********************************************************************************************
+
+void BaseAPI::checkAuthentication(AsyncWebServerRequest* request,
+                                  const char* login,
+                                  const char* password) {
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+  if (_authRequired) {
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+    log_i("Auth required");
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+    if (!request->authenticate(login, password, NULL, false)) {
+      log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+      return request->requestAuthentication(NULL, false);
+    }
+  }
+}
+
+void BaseAPI::beginOTA() {
+  // NOTE: Code adapted from: https://github.com/ayushsharma82/AsyncElegantOTA/
+
+  auto device_config = projectConfig->getDeviceConfig();
+  auto mdns_config = projectConfig->getMDNSConfig();
+
+  if (device_config->OTAPassword.empty()) {
+    log_e(
+        "Password is empty, you need to provide a password in order to setup "
+        "the OTA server");
+    return;
+  }
+
+  log_i("[OTA Server]: Initializing OTA Server");
+  log_i(
+      "[OTA Server]: Navigate to http://%s.local:81/update to update the "
+      "firmware",
+      mdns_config->hostname.c_str());
+
+  log_d("[OTA Server]: Username: %s, Password: %s",
+        device_config->OTALogin.c_str(), device_config->OTAPassword.c_str());
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+  const char* login = device_config->OTALogin.c_str();
+  const char* password = device_config->OTAPassword.c_str();
+  log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+
+  // Note: HTTP_GET
+  server.on(
+      "/update/identity", 0b00000001, [&](AsyncWebServerRequest* request) {
+        checkAuthentication(request, login, password);
+
+        String _id = String((uint32_t)ESP.getEfuseMac(), HEX);
+        _id.toUpperCase();
+        request->send(200, "application/json",
+                      "{\"id\": \"" + _id + "\", \"hardware\": \"ESP32\"}");
+      });
+
+  // Note: HTT_GET
+  server.on("/update", 0b00000001, [&](AsyncWebServerRequest* request) {
+    log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
+    checkAuthentication(request, login, password);
+
+    // turn off the camera and stop the stream
+    esp_camera_deinit();                // deinitialize the camera driver
+    digitalWrite(PWDN_GPIO_NUM, HIGH);  // turn power off to camera module
+
+    AsyncWebServerResponse* response = request->beginResponse_P(
+        200, "text/html", ELEGANT_HTML, ELEGANT_HTML_SIZE);
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
+  // Note: HTT_POST
+  server.on(
+      "/update", 0b00000010,
+      [&](AsyncWebServerRequest* request) {
+        checkAuthentication(request, login, password);
+        // the request handler is triggered after the upload has finished...
+        // create the response, add header, and send response
+        AsyncWebServerResponse* response = request->beginResponse(
+            (Update.hasError()) ? 500 : 200, "text/plain",
+            (Update.hasError()) ? "FAIL" : "OK");
+        response->addHeader("Connection", "close");
+        response->addHeader("Access-Control-Allow-Origin", "*");
+        request->send(response);
+        this->save(request);
+      },
+      [&](AsyncWebServerRequest* request, String filename, size_t index,
+          uint8_t* data, size_t len, bool final) {
+        // Upload handler chunks in data
+        checkAuthentication(request, login, password);
+
+        if (!index) {
+          if (!request->hasParam("MD5", true)) {
+            return request->send(400, "text/plain", "MD5 parameter missing");
+          }
+
+          if (!Update.setMD5(request->getParam("MD5", true)->value().c_str())) {
+            return request->send(400, "text/plain", "MD5 parameter invalid");
+          }
+          int cmd = (filename == "filesystem") ? U_SPIFFS : U_FLASH;
+          if (!Update.begin(UPDATE_SIZE_UNKNOWN,
+                            cmd)) {  // Start with max available size
+            Update.printError(Serial);
+            return request->send(400, "text/plain", "OTA could not begin");
+          }
+        }
+
+        // Write chunked data to the free sketch space
+        if (len) {
+          if (Update.write(data, len) != len) {
+            return request->send(400, "text/plain", "OTA could not begin");
+          }
+        }
+
+        if (final) {  // if the final flag is set then this is the last frame of
+                      // data
+          if (!Update.end(
+                  true)) {  // true to set the size to the current progress
+            Update.printError(Serial);
+            return request->send(400, "text/plain", "Could not end OTA");
+          }
+        } else {
+          return;
+        }
+      });
 }

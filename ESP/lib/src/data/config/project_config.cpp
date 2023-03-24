@@ -30,10 +30,7 @@ void ProjectConfig::initConfig() {
   ! Do not initialize the WiFiConfig_t struct here,
   ! as it will create a blank network which breaks the WiFiManager
    */
-  this->config.device = {
-      "12345678",
-      3232,
-  };
+  this->config.device = {OTA_LOGIN, OTA_PASSWORD, 3232};
 
   if (_mdnsName.empty()) {
     log_e("MDNS name is null\n Autoassigning name to 'openiristracker'");
@@ -113,6 +110,7 @@ void ProjectConfig::wifiConfigSave() {
 void ProjectConfig::deviceConfigSave() {
   /* Device Config */
   putString("OTAPassword", this->config.device.OTAPassword.c_str());
+  putString("OTALogin", this->config.device.OTALogin.c_str());
   putInt("OTAPort", this->config.device.OTAPort);
 }
 
@@ -149,6 +147,7 @@ void ProjectConfig::load() {
   }
 
   /* Device Config */
+  this->config.device.OTALogin = getString("OTALogin", "openiris").c_str();
   this->config.device.OTAPassword =
       getString("OTAPassword", "12345678").c_str();
   this->config.device.OTAPort = getInt("OTAPort", 3232);
@@ -210,18 +209,14 @@ void ProjectConfig::load() {
 //!                                                DeviceConfig
 //*
 //**********************************************************************************************************************
-void ProjectConfig::setDeviceConfig(const std::string& OTAPassword,
+void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
+                                    const std::string& OTAPassword,
                                     int OTAPort,
-                                    const std::string& binaryName,
                                     bool shouldNotify) {
   log_d("Updating device config");
+  this->config.device.OTALogin.assign(OTALogin);
   this->config.device.OTAPassword.assign(OTAPassword);
   this->config.device.OTAPort = OTAPort;
-  // check if binary name is empty
-  if (binaryName.empty())
-    log_w("Binary name is empty, using previous value");
-  else
-    this->config.device.binaryName.assign(binaryName);
 
   if (shouldNotify)
     this->notify(ObserverEvent::deviceConfigUpdated);
@@ -361,8 +356,9 @@ void ProjectConfig::setAPWifiConfig(const std::string& ssid,
 
 std::string ProjectConfig::DeviceConfig_t::toRepresentation() {
   std::string json = Helpers::format_string(
-      "\"device_config\": {\"OTAPassword\": \"%s\", \"OTAPort\": %u}",
-      this->OTAPassword.c_str(), this->OTAPort);
+      "\"device_config\": {\"OTALogin\": \"%s\", \"OTAPassword\": \"%s\", "
+      "\"OTAPort\": %u}",
+      this->OTALogin.c_str(), this->OTAPassword.c_str(), this->OTAPort);
   return json;
 }
 

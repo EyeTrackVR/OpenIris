@@ -6,20 +6,17 @@
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 
-#if ENABLE_OTA
-#include <network/OTA/OTA.hpp>
-#endif  // ENABLE_OTA
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
 int STREAM_SERVER_PORT = 80;
-int CONTROL_SERVER_PORT = 81;
-
+/**
+ * @brief ProjectConfig object
+ * @brief This is the main configuration object for the project
+ * @param name The name of the project config partition
+ * @param mdnsName The mDNS hostname to use
+ */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
-
-#if ENABLE_OTA
-OTA ota(&deviceConfig);
-#endif  // ENABLE_OTA
 
 LEDManager ledManager(33, &ledStateManager);
 
@@ -32,11 +29,15 @@ WiFiHandler wifiHandler(&deviceConfig,
                         WIFI_SSID,
                         WIFI_PASSWORD,
                         WIFI_CHANNEL);
-APIServer apiServer(CONTROL_SERVER_PORT,
-                    &deviceConfig,
+
+#ifndef SIM_ENABLED
+APIServer apiServer(&deviceConfig,
                     &cameraHandler,
                     &wifiStateManager,
                     "/control");
+#else
+APIServer apiServer(&deviceConfig, NULL, &wifiStateManager, "/control");
+#endif  // SIM_ENABLED
 MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
 
 #ifndef SIM_ENABLED
@@ -66,20 +67,20 @@ void setup() {
     }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connected: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connecting: {
@@ -91,14 +92,8 @@ void setup() {
       break;
     }
   }
-#if ENABLE_OTA
-  ota.begin();
-#endif  // ENABLE_OTA
 }
 
 void loop() {
-#if ENABLE_OTA
-  ota.handleOTAUpdate();
-#endif  // ENABLE_OTA
   ledManager.handleLED();
 }
