@@ -23,11 +23,12 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 - [x] MDNS - so that the server itself will detect and communicate with the tracker without you doing anything. No need to configure IPs and stuff, it's automagic
 - [x] Implementation of Preferences Lib for saving device settings (camera , MDNS, wifi configs etc )
 - [x] CI/CD with github actions - so we can more seamlessly update the trackers
+- [x] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
+- [x] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker
 
 ### TODO
-- [ ] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
 - [ ] streaming over sockets instead of HTTP MJPEG for faster streams!
-- [ ] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker
+- [ ] better LED patterns 
 
 # Accompanying projects
 
