@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [1.1.0](https://github.com/lorow/OpenIris/compare/v1.0.9...v1.1.0) (2023-03-24)
+
+
+### 🍕 Features
+
+* Initial implementation of Elegant OTA with support for API server ([#41](https://github.com/lorow/OpenIris/issues/41)) ([58989b4](https://github.com/lorow/OpenIris/commit/58989b45672695ef72088ea1118522f606b6abf2))
+
 ## [1.0.9](https://github.com/lorow/OpenIris/compare/v1.0.8...v1.0.9) (2023-03-21)
 
 
