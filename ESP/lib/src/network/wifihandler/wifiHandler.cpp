@@ -1,4 +1,4 @@
-#include "wifihandler.hpp"
+#include "WifiHandler.hpp"
 #include <WiFi.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/utilities/helpers.hpp"

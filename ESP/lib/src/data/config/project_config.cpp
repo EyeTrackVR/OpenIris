@@ -282,7 +282,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
       it->adhoc = false;
 
       if (shouldNotify) {
-        wifiStateManager.setState(WiFiState_e::WiFiState_None);
+        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
         WiFi.disconnect();
         this->wifiConfigSave();
         this->notifyAll(ConfigState_e::networksConfigUpdated);
