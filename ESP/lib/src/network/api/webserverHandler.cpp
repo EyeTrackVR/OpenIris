@@ -8,13 +8,11 @@ APIServer::APIServer(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
                      CameraHandler& camera,
 #endif  // SIM_ENABLED
-                     StateManager<WiFiState_e>& wiFiStateManager
                      const std::string& api_url)
     : BaseAPI(projectConfig,
 #ifndef SIM_ENABLED
               camera,
 #endif  // SIM_ENABLED
-              wiFiStateManager,
               api_url) {
 }
 

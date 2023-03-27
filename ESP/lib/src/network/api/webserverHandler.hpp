@@ -10,7 +10,6 @@ class APIServer : public BaseAPI {
 #ifndef SIM_ENABLED
             CameraHandler& camera,
 #endif  // SIM_ENABLED
-            StateManager<WiFiState_e>& wiFiStateManager,
             const std::string& api_url);
 
   virtual ~APIServer();

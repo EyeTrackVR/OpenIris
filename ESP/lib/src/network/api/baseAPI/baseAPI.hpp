@@ -102,7 +102,6 @@ class BaseAPI {
 
 	ProjectConfig &projectConfig;
 	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-    StateManager<WiFiState_e>& wiFiStateManager;
     AsyncWebServer server;
 #ifndef SIM_ENABLED
         CameraHandler &camera;
@@ -110,7 +109,6 @@ class BaseAPI {
 
 public :
     BaseAPI(ProjectConfig& projectConfig,
-            StateManager<WiFiState_e>& wiFiStateManager,
 #ifndef SIM_ENABLED
             CameraHandler& camera,
 #endif  // SIM_ENABLED
