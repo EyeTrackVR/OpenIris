@@ -1,9 +1,11 @@
 #include "tasks.hpp"
 
 void OpenIrisTasks::ScheduleRestart(int milliseconds) {
-    int initialTime = millis(); 
+    yield();
+    int initialTime = millis();
     while (millis() - initialTime <= milliseconds) {
         continue;
     }
+    yield();
     ESP.restart();
 }

@@ -46,6 +46,21 @@ void Network_Utilities::my_delay(volatile long delay_time)
         ;
 }
 
+// a function to generate the device ID
+std::string Network_Utilities::generateDeviceID() {
+  uint32_t chipId = 0;
+  for (int i = 0; i < 17; i = i + 8) {
+    chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+  }
+
+  log_i("ESP Chip model = %s Rev %d\n", ESP.getChipModel(),
+        ESP.getChipRevision());
+  log_i("This chip has %d cores\n", ESP.getChipCores());
+  log_i("Chip ID: %d", chipId);
+  std::string deviceID = (const char*)chipId;
+  return deviceID;
+}
+
 /**
  * @brief Function to map the WiFi status to the WiFiState_e enum
  *
@@ -60,21 +75,22 @@ void Network_Utilities::checkWiFiState()
 
     switch (WiFi.status())
     {
-    case wl_status_t::WL_IDLE_STATUS:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Idle);
-    case wl_status_t::WL_NO_SSID_AVAIL:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Error);
-    case wl_status_t::WL_SCAN_COMPLETED:
-        wifiStateManager.setState(WiFiState_e::WiFiState_None);
-    case wl_status_t::WL_CONNECTED:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
-    case wl_status_t::WL_CONNECT_FAILED:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Error);
-    case wl_status_t::WL_CONNECTION_LOST:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
-    case wl_status_t::WL_DISCONNECTED:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
-    default:
-        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+        case wl_status_t::WL_IDLE_STATUS:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Idle);
+        case wl_status_t::WL_NO_SSID_AVAIL:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Error);
+        case wl_status_t::WL_SCAN_COMPLETED:
+            wifiStateManager.setState(WiFiState_e::WiFiState_None);
+        case wl_status_t::WL_CONNECTED:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
+        case wl_status_t::WL_CONNECT_FAILED:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Error);
+        case wl_status_t::WL_CONNECTION_LOST:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+        case wl_status_t::WL_DISCONNECTED:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+        default:
+            wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
     }
 }
+

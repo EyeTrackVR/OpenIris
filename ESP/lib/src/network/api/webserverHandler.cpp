@@ -8,19 +8,19 @@ APIServer::APIServer(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
                      CameraHandler& camera,
 #endif  // SIM_ENABLED
-                     const std::string& api_url,
-                     const int CONTROL_PORT)
+                     StateManager<WiFiState_e>& wiFiStateManager
+                     const std::string& api_url)
     : BaseAPI(projectConfig,
 #ifndef SIM_ENABLED
               camera,
 #endif  // SIM_ENABLED
-              api_url,
-              CONTROL_PORT) {
+              wiFiStateManager,
+              api_url) {
 }
 
 APIServer::~APIServer() {}
 
-void APIServer::begin() {
+void APIServer::setup() {
   log_d("Initializing REST API Server");
   this->setupServer();
   BaseAPI::begin();
@@ -30,8 +30,13 @@ void APIServer::begin() {
            "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$",
            this->api_url.c_str());
   log_d("API URL: %s", buffer);
-  server.on(buffer, 0b01111111,
-            [&](AsyncWebServerRequest* request) { handleRequest(request); });
+  server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
+      handleRequest(request);
+  });
+#ifndef SIM_ENABLED
+    //this->_authRequired = true;
+#endif  // SIM_ENABLED
+  beginOTA();
   server.begin();
 }
 

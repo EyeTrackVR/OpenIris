@@ -1,6 +1,9 @@
 name: Build and Release the OpenIris bin files
 on:
+  workflow_dispatch:
   push:
+    tags:
+      - "v*"
     branches:
       - "master"
       - "main"
@@ -9,14 +12,24 @@ on:
     branches:
       - "master"
       - "main"
-  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
-        target_build_type: ["", _release] #, _OTA] # OTA is not needed 
+        target_name:
+          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
+        target_build_type: ["", _release] #, _OTA] # OTA is not needed
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +54,7 @@ jobs:
       #    python-version: "3.x"
       #- name: Install PlatformIO with Pip
       #  run: |
-#
+      #
       #    python -m pip install --upgrade pip
       #    pip install distro
       #    pip install --upgrade platformio
@@ -110,12 +123,16 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
+        run: |
+          sudo apt-get install -y jq
+          chmod +x ./repo-tools/scripts/prepareCMD.sh 
+          semantic-release
   cleanup:
     strategy:
       fail-fast: false
       matrix:
-        target_name: [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
+        target_name:
+          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
         target_build_type: ["", _release]
     name: Cleanup actions
     needs:

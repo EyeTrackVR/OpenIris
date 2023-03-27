@@ -6,9 +6,6 @@
 #include <network/stream/streamServer.hpp>
 #include <network/wifihandler/wifihandler.hpp>
 
-#if ENABLE_OTA
-#include <network/OTA/OTA.hpp>
-#endif  // ENABLE_OTA
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
@@ -24,19 +21,19 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 OTA ota(deviceConfig);
 #endif  // ENABLE_OTA
 
-LEDManager ledManager(33);
+LEDManager ledManager(33, &ledStateManager);
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+WiFiHandler wifiHandler(deviceConfig, wifiStateManager,ledStateManager, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 
 // ImprovHandler improvHandler(deviceConfig);
 
 #ifndef SIM_ENABLED
-APIServer apiServer(deviceConfig, cameraHandler, "/control", 81);
+APIServer apiServer(deviceConfig, cameraHandler, wifiStateManager, "/control");
 #else
-APIServer apiServer(deviceConfig, "/control", 80);
+APIServer apiServer(deviceConfig, wifiStateManager, "/control");
 #endif  // SIM_ENABLED
 
 MDNSHandler mdnsHandler(deviceConfig);
@@ -48,11 +45,8 @@ StreamServer streamServer;
 void setup() {
   setCpuFrequencyMhz(240);  // set to 240mhz for performance boost
   Serial.begin(115200);
-  // Serial.setDebugOutput(DEBUG_MODE);
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
   Logo::printASCII();
   Serial.flush();
-  // Serial.println("Free Heap: " + String(ESP.getFreeHeap()));
   ledManager.begin();
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
@@ -65,20 +59,6 @@ void setup() {
   wifiHandler.begin();
   mdnsHandler.startMDNS();
 
-  /* mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
-      switch (mdnsStateManager.getCurrentState())
-      {
-      case MDNSState_e::MDNSState_Starting:
-              break;
-      case MDNSState_e::MDNSState_Error:
-              break;
-      case MDNSState_e::MDNSState_QueryComplete:
-              mdnsHandler.startMDNS();
-              break;
-      default:
-              break;
-      } */
-
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
       //! TODO: Implement
@@ -86,20 +66,20 @@ void setup() {
     }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connected: {
 #ifndef SIM_ENABLED
-      streamServer.startStreamServer();
       log_d("[SETUP]: Starting Stream Server");
+      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      apiServer.begin();
       log_d("[SETUP]: Starting API Server");
+      apiServer.setup();
       break;
     }
     case WiFiState_e::WiFiState_Connecting: {
@@ -111,14 +91,8 @@ void setup() {
       break;
     }
   }
-#if ENABLE_OTA
-  ota.begin();
-#endif  // ENABLE_OTA
 }
 
 void loop() {
   ledManager.handleLED();
-#if ENABLE_OTA
-  ota.handleOTAUpdate();
-#endif  // ENABLE_OTA
 }

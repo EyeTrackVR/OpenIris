@@ -10,11 +10,11 @@ class APIServer : public BaseAPI {
 #ifndef SIM_ENABLED
             CameraHandler& camera,
 #endif  // SIM_ENABLED
-            const std::string& api_url,
-            const int CONTROL_PORT);
+            StateManager<WiFiState_e>& wiFiStateManager,
+            const std::string& api_url);
 
   virtual ~APIServer();
-  void begin();
+  void setup();
   void setupServer();
   void addRouteMap(const std::string& index,
                    route_t route,

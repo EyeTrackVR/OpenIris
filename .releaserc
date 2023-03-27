@@ -148,8 +148,8 @@
         [
             "@semantic-release/exec",
             {
-                "prepareCmd": "sed -i 's/\"version\": \"[0-9\\.]*\",/\"version\": \"${nextRelease.version}\",/g' ./ESP/lib/library.json",
-                "publishCmd": "ls -l"
+                "prepareCmd": "./repo-tools/scripts/prepareCMD.sh ${nextRelease.version}",
+                "publishCmd": "echo Publishing ${nextRelease.version}"
             }
         ],
         [
@@ -168,6 +168,7 @@
             {
                 "assets": [
                     "ESP/lib/library.json",
+                    "ESP/ini/dev_config.ini",
                     "LICENSE*",
                     "CHANGELOG.md"
                 ],
