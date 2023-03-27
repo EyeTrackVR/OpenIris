@@ -148,8 +148,7 @@ bool CameraHandler::setupCamera() {
 }
 
 void CameraHandler::loadConfigData() {
-  ProjectConfig::CameraConfig_t cameraConfig =
-      configManager.getCameraConfig();
+  ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
   this->setHFlip(cameraConfig.href);
   this->setVFlip(cameraConfig.vflip);
   this->setCameraResolution((framesize_t)cameraConfig.framesize);
