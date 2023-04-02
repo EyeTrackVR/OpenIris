@@ -3,6 +3,81 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.0.0](https://github.com/lorow/OpenIris/compare/v1.1.0...v2.0.0) (2023-04-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* CHANGES
+
+* refactor: minor logging refactor
+
+* fix: add config save to delete method
+
+* fix: improv provisioning error
+
+* refactor: simplify library interface
+
+- implement pass by reference for all objects
+- implement get by reference for all objects
+- remove passing state to classes
+- migrate to range based for loops
+* CHANGES
+
+* fix: esp crash on wifi updates
+
+- figure out why esp crashes sometimes when wifi config changes
+
+* fix: add warning about clang-format to baseAPI.hpp
+
+* refactor: update improv
+
+* ci(ci-test): setup prerelease
+
+- use ci to merge binaries for testing in etvr app
+
+* fix: compile time error
+
+* fix: compile time error
+
+* fix folder names
+
+* fix folder names
+
+* fix: compile time error
+
+* fix: compile time error
+
+* feat: remove improv from main
+
+- keep improv code, incase we fix issue later on
+- comment out improv includes
+
+* fix: remove pre-release from release cycle
+
+* fix: resolve wifiState manager state in config
+
+* fix: file name casing
+
+* fix: file name casing
+
+* feat: add custom string_view header
+
+- it is the intention to implement string_view
+- vastly reduce heap allocations and improve performance of strings
+
+* refactor: move improv class to new branch
+
+* fix: file name casing
+
+* feat: add newer esp cam driver
+
+* Cleanup after merge
+
+### 🍕 Features
+
+* Code cleanup and initial implementation of improv ([17e3049](https://github.com/lorow/OpenIris/commit/17e3049be169132bbe8303b3a70302019f67435e))
+
 ## [1.1.0](https://github.com/lorow/OpenIris/compare/v1.0.9...v1.1.0) (2023-03-24)
 
 
