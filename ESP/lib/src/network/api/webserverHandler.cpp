@@ -4,11 +4,17 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(ProjectConfig* projectConfig,
-                     CameraHandler* camera,
-                     StateManager<WiFiState_e>* wiFiStateManager,
+APIServer::APIServer(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+                     CameraHandler& camera,
+#endif  // SIM_ENABLED
                      const std::string& api_url)
-    : BaseAPI(projectConfig, camera, wiFiStateManager, api_url) {}
+    : BaseAPI(projectConfig,
+#ifndef SIM_ENABLED
+              camera,
+#endif  // SIM_ENABLED
+              api_url) {
+}
 
 APIServer::~APIServer() {}
 
@@ -22,16 +28,13 @@ void APIServer::setup() {
            "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$",
            this->api_url.c_str());
   log_d("API URL: %s", buffer);
-
-  this->server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
-    handleRequest(request);
+  server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
+      handleRequest(request);
   });
-
-  // Note: Start OTA after all routes have been added
 #ifndef SIM_ENABLED
-  //this->_authRequired = true;
+    //this->_authRequired = true;
 #endif  // SIM_ENABLED
-  this->beginOTA();
+  beginOTA();
   server.begin();
 }
 
@@ -43,8 +46,10 @@ void APIServer::setupServer() {
   routes.emplace("getStoredConfig", &APIServer::getJsonConfig);
   routes.emplace("setTxPower", &APIServer::setWiFiTXPower);
   // Camera Routes
+#ifndef SIM_ENABLED
   routes.emplace("setCamera", &APIServer::setCamera);
   routes.emplace("restartCamera", &APIServer::restartCamera);
+#endif  // SIM_ENABLED
   routes.emplace("ping", &APIServer::ping);
   routes.emplace("save", &APIServer::save);
   routes.emplace("wifiStrength", &APIServer::rssi);
@@ -55,14 +60,6 @@ void APIServer::setupServer() {
                                    // memory and copying of data
   addRouteMap("builtin", routes,
               indexes);  // add new route map to the route_map
-}
-
-void APIServer::findParam(AsyncWebServerRequest* request,
-                          const char* param,
-                          std::string& value) {
-  if (request->hasParam(param)) {
-    value = request->getParam(param)->value().c_str();
-  }
 }
 
 /**

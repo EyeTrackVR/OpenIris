@@ -1,15 +1,14 @@
 #include <Arduino.h>
 #include <io/LEDManager/LEDManager.hpp>
 #include <io/camera/cameraHandler.hpp>
-#include <network/WifiHandler/WifiHandler.hpp>
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
+#include <network/wifihandler/wifihandler.hpp>
 
 #include <data/config/project_config.hpp>
 #include <logo/logo.hpp>
 
-int STREAM_SERVER_PORT = 80;
 /**
  * @brief ProjectConfig object
  * @brief This is the main configuration object for the project
@@ -18,30 +17,25 @@ int STREAM_SERVER_PORT = 80;
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
-LEDManager ledManager(33, &ledStateManager);
+LEDManager ledManager(33);
 
 #ifndef SIM_ENABLED
-CameraHandler cameraHandler(&deviceConfig, &ledStateManager);
+CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
-WiFiHandler wifiHandler(&deviceConfig,
-                        &wifiStateManager,
-                        &ledStateManager,
-                        WIFI_SSID,
-                        WIFI_PASSWORD,
-                        WIFI_CHANNEL);
+WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+
+// ImprovHandler improvHandler(deviceConfig);
 
 #ifndef SIM_ENABLED
-APIServer apiServer(&deviceConfig,
-                    &cameraHandler,
-                    &wifiStateManager,
-                    "/control");
+APIServer apiServer(deviceConfig, cameraHandler, "/control");
 #else
-APIServer apiServer(&deviceConfig, NULL, &wifiStateManager, "/control");
+APIServer apiServer(deviceConfig, wifiStateManager, "/control");
 #endif  // SIM_ENABLED
-MDNSHandler mdnsHandler(&mdnsStateManager, &deviceConfig);
+
+MDNSHandler mdnsHandler(deviceConfig);
 
 #ifndef SIM_ENABLED
-StreamServer streamServer(STREAM_SERVER_PORT, &wifiStateManager);
+StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void setup() {
@@ -51,13 +45,14 @@ void setup() {
   Serial.flush();
   ledManager.begin();
 #ifndef SIM_ENABLED
-  deviceConfig.attach(&cameraHandler);
+  deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-  deviceConfig.attach(&mdnsHandler);
+  deviceConfig.attach(mdnsHandler);
+  deviceConfig.attach(wifiHandler);
   deviceConfig.initConfig();
   deviceConfig.load();
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
-  wifiHandler.setupWifi();
+  wifiHandler.begin();
   mdnsHandler.startMDNS();
 
   switch (wifiStateManager.getCurrentState()) {

@@ -74,9 +74,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
     return res;
 }
 
-StreamServer::StreamServer(int STREAM_PORT,
-                           StateManager<WiFiState_e> *stateManager) : STREAM_SERVER_PORT(STREAM_PORT),
-                                                                      stateManager(stateManager) {}
+StreamServer::StreamServer(const int STREAM_PORT) : STREAM_SERVER_PORT(STREAM_PORT) {}
 
 int StreamServer::startStreamServer()
 {
@@ -102,7 +100,7 @@ int StreamServer::startStreamServer()
     {
         httpd_register_uri_handler(camera_stream, &stream_page);
         Serial.println("Stream server initialized");
-        switch (stateManager->getCurrentState())
+        switch (wifiStateManager.getCurrentState())
         {
         case WiFiState_e::WiFiState_ADHOC:
             Serial.printf("\n\rThe stream is under: http://%s:%i\n\r", WiFi.softAPIP().toString().c_str(), this->STREAM_SERVER_PORT);

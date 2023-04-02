@@ -6,17 +6,15 @@
 
 class APIServer : public BaseAPI {
  public:
-  APIServer(ProjectConfig* projectConfig,
-            CameraHandler* camera,
-            StateManager<WiFiState_e>* wiFiStateManager,
+  APIServer(ProjectConfig& projectConfig,
+#ifndef SIM_ENABLED
+            CameraHandler& camera,
+#endif  // SIM_ENABLED
             const std::string& api_url);
 
   virtual ~APIServer();
   void setup();
   void setupServer();
-  void findParam(AsyncWebServerRequest* request,
-                 const char* param,
-                 std::string& value);
   void addRouteMap(const std::string& index,
                    route_t route,
                    std::vector<std::string>& indexes);

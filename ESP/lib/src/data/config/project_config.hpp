@@ -7,11 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "data/StateManager/StateManager.hpp"
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/helpers.hpp"
+#include "data/utilities/network_utilities.hpp"
 #include "tasks/tasks.hpp"
 
-class ProjectConfig : public Preferences, public ISubject {
+class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
  public:
   ProjectConfig(const std::string& name = std::string(),
                 const std::string& mdnsName = std::string());
@@ -95,12 +97,12 @@ class ProjectConfig : public Preferences, public ISubject {
     WiFiTxPower_t txpower;
   };
 
-  DeviceConfig_t* getDeviceConfig();
-  CameraConfig_t* getCameraConfig();
-  std::vector<WiFiConfig_t>* getWifiConfigs();
-  AP_WiFiConfig_t* getAPWifiConfig();
-  MDNSConfig_t* getMDNSConfig();
-  WiFiTxPower_t* getWiFiTxPowerConfig();
+  DeviceConfig_t& getDeviceConfig();
+  CameraConfig_t& getCameraConfig();
+  std::vector<WiFiConfig_t>& getWifiConfigs();
+  AP_WiFiConfig_t& getAPWifiConfig();
+  MDNSConfig_t& getMDNSConfig();
+  WiFiTxPower_t& getWiFiTxPowerConfig();
 
   void setDeviceConfig(const std::string& OTALogin,
                        const std::string& OTAPassword,
@@ -109,25 +111,25 @@ class ProjectConfig : public Preferences, public ISubject {
   void setMDNSConfig(const std::string& hostname,
                      const std::string& service,
                      bool shouldNotify);
-  void setCameraConfig(uint8_t* vflip,
-                       uint8_t* framesize,
-                       uint8_t* href,
-                       uint8_t* quality,
-                       uint8_t* brightness,
+  void setCameraConfig(uint8_t vflip,
+                       uint8_t framesize,
+                       uint8_t href,
+                       uint8_t quality,
+                       uint8_t brightness,
                        bool shouldNotify);
   void setWifiConfig(const std::string& networkName,
                      const std::string& ssid,
                      const std::string& password,
-                     uint8_t* channel,
-                     uint8_t* power,
+                     uint8_t channel,
+                     uint8_t power,
                      bool adhoc,
                      bool shouldNotify);
   void setAPWifiConfig(const std::string& ssid,
                        const std::string& password,
-                       uint8_t* channel,
+                       uint8_t channel,
                        bool adhoc,
                        bool shouldNotify);
-  void setWiFiTxPower(uint8_t* power, bool shouldNotify);
+  void setWiFiTxPower(uint8_t power, bool shouldNotify);
 
   void deleteWifiConfig(const std::string& networkName, bool shouldNotify);
 

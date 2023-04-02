@@ -21,8 +21,8 @@ void ProjectConfig::initConfig() {
 
   bool success = begin(_name.c_str());
 
-  log_i("Config name: %s", _name.c_str());
-  log_i("Config loaded: %s", success ? "true" : "false");
+  log_i("[Project Config]: Config name: %s", _name.c_str());
+  log_i("[Project Config]: Config loaded: %s", success ? "true" : "false");
 
   /*
   * If the config is not loaded,
@@ -41,7 +41,7 @@ void ProjectConfig::initConfig() {
       "openiristracker",
   };
 
-  log_i("MDNS name: %s", _mdnsName.c_str());
+  log_i("[Project Config]: MDNS name: %s", _mdnsName.c_str());
 
   this->config.ap_network = {
       "",
@@ -104,7 +104,7 @@ void ProjectConfig::wifiConfigSave() {
   putString("apPass", this->config.ap_network.password.c_str());
   putUInt("apChannel", this->config.ap_network.channel);
 
-  log_i("Project config saved and system is rebooting");
+  log_i("[Project Config]: Wifi configs saved");
 }
 
 void ProjectConfig::deviceConfigSave() {
@@ -201,7 +201,7 @@ void ProjectConfig::load() {
   this->config.camera.brightness = getInt("brightness", 2);
 
   this->_already_loaded = true;
-  this->notify(ObserverEvent::configLoaded);
+  this->notifyAll(ConfigState_e::configLoaded);
 }
 
 //**********************************************************************************************************************
@@ -219,7 +219,7 @@ void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
   this->config.device.OTAPort = OTAPort;
 
   if (shouldNotify)
-    this->notify(ObserverEvent::deviceConfigUpdated);
+    this->notifyAll(ConfigState_e::deviceConfigUpdated);
 }
 
 void ProjectConfig::setMDNSConfig(const std::string& hostname,
@@ -230,64 +230,58 @@ void ProjectConfig::setMDNSConfig(const std::string& hostname,
   this->config.mdns.service.assign(service);
 
   if (shouldNotify)
-    this->notify(ObserverEvent::mdnsConfigUpdated);
+    this->notifyAll(ConfigState_e::mdnsConfigUpdated);
 }
 
-void ProjectConfig::setCameraConfig(uint8_t* vflip,
-                                    uint8_t* framesize,
-                                    uint8_t* href,
-                                    uint8_t* quality,
-                                    uint8_t* brightness,
+void ProjectConfig::setCameraConfig(uint8_t vflip,
+                                    uint8_t framesize,
+                                    uint8_t href,
+                                    uint8_t quality,
+                                    uint8_t brightness,
                                     bool shouldNotify) {
   log_d("Updating camera config");
-  this->config.camera.vflip = *vflip;
-  this->config.camera.href = *href;
-  this->config.camera.framesize = *framesize;
-  this->config.camera.quality = *quality;
-  this->config.camera.brightness = *brightness;
+  this->config.camera.vflip = vflip;
+  this->config.camera.href = href;
+  this->config.camera.framesize = framesize;
+  this->config.camera.quality = quality;
+  this->config.camera.brightness = brightness;
 
   log_d("Updating Camera config");
   if (shouldNotify)
-    this->notify(ObserverEvent::cameraConfigUpdated);
+    this->notifyAll(ConfigState_e::cameraConfigUpdated);
 }
 
 void ProjectConfig::setWifiConfig(const std::string& networkName,
                                   const std::string& ssid,
                                   const std::string& password,
-                                  uint8_t* channel,
-                                  uint8_t* power,
+                                  uint8_t channel,
+                                  uint8_t power,
                                   bool adhoc,
                                   bool shouldNotify) {
   // we store the ADHOC flag as false because the networks we store in the
   // config are the ones we want the esp to connect to, rather than host as AP,
   // and here we're just updating them
   size_t size = this->config.networks.size();
-  // we're allowing to store up to three additional networks
-  if (size == 0) {
-    Serial.println("No networks, We're adding a new network");
-    this->config.networks.emplace_back(networkName, ssid, password, *channel,
-                                       *power, false);
-
-    if (shouldNotify)
-      this->notify(ObserverEvent::networksConfigUpdated);
-
-    return;
-  }
 
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
     if (it->name == networkName) {
-      log_i("Found network %s, updating it ...", it->name.c_str());
+      log_i("[Project Config]: Found network %s, updating it ...",
+            it->name.c_str());
 
       it->name = networkName;
       it->ssid = ssid;
       it->password = password;
-      it->channel = *channel;
-      it->power = *power;
+      it->channel = channel;
+      it->power = power;
       it->adhoc = false;
 
-      if (shouldNotify)
-        this->notify(ObserverEvent::networksConfigUpdated);
+      if (shouldNotify) {
+        wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+        WiFi.disconnect();
+        this->wifiConfigSave();
+        this->notifyAll(ConfigState_e::networksConfigUpdated);
+      }
 
       return;
     } else {
@@ -295,17 +289,28 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
     }
   }
 
-  if (size < 3) {
+  if (size < 3 && size > 0) {
     Serial.println("We're adding a new network");
     // we don't have that network yet, we can add it as we still have some
     // space we're using emplace_back as push_back will create a copy of it,
     // we want to avoid that
-    this->config.networks.emplace_back(networkName, ssid, password, *channel,
-                                       *power, false);
+    this->config.networks.emplace_back(networkName, ssid, password, channel,
+                                       power, false);
   }
 
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+  // we're allowing to store up to three additional networks
+  if (size == 0) {
+    Serial.println("No networks, We're adding a new network");
+    this->config.networks.emplace_back(networkName, ssid, password, channel,
+                                       power, false);
+  }
+
+  if (shouldNotify) {
+    wifiStateManager.setState(WiFiState_e::WiFiState_None);
+    WiFi.disconnect();
+    this->wifiConfigSave();
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
 void ProjectConfig::deleteWifiConfig(const std::string& networkName,
@@ -318,40 +323,47 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
     if (it->name == networkName) {
-      log_i("Found network %s", it->name.c_str());
+      log_i("[Project Config]: Found network %s", it->name.c_str());
       it = this->config.networks.erase(it);
-      log_i("Deleted network %s", networkName.c_str());
+      log_i("[Project Config]: Deleted network %s", networkName.c_str());
 
     } else {
       ++it;
     }
   }
 
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+  if (shouldNotify) {
+    this->wifiConfigSave();
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
-void ProjectConfig::setWiFiTxPower(uint8_t* power, bool shouldNotify) {
-  this->config.txpower.power = *power;
+void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
+  this->config.txpower.power = power;
 
   log_d("Updating wifi tx power");
   if (shouldNotify)
-    this->notify(ObserverEvent::wifiTxPowerUpdated);
+    this->notifyAll(ConfigState_e::wifiTxPowerUpdated);
 }
 
 void ProjectConfig::setAPWifiConfig(const std::string& ssid,
                                     const std::string& password,
-                                    uint8_t* channel,
+                                    uint8_t channel,
                                     bool adhoc,
                                     bool shouldNotify) {
   this->config.ap_network.ssid.assign(ssid);
   this->config.ap_network.password.assign(password);
-  this->config.ap_network.channel = *channel;
+  this->config.ap_network.channel = channel;
   this->config.ap_network.adhoc = adhoc;
 
   log_d("Updating access point config");
-  if (shouldNotify)
-    this->notify(ObserverEvent::networksConfigUpdated);
+
+  if (shouldNotify) {
+    wifiStateManager.setState(WiFiState_e::WiFiState_None);
+    WiFi.disconnect();
+    this->wifiConfigSave();
+    this->notifyAll(ConfigState_e::networksConfigUpdated);
+  }
 }
 
 std::string ProjectConfig::DeviceConfig_t::toRepresentation() {
@@ -409,21 +421,21 @@ std::string ProjectConfig::WiFiTxPower_t::toRepresentation() {
 //*
 //**********************************************************************************************************************
 
-ProjectConfig::DeviceConfig_t* ProjectConfig::getDeviceConfig() {
-  return &this->config.device;
+ProjectConfig::DeviceConfig_t& ProjectConfig::getDeviceConfig() {
+  return this->config.device;
 }
-ProjectConfig::CameraConfig_t* ProjectConfig::getCameraConfig() {
-  return &this->config.camera;
+ProjectConfig::CameraConfig_t& ProjectConfig::getCameraConfig() {
+  return this->config.camera;
 }
-std::vector<ProjectConfig::WiFiConfig_t>* ProjectConfig::getWifiConfigs() {
-  return &this->config.networks;
+std::vector<ProjectConfig::WiFiConfig_t>& ProjectConfig::getWifiConfigs() {
+  return this->config.networks;
 }
-ProjectConfig::AP_WiFiConfig_t* ProjectConfig::getAPWifiConfig() {
-  return &this->config.ap_network;
+ProjectConfig::AP_WiFiConfig_t& ProjectConfig::getAPWifiConfig() {
+  return this->config.ap_network;
 }
-ProjectConfig::MDNSConfig_t* ProjectConfig::getMDNSConfig() {
-  return &this->config.mdns;
+ProjectConfig::MDNSConfig_t& ProjectConfig::getMDNSConfig() {
+  return this->config.mdns;
 }
-ProjectConfig::WiFiTxPower_t* ProjectConfig::getWiFiTxPowerConfig() {
-  return &this->config.txpower;
+ProjectConfig::WiFiTxPower_t& ProjectConfig::getWiFiTxPowerConfig() {
+  return this->config.txpower;
 }

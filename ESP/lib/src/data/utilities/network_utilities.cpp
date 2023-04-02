@@ -5,7 +5,7 @@ void Network_Utilities::setupWifiScan()
     // Set WiFi to station mode and disconnect from an AP if it was previously connected
     WiFi.mode(WIFI_STA);
     WiFi.disconnect(); // Disconnect from the access point if connected before
-    my_delay(0.1L);
+    my_delay(0.1);
     Serial.println("Setup done");
 }
 
