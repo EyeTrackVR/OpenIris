@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-from PythonTools.constants import FrameSize, WifiPowerPoint
+from .constants import FrameSize, WifiPowerPoint
 
 
 class DeviceConfig(BaseModel):

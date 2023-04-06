@@ -2,7 +2,7 @@ from typing import Optional, Callable
 
 import aiohttp
 
-from PythonTools.models import (
+from .models import (
     DeviceConfig,
     CameraConfig,
     WiFiConfig,
@@ -16,7 +16,13 @@ class BaseAPIClient:
     def __init__(self, tracker_address: str):
         self.tracker_address = tracker_address
         self.base_endpoint = "control/builtin/command"
+
+    async def __aenter__(self):
         self.session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.session.close()
 
     async def get(
         self,
@@ -35,6 +41,7 @@ class BaseAPIClient:
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
             params=clean_params,
         ) as request:
+            await request.read()
             return request
 
     async def post(
@@ -51,6 +58,7 @@ class BaseAPIClient:
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
             params=clean_params,
         ) as request:
+            await request.read()
             return request
 
     async def delete(
@@ -67,6 +75,7 @@ class BaseAPIClient:
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
             params=clean_params,
         ) as request:
+            await request.read()
             return request
 
     @staticmethod
