@@ -2,6 +2,7 @@ from typing import Optional, Callable
 
 import aiohttp
 
+from constants import WifiPowerPoint
 from .models import (
     DeviceConfig,
     CameraConfig,
@@ -129,9 +130,9 @@ class OpenIrisClient(BaseAPIClient):
     async def reboot_device(self):
         return await self.get(command="rebootDevice")
 
-    async def set_tx_power(self, power_level: WiFiTXPower):
+    async def set_tx_power(self, power_level: WifiPowerPoint):
         params = {
-            "txPower": power_level.power,
+            "txPower": power_level,
         }
         return await self.get(command="setTxPower", params=params)
 
@@ -150,7 +151,7 @@ class OpenIrisClient(BaseAPIClient):
         return await self.get(command="setCamera", params=params)
 
     async def restart_camera(self, hard_reset: bool = False):
-        params = {"mode": hard_reset}
+        params = {"mode": int(hard_reset)}
         return await self.get(command="restartCamera", params=params)
 
     async def ping(self):

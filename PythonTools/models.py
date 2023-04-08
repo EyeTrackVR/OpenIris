@@ -46,6 +46,5 @@ class TrackerConfig(BaseModel):
     device_config: DeviceConfig
     camera_config: CameraConfig
     networks: List[WiFiConfig]
-    AP_WiFi_config: APWiFiConfig
+    ap_wifi_config: APWiFiConfig
     mdns_config: MDNSConfig
-    Wifi_TX_power: WiFiTXPower
