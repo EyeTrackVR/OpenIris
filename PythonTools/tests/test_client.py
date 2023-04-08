@@ -173,3 +173,27 @@ async def test_restart_camera(device_url, payload, response):
 
     m.assert_called_once()
     assert await result.json() == response
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "msg": "rebooting device"
+        }
+    ],
+)
+async def test_restart_camera(device_url, payload):
+    with aioresponses() as m:
+        m.get(
+            rf"{device_url}/control/builtin/command/rebootDevice/",
+            status=200,
+            payload=payload,
+        )
+
+        async with OpenIrisClient(device_url) as openiris_client:
+            result = await openiris_client.reboot_device()
+
+    m.assert_called_once()
+    assert await result.json() == payload
