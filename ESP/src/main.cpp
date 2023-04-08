@@ -103,6 +103,8 @@ void setup() {
 
 #ifdef ETVR_EYE_TRACKER_WEB_API
   etvr_eye_tracker_web_init();
+#else  // ETVR_EYE_TRACKER_WEB_API
+  WiFi.disconnect(true);
 #endif  // ETVR_EYE_TRACKER_WEB_API
 
 #ifdef ETVR_EYE_TRACKER_USB_API
