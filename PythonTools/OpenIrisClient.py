@@ -33,9 +33,7 @@ class BaseAPIClient:
         clean_params = await self._clean_params(params)
 
         if validator and not validator(clean_params):
-            raise ValueError(
-                f"Params for command {command} are required, none provided"
-            )
+            raise ValueError(f"Params for command {command} are required, none provided")
 
         async with self.session.get(
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
@@ -44,15 +42,11 @@ class BaseAPIClient:
             await request.read()
             return request
 
-    async def post(
-        self, command: str, data: dict, validator: Optional[Callable] = None
-    ):
+    async def post(self, command: str, data: dict, validator: Optional[Callable] = None):
         clean_params = await self._clean_params(data)
 
         if validator and not validator(clean_params):
-            raise ValueError(
-                f"Params for command {command} are required, none provided"
-            )
+            raise ValueError(f"Params for command {command} are required, none provided")
 
         async with self.session.post(
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
@@ -61,15 +55,11 @@ class BaseAPIClient:
             await request.read()
             return request
 
-    async def delete(
-        self, command: str, data: dict, validator: Optional[Callable] = None
-    ):
+    async def delete(self, command: str, data: dict, validator: Optional[Callable] = None):
         clean_params = await self._clean_params(data)
 
         if validator and not validator(clean_params):
-            raise ValueError(
-                f"Params for command {command} are required, none provided"
-            )
+            raise ValueError(f"Params for command {command} are required, none provided")
 
         async with self.session.delete(
             f"{self.tracker_address}/{self.base_endpoint}/{command}/",
@@ -114,9 +104,7 @@ class OpenIrisClient(BaseAPIClient):
         return await self.get("resetConfig")
 
     # we should split this into two separate configs and endpoints and clean them up
-    async def update_device_settings(
-        self, mdns_config: MDNSConfig, device_config: DeviceConfig
-    ):
+    async def update_device_settings(self, mdns_config: MDNSConfig, device_config: DeviceConfig):
         params = {
             "hostname": mdns_config.hostname,
             "service": mdns_config.service,
@@ -140,9 +128,9 @@ class OpenIrisClient(BaseAPIClient):
 
     async def update_camera_settings(self, camera_config: CameraConfig):
         params = {
-            "framesize": camera_config.framesize,
-            "vflip": camera_config.vflip,
-            "hflip": camera_config.hflip,
+            "framesize": camera_config.framesize.value if camera_config.framesize else None,
+            "vflip": int(camera_config.vflip) if camera_config.vflip is not None else None,
+            "hflip": int(camera_config.hflip) if camera_config.hflip is not None else None,
             "quality": camera_config.quality,
             "brightness": camera_config.brightness,
         }
