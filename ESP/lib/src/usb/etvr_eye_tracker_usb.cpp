@@ -4,6 +4,9 @@
 #include <USBCDC.h>
 #include <esp_camera.h>
 
+const char* const ETVR_HEADER = "\xff\xa0";
+const char* const ETVR_HEADER_FRAME = "\xff\xa1";
+
 void etvr_eye_tracker_usb_init() {
   Serial.begin(3000000);
   Serial.flush();
@@ -21,6 +24,8 @@ void etvr_eye_tracker_usb_loop() {
   size_t len = 0;
   uint8_t* buf = NULL;
 
+  uint8_t len_bytes[2];
+
   while (true) {
     fb = esp_camera_fb_get();
     if (fb) {
@@ -31,6 +36,11 @@ void etvr_eye_tracker_usb_loop() {
       err = ESP_FAIL;
     }
     if (err == ESP_OK)
+      Serial.write(ETVR_HEADER, 2);
+      Serial.write(ETVR_HEADER_FRAME, 2);
+      len_bytes[0] = len & 0xFF;
+      len_bytes[1] = (len >> CHAR_BIT) & 0xFF;
+      Serial.write(len_bytes, 2);
       Serial.write((const char*)buf, len);
     if (fb) {
       esp_camera_fb_return(fb);
