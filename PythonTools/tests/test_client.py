@@ -327,3 +327,20 @@ async def test_get_wifi_strength(device_url, payload):
 
         m.assert_called_once()
         assert await result.json() == payload
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("network_name,payload", [("test_network", {"msg": "network removed"})])
+async def test_remove_wifi_network(device_url, network_name, payload):
+    with aioresponses() as m:
+        m.delete(
+            f"{device_url}/control/builtin/command/setWiFi/?networkName={network_name}",
+            status=200,
+            payload=payload,
+        )
+
+        async with OpenIrisClient(device_url) as openiris_client:
+            result = await openiris_client.remove_wifi_network(network_name)
+
+        m.assert_called_once()
+        assert await result.json() == payload
