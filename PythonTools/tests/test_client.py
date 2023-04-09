@@ -3,8 +3,8 @@ import re
 import pytest
 from aioresponses import aioresponses
 
-from constants import WifiPowerPoint
-from ..models import TrackerConfig
+from constants import WifiPowerPoint, FrameSize
+from ..models import TrackerConfig, CameraConfig
 from ..OpenIrisClient import OpenIrisClient
 
 
@@ -130,9 +130,7 @@ async def test_save_config(device_url, payload):
 async def test_set_tx_power(device_url, payload):
     with aioresponses() as m:
         m.get(
-            re.compile(
-                rf"{device_url}/control/builtin/command/setTxPower/\?txPower=\d+"
-            ),
+            re.compile(rf"{device_url}/control/builtin/command/setTxPower/\?txPower=\d+"),
             status=200,
             payload=payload,
         )
@@ -161,9 +159,7 @@ async def test_set_tx_power(device_url, payload):
 async def test_restart_camera(device_url, payload, response):
     with aioresponses() as m:
         m.get(
-            re.compile(
-                rf"{device_url}/control/builtin/command/restartCamera/\?mode=\d+"
-            ),
+            re.compile(rf"{device_url}/control/builtin/command/restartCamera/\?mode=\d+"),
             status=200,
             payload=response,
         )
@@ -177,10 +173,64 @@ async def test_restart_camera(device_url, payload, response):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "payload",
+    "parameters,query_params,payload",
     [
-        {"msg": "rebooting device"},
+        (
+            {"framesize": FrameSize.FRAMESIZE_240X240},
+            "framesize=5",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
+        (
+            {"vflip": False},
+            "vflip=0",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
+        (
+            {"hflip": False},
+            "hflip=0",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
+        (
+            {"quality": 11},
+            "quality=11",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
+        (
+            {"brightness": 2},
+            "brightness=2",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
+        (
+            {
+                "framesize": FrameSize.FRAMESIZE_240X240,
+                "vflip": True,
+                "hflip": True,
+                "quality": 9,
+                "brightness": 1,
+            },
+            "brightness=1&framesize=5&hflip=1&quality=9&vflip=1",
+            {"msg": "Done. Camera Settings have been set."},
+        ),
     ],
+)
+async def test_update_camera_settings(device_url, parameters, query_params, payload):
+    with aioresponses() as m:
+        m.get(
+            f"{device_url}/control/builtin/command/setCamera/?{query_params}",
+            status=200,
+            payload=payload,
+        )
+        async with OpenIrisClient(device_url) as openiris_client:
+            result = await openiris_client.update_camera_settings(CameraConfig(**parameters))
+
+    m.assert_called_once()
+    assert await result.json() == payload
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [{"msg": "rebooting device"}],
 )
 async def test_reboot_device(device_url, payload):
     with aioresponses() as m:
@@ -200,11 +250,7 @@ async def test_reboot_device(device_url, payload):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "payload",
-    [
-        {
-            "wifi_power": 20,
-        }
-    ],
+    [{"wifi_power": 20}],
 )
 async def test_get_wifi_strength(device_url, payload):
     with aioresponses() as m:
