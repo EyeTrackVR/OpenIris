@@ -8,7 +8,6 @@ from .models import (
     CameraConfig,
     WiFiConfig,
     TrackerConfig,
-    WiFiTXPower,
     MDNSConfig,
 )
 
