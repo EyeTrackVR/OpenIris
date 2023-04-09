@@ -4,7 +4,7 @@ import pytest
 from aioresponses import aioresponses
 
 from constants import WifiPowerPoint, FrameSize
-from ..models import TrackerConfig, CameraConfig
+from ..models import TrackerConfig, CameraConfig, MDNSConfig, DeviceConfig
 from ..OpenIrisClient import OpenIrisClient
 
 
@@ -242,6 +242,68 @@ async def test_reboot_device(device_url, payload):
 
         async with OpenIrisClient(device_url) as openiris_client:
             result = await openiris_client.reboot_device()
+
+    m.assert_called_once()
+    assert await result.json() == payload
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "parameters,query_params,payload",
+    [
+        (
+            {"hostname": "someTestName"},
+            "hostname=someTestName",
+            {"msg": "Done. Device Settings have been set."},
+        ),
+        (
+            {"service": "someService"},
+            "service=someService",
+            {"msg": "Done. Device Settings have been set."},
+        ),
+        (
+            {"ota_login": "otaLogin"},
+            "ota_login=otaLogin",
+            {"msg": "Done. Device Settings have been set."},
+        ),
+        (
+            {"ota_password": "123456798"},
+            "ota_password=123456798",
+            {"msg": "Done. Device Settings have been set."},
+        ),
+        (
+            {
+                "hostname": "someTestName",
+                "service": "someService",
+                "ota_login": "otaLogin",
+                "ota_password": "123456798",
+            },
+            "hostname=someTestName&service=someService&ota_login=otaLogin&ota_password=123456798",
+            {"msg": "Done. Device Settings have been set."},
+        ),
+    ],
+)
+async def test_update_device_settings(device_url, parameters, query_params, payload):
+    with aioresponses() as m:
+        m.get(
+            f"{device_url}/control/builtin/command/setDevice/?{query_params}",
+            status=200,
+            payload=payload,
+        )
+        async with OpenIrisClient(device_url) as openiris_client:
+            keys = parameters.keys()
+
+            device_config = DeviceConfig()
+            mdns_config = MDNSConfig()
+
+            if "ota_login" in keys or "ota_password" in keys:
+                device_config.OTALogin = parameters.get("ota_login")
+                device_config.OTAPassword = parameters.get("ota_password")
+            if "service" in keys or "hostname" in keys:
+                mdns_config.hostname = parameters.get("hostname")
+                mdns_config.service = parameters.get("service")
+
+            result = await openiris_client.update_device_settings(device_config=device_config, mdns_config=mdns_config)
 
     m.assert_called_once()
     assert await result.json() == payload
