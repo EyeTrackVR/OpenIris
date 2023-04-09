@@ -179,15 +179,13 @@ async def test_restart_camera(device_url, payload, response):
 @pytest.mark.parametrize(
     "payload",
     [
-        {
-            "msg": "rebooting device"
-        }
+        {"msg": "rebooting device"},
     ],
 )
-async def test_restart_camera(device_url, payload):
+async def test_reboot_device(device_url, payload):
     with aioresponses() as m:
         m.get(
-            rf"{device_url}/control/builtin/command/rebootDevice/",
+            f"{device_url}/control/builtin/command/rebootDevice/",
             status=200,
             payload=payload,
         )
@@ -197,3 +195,27 @@ async def test_restart_camera(device_url, payload):
 
     m.assert_called_once()
     assert await result.json() == payload
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "wifi_power": 20,
+        }
+    ],
+)
+async def test_get_wifi_strength(device_url, payload):
+    with aioresponses() as m:
+        m.get(
+            f"{device_url}/control/builtin/command/wifiStrength/",
+            status=200,
+            payload=payload,
+        )
+
+        async with OpenIrisClient(device_url) as openiris_client:
+            result = await openiris_client.get_wifi_strength()
+
+        m.assert_called_once()
+        assert await result.json() == payload
