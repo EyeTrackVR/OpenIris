@@ -25,6 +25,7 @@ Nonetheless, pull requests and issues are welcome, let's get this cracking!
 - [x] CI/CD with github actions - so we can more seamlessly update the trackers
 - [x] LED status patterns - so that you know what's going on without plugging the tracker in to the PC
 - [x] Better OTA so that updates can be downloaded from github and pushed by the server to the tracker
+- [x] Streaming over USB on boards that support it (ESP32S3 / XIAO ESP32S3 Sense thanks to XadE#2410 and Seaweed#4353
 
 ### TODO
 - [ ] streaming over sockets instead of HTTP MJPEG for faster streams!
