@@ -1,5 +1,3 @@
-#include <etvr_system.hpp>
-
 #include <Arduino.h>
 
 #include <data/config/project_config.hpp>
@@ -7,7 +5,7 @@
 #include <io/camera/cameraHandler.hpp>
 #include <logo/logo.hpp>
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
@@ -32,7 +30,7 @@ LEDManager ledManager(33);
 CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
 WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 MDNSHandler mdnsHandler(deviceConfig);
 #ifdef SIM_ENABLED
@@ -94,7 +92,7 @@ void setup() {
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_web_init();
 #else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);

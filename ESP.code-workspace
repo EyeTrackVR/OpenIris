@@ -61,7 +61,9 @@
 			"iostream": "cpp"
 		},
 		"cSpell.words": [
-			"ESPS"
+			"ESPS",
+			"JTAG",
+			"sccb"
 		]
 	}
 }
