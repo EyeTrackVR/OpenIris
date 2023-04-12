@@ -43,6 +43,8 @@ StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void etvr_eye_tracker_web_init() {
+  deviceConfig.attach(mdnsHandler);
+  deviceConfig.attach(wifiHandler);
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
   wifiHandler.begin();
   mdnsHandler.startMDNS();
@@ -92,20 +94,14 @@ void setup() {
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-
 #ifdef ETVR_EYE_TRACKER_WEB_API
-  deviceConfig.attach(mdnsHandler);
-  deviceConfig.attach(wifiHandler);
+  etvr_eye_tracker_web_init();
+#else   // ETVR_EYE_TRACKER_WEB_API
+  WiFi.disconnect(true);
 #endif  // ETVR_EYE_TRACKER_WEB_API
 
   deviceConfig.initConfig();
   deviceConfig.load();
-
-#ifdef ETVR_EYE_TRACKER_WEB_API
-  etvr_eye_tracker_web_init();
-#else  // ETVR_EYE_TRACKER_WEB_API
-  WiFi.disconnect(true);
-#endif  // ETVR_EYE_TRACKER_WEB_API
 
 #ifdef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_usb_init();
