@@ -42,7 +42,7 @@ StreamServer streamServer;
 
 void etvr_eye_tracker_web_init() {
   deviceConfig.attach(mdnsHandler);
-  deviceConfig.attach(wifiHandler);
+  //deviceConfig.attach(wifiHandler);
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
   wifiHandler.begin();
   mdnsHandler.startMDNS();
