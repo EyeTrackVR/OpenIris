@@ -11,10 +11,12 @@ void CameraHandler::setupCameraPinout() {
   log_i("Camera module is undefined");
 #endif
 
-  int xclk_freq_hz = 16500000;  // 10000000 stable,
-                                // 16500000 optimal,
-                                // 20000000 max freq on ESP32-CAM
-                                // 24000000 max freq on OV2640 sensor
+  // camera external clock signal frequencies
+  // 10000000 stable
+  // 16500000 optimal freq on ESP32-CAM (default)
+  // 20000000 max freq on ESP32-CAM
+  // 24000000 optimal freq on ESP32-S3
+  int xclk_freq_hz = 16500000;
 
 #if CONFIG_CAMERA_MODULE_ESP_EYE
   /* IO13, IO14 is designed for JTAG by default,
@@ -56,9 +58,7 @@ void CameraHandler::setupCameraPinout() {
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = xclk_freq_hz;  // 10000000 stable,
-                                       // 16500000 optimal,
-                                       // 20000000 max fps
+  config.xclk_freq_hz = xclk_freq_hz;
 }
 
 void CameraHandler::setupBasicResolution() {
