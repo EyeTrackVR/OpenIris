@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.0](https://github.com/lorow/OpenIris/compare/v2.1.0...v2.2.0) (2023-04-19)
+
+
+### 🍕 Features
+
+* improve the initial USB implementation, increase the XCLK clock for S3 boards - higher framerate over usb  ([90a17d6](https://github.com/lorow/OpenIris/commit/90a17d6e6fc4cc09d57e5515de186448a4dcb551)), closes [#49](https://github.com/lorow/OpenIris/issues/49)
+
 ## [2.1.0](https://github.com/lorow/OpenIris/compare/v2.0.0...v2.1.0) (2023-04-10)
 
 
