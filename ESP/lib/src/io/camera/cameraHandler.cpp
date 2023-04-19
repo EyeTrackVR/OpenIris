@@ -34,7 +34,8 @@ void CameraHandler::setupCameraPinout() {
   pinMode(13, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
   log_i("CAM_BOARD");
-#elif CONFIG_CAMERA_MODULE_ESPS3WROVER
+#endif
+#if ETVR_EYE_TRACKER_USB_API
   /* ESP32-S3 is capable of using higher freqs */
   xclk_freq_hz = 24000000;
 #endif
