@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.1](https://github.com/lorow/OpenIris/compare/v2.2.0...v2.2.1) (2023-04-19)
+
+
+### 🐛 Bug Fixes
+
+* XCLK preprocessor macro ([2afcad6](https://github.com/lorow/OpenIris/commit/2afcad64b6e588d24600daeacb6dc9c99e2c8402))
+
 ## [2.2.0](https://github.com/lorow/OpenIris/compare/v2.1.0...v2.2.0) (2023-04-19)
 
 
