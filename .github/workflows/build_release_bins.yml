@@ -28,42 +28,13 @@ jobs:
       fail-fast: false
       matrix:
         target_name:
-          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
+          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrooms3QIO, wrooms3QIOUSB, wrooms3, wrooms3USB]
         target_build_type: ["", _release] #, _OTA] # OTA is not needed
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      #- name: Cache pip
-      #  uses: actions/cache@v3
-      #  with:
-      #    path: ~/.cache/pip
-      #    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-      #    restore-keys: ${{ runner.os }}-pip-
-      #- name: Cache PlatformIO
-      #  uses: actions/cache@v3
-      #  with:
-      #    path: ~/.platformio
-      #    key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-      #    restore-keys: |
-      #      ${{ runner.os }}-pio-
-      #- name: Setup Python install
-      #  uses: actions/setup-python@v4
-      #  with:
-      #    python-version: "3.x"
-      #- name: Install PlatformIO with Pip
-      #  run: |
-      #
-      #    python -m pip install --upgrade pip
-      #    pip install distro
-      #    pip install --upgrade platformio
-      #    pio upgrade --dev
-      #    pio pkg update --global
-      #- name: Update build command
-      #  working-directory: ./ESP
-      #  run: |
-      #    sed -i '/\[env\]/p; s/\[env\]/upload_protocol = custom/' platformio.ini
       - name: Build OpenIris Firmware
         uses: addnab/docker-run-action@v3
         with:
@@ -132,7 +103,7 @@ jobs:
       fail-fast: false
       matrix:
         target_name:
-          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrovers3]
+          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrooms3QIO, wrooms3QIOUSB, wrooms3, wrooms3USB]
         target_build_type: ["", _release]
     name: Cleanup actions
     needs:
