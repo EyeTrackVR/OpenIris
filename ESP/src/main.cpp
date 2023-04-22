@@ -10,11 +10,9 @@
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/stream/streamServer.hpp>
 #include <network/wifihandler/wifihandler.hpp>
-#endif  // ETVR_EYE_TRACKER_WEB_API
-
-#ifdef ETVR_EYE_TRACKER_USB_API
+#else
 #include <usb/etvr_eye_tracker_usb.hpp>
-#endif  // ETVR_EYE_TRACKER_USB_API
+#endif  // ETVR_EYE_TRACKER_WEB_API
 
 /**
  * @brief ProjectConfig object
