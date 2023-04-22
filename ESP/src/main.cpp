@@ -89,6 +89,9 @@ void setup() {
   Serial.flush();
   ledManager.begin();
 
+  deviceConfig.initConfig();
+  deviceConfig.load();
+
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
@@ -97,9 +100,6 @@ void setup() {
 #else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);
 #endif  // ETVR_EYE_TRACKER_WEB_API
-
-  deviceConfig.initConfig();
-  deviceConfig.load();
 
 #ifdef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_usb_init();
