@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.3](https://github.com/lorow/OpenIris/compare/v2.2.2...v2.2.3) (2023-04-22)
+
+
+### 🐛 Bug Fixes
+
+* bug causing camera to not work ([86f6526](https://github.com/lorow/OpenIris/commit/86f65260e8453a2390194d2897390c9f8a80698e))
+
 ## [2.2.2](https://github.com/lorow/OpenIris/compare/v2.2.1...v2.2.2) (2023-04-22)
 
 
