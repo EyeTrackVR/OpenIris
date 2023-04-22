@@ -3,6 +3,19 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.2](https://github.com/lorow/OpenIris/compare/v2.2.1...v2.2.2) (2023-04-22)
+
+
+### 🐛 Bug Fixes
+
+* bug prevent device from connecting to saved wifi networks ([cd55c8c](https://github.com/lorow/OpenIris/commit/cd55c8c2ea83c6f6a35e4e08a579ac90f1722b75))
+
+
+### 🧑‍💻 Code Refactoring
+
+* cleanup USB activation code ([5e19d98](https://github.com/lorow/OpenIris/commit/5e19d98f597da5bdad837467f79c754cfe4ae1e0))
+* cleanup USB activation code ([3339f81](https://github.com/lorow/OpenIris/commit/3339f81cb3e7367365b2a53fa22021a1b8147efc))
+
 ## [2.2.1](https://github.com/lorow/OpenIris/compare/v2.2.0...v2.2.1) (2023-04-19)
 
 
