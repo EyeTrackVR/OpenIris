@@ -3,6 +3,40 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.3](https://github.com/lorow/OpenIris/compare/v2.2.2...v2.2.3) (2023-04-22)
+
+
+### 🐛 Bug Fixes
+
+* bug causing camera to not work ([86f6526](https://github.com/lorow/OpenIris/commit/86f65260e8453a2390194d2897390c9f8a80698e))
+
+## [2.2.2](https://github.com/lorow/OpenIris/compare/v2.2.1...v2.2.2) (2023-04-22)
+
+
+### 🐛 Bug Fixes
+
+* bug prevent device from connecting to saved wifi networks ([cd55c8c](https://github.com/lorow/OpenIris/commit/cd55c8c2ea83c6f6a35e4e08a579ac90f1722b75))
+
+
+### 🧑‍💻 Code Refactoring
+
+* cleanup USB activation code ([5e19d98](https://github.com/lorow/OpenIris/commit/5e19d98f597da5bdad837467f79c754cfe4ae1e0))
+* cleanup USB activation code ([3339f81](https://github.com/lorow/OpenIris/commit/3339f81cb3e7367365b2a53fa22021a1b8147efc))
+
+## [2.2.1](https://github.com/lorow/OpenIris/compare/v2.2.0...v2.2.1) (2023-04-19)
+
+
+### 🐛 Bug Fixes
+
+* XCLK preprocessor macro ([2afcad6](https://github.com/lorow/OpenIris/commit/2afcad64b6e588d24600daeacb6dc9c99e2c8402))
+
+## [2.2.0](https://github.com/lorow/OpenIris/compare/v2.1.0...v2.2.0) (2023-04-19)
+
+
+### 🍕 Features
+
+* improve the initial USB implementation, increase the XCLK clock for S3 boards - higher framerate over usb  ([90a17d6](https://github.com/lorow/OpenIris/commit/90a17d6e6fc4cc09d57e5515de186448a4dcb551)), closes [#49](https://github.com/lorow/OpenIris/issues/49)
+
 ## [2.1.0](https://github.com/lorow/OpenIris/compare/v2.0.0...v2.1.0) (2023-04-10)
 
 

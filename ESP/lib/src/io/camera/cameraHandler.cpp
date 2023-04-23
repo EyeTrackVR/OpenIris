@@ -11,10 +11,17 @@ void CameraHandler::setupCameraPinout() {
   log_i("Camera module is undefined");
 #endif
 
+  // camera external clock signal frequencies
+  // 10000000 stable
+  // 16500000 optimal freq on ESP32-CAM (default)
+  // 20000000 max freq on ESP32-CAM
+  // 24000000 optimal freq on ESP32-S3
+  int xclk_freq_hz = 16500000;
+
 #if CONFIG_CAMERA_MODULE_ESP_EYE
   /* IO13, IO14 is designed for JTAG by default,
    * to use it as generalized input,
-   * firstly declair it as pullup input
+   * firstly declare it as pullup input
    **/
   pinMode(13, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
@@ -22,11 +29,15 @@ void CameraHandler::setupCameraPinout() {
 #elif CONFIG_CAMERA_MODULE_CAM_BOARD
   /* IO13, IO14 is designed for JTAG by default,
    * to use it as generalized input,
-   * firstly declair it as pullup input
+   * firstly declare it as pullup input
    **/
   pinMode(13, INPUT_PULLUP);
   pinMode(14, INPUT_PULLUP);
   log_i("CAM_BOARD");
+#endif
+#if ETVR_EYE_TRACKER_USB_API
+  /* ESP32-S3 is capable of using higher freqs */
+  xclk_freq_hz = 24000000;
 #endif
 
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -48,9 +59,7 @@ void CameraHandler::setupCameraPinout() {
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 16500000;  // 10000000 stable,
-                                   // 16500000 optimal,
-                                   // 20000000 max fps
+  config.xclk_freq_hz = xclk_freq_hz;
 }
 
 void CameraHandler::setupBasicResolution() {

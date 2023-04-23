@@ -1,5 +1,4 @@
 #include "AsyncUDP.h"
-#include <etvr_system.hpp>
 
 #include <Arduino.h>
 
@@ -8,7 +7,7 @@
 #include <io/camera/cameraHandler.hpp>
 #include <logo/logo.hpp>
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
 #include <network/api/webserverHandler.hpp>
 #include <network/mDNS/MDNSManager.hpp>
 #include <network/UDPStream/UDPStreamHandler.h>
@@ -16,11 +15,9 @@
 //#include <network/UDPStream/UDPStreamHandler.h>
 //#include <network/stream/streamServer.hpp>
 #include <network/wifihandler/wifihandler.hpp>
-#endif  // ETVR_EYE_TRACKER_WEB_API
-
-#ifdef ETVR_EYE_TRACKER_USB_API
+#else
 #include <usb/etvr_eye_tracker_usb.hpp>
-#endif  // ETVR_EYE_TRACKER_USB_API
+#endif  // ETVR_EYE_TRACKER_WEB_API
 
 /**
  * @brief ProjectConfig object
@@ -35,7 +32,7 @@ LEDManager ledManager(33);
 CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
 WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 MDNSHandler mdnsHandler(deviceConfig);
 
@@ -55,6 +52,8 @@ UDPStreamHandler udpStreamHandler;
 #endif  // SIM_ENABLED
 
 void etvr_eye_tracker_web_init() {
+  deviceConfig.attach(mdnsHandler);
+  //deviceConfig.attach(wifiHandler);
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
   wifiHandler.begin();
   mdnsHandler.startMDNS();
@@ -105,23 +104,15 @@ void setup() {
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
-  deviceConfig.attach(mdnsHandler);
-  deviceConfig.attach(wifiHandler);
-#endif  // ETVR_EYE_TRACKER_WEB_API
-
   deviceConfig.initConfig();
   deviceConfig.load();
 
-#ifdef ETVR_EYE_TRACKER_WEB_API
+#ifndef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_web_init();
-#else  // ETVR_EYE_TRACKER_WEB_API
+#else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);
-#endif  // ETVR_EYE_TRACKER_WEB_API
-
-#ifdef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_usb_init();
-#endif  // ETVR_EYE_TRACKER_USB_API
+#endif  // ETVR_EYE_TRACKER_WEB_API
 }
 
 void loop() {
