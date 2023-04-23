@@ -102,22 +102,18 @@ class BaseAPI {
 
 	ProjectConfig &projectConfig;
 	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-    AsyncWebServer server;
+    AsyncWebServer &server;
 #ifndef SIM_ENABLED
         CameraHandler &camera;
 #endif  // SIM_ENABLED
 
 public :
-    BaseAPI(ProjectConfig& projectConfig,
+    BaseAPI(AsyncWebServer &server,
+            ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
             CameraHandler& camera,
 #endif  // SIM_ENABLED
-            const std::string& api_url,
-#ifndef SIM_ENABLED
-            int port = 81
-#else
-            int port = 80
-#endif
+            const std::string& api_url
   );
 
  virtual ~BaseAPI();

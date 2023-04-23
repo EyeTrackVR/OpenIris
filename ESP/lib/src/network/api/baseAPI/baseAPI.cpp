@@ -10,13 +10,14 @@
 // const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
-BaseAPI::BaseAPI(ProjectConfig& projectConfig,
+BaseAPI::BaseAPI(
+                 AsyncWebServer &server,
+                 ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
                  CameraHandler& camera,
 #endif  // SIM_ENABLED
-                 const std::string& api_url,
-                 const int CONTROL_PORT)
-    : server(CONTROL_PORT),
+                 const std::string& api_url)
+    : server(server),
       projectConfig(projectConfig),
 #ifndef SIM_ENABLED
       camera(camera),

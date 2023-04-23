@@ -9,6 +9,9 @@ license = "gnu gplv3"
 python = "^3.8"
 zeroconf = "^0.38.4"
 black = "^22.3.0"
+websockets = "^11.0.1"
+opencv-python = "^4.7.0.72"
+numpy = "^1.24.2"
 
 [tool.poetry.dev-dependencies]
 

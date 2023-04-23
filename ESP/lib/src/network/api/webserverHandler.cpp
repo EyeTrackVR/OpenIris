@@ -4,12 +4,14 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(ProjectConfig& projectConfig,
+APIServer::APIServer(AsyncWebServer &server,
+                     ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
                      CameraHandler& camera,
 #endif  // SIM_ENABLED
                      const std::string& api_url)
-    : BaseAPI(projectConfig,
+    : BaseAPI(server,
+              projectConfig,
 #ifndef SIM_ENABLED
               camera,
 #endif  // SIM_ENABLED
