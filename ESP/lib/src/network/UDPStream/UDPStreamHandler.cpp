@@ -1,11 +1,26 @@
 #include "UDPStreamHandler.h"
+#include "data/StateManager/StateManager.hpp"
 #include <esp_camera.h>
 
 
-void UDPStreamHandler::begin() {
-    auto address = IPAddress(255,255,255,255);
-//    this->udp.connect(address, this->port);
+UDPStreamHandler::UDPStreamHandler(ProjectConfig& configManager) : configManager(configManager) {}
 
+void UDPStreamHandler::update(ConfigState_e event) {
+    if (event == ConfigState_e::deviceConfigUpdated)
+        this->begin();
+}
+
+std::string UDPStreamHandler::getName() {
+    return "UDPStreamHandler";
+}
+
+
+void UDPStreamHandler::begin() {
+    auto deviceConfig =  this->configManager.getDeviceConfig();
+    this->port = deviceConfig.UDPPort;
+
+    auto address = IPAddress(255,255,255,255);
+    this->udp.connect(address, this->port);
     if(this->udp.connected()){
         this->udp.onPacket([&](AsyncUDPPacket packet){
             this->calculateLatency(packet);
@@ -19,8 +34,18 @@ void UDPStreamHandler::stop() {
     }
 }
 
+bool UDPStreamHandler::canStream() {
+    // we should stream if:
+    auto streamState = streamStateManager.getCurrentState();
+
+    // we were told to stream and there wasn't any errors, we're connected
+    return streamState == DeviceStates::StreamState_e::Stream_ON && this->udp.connected() &&
+    // and we're past the timeout
+    (millis() - this->lastTimeFrameSentTime < UDPStreamHandler::timeBetweenFrames);
+}
+
 void UDPStreamHandler::stream() {
-    if(!this->udp.connected() || (millis() - this->lastTimeFrameSentTime < UDPStreamHandler::timeBetweenFrames)){
+    if(!this->canStream()){
         return;
     }
 

@@ -46,7 +46,7 @@ AsyncWebServer server(port);
 APIServer apiServer(server, deviceConfig, cameraHandler, "/control");
 
 #ifndef SIM_ENABLED
-UDPStreamHandler udpStreamHandler;
+UDPStreamHandler udpStreamHandler(deviceConfig);
 //WebSocketHandler webSocketHandler(server);
 //StreamServer streamServer;
 #endif  // SIM_ENABLED
@@ -66,8 +66,7 @@ void etvr_eye_tracker_web_init() {
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
       log_d("[SETUP]: Starting Stream Websocket");
-      udpStreamHandler.begin();
-//        webSocketHandler.begin();
+//      webSocketHandler.begin();
 //      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
       log_d("[SETUP]: Starting API Server");
@@ -77,8 +76,7 @@ void etvr_eye_tracker_web_init() {
     case WiFiState_e::WiFiState_Connected: {
 #ifndef SIM_ENABLED
       log_d("[SETUP]: Starting Stream Websocket");
-      udpStreamHandler.begin();
-//        webSocketHandler.begin();
+//      webSocketHandler.begin();
 //      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
       log_d("[SETUP]: Starting API Server");
@@ -102,6 +100,7 @@ void setup() {
 
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
+  deviceConfig.attach(udpStreamHandler);
 #endif  // SIM_ENABLED
 
   deviceConfig.initConfig();
@@ -121,6 +120,6 @@ void loop() {
   etvr_eye_tracker_usb_loop();
 #else
 //  webSocketHandler.stream();
-
+udpStreamHandler.stream();
 #endif  // ETVR_EYE_TRACKER_USB_API
 }
