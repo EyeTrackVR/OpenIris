@@ -30,7 +30,7 @@ void ProjectConfig::initConfig() {
   ! Do not initialize the WiFiConfig_t struct here,
   ! as it will create a blank network which breaks the WiFiManager
    */
-  this->config.device = {OTA_LOGIN, OTA_PASSWORD, 3232};
+  this->config.device = {OTA_LOGIN, OTA_PASSWORD, 3232, 6868};
 
   if (_mdnsName.empty()) {
     log_e("MDNS name is null\n Autoassigning name to 'openiristracker'");
@@ -112,6 +112,7 @@ void ProjectConfig::deviceConfigSave() {
   putString("OTAPassword", this->config.device.OTAPassword.c_str());
   putString("OTALogin", this->config.device.OTALogin.c_str());
   putInt("OTAPort", this->config.device.OTAPort);
+  putInt("UDPPort", this->config.device.UDPPort);
 }
 
 void ProjectConfig::mdnsConfigSave() {
@@ -151,6 +152,7 @@ void ProjectConfig::load() {
   this->config.device.OTAPassword =
       getString("OTAPassword", "12345678").c_str();
   this->config.device.OTAPort = getInt("OTAPort", 3232);
+  this->config.device.UDPPort = getInt("UDPPort", 6868);
 
   /* MDNS Config */
   this->config.mdns.hostname = getString("hostname", _mdnsName.c_str()).c_str();
@@ -212,11 +214,13 @@ void ProjectConfig::load() {
 void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
                                     const std::string& OTAPassword,
                                     int OTAPort,
+                                    int UDPPort,
                                     bool shouldNotify) {
   log_d("Updating device config");
   this->config.device.OTALogin.assign(OTALogin);
   this->config.device.OTAPassword.assign(OTAPassword);
   this->config.device.OTAPort = OTAPort;
+  this->config.device.UDPPort = UDPPort;
 
   if (shouldNotify)
     this->notifyAll(ConfigState_e::deviceConfigUpdated);
@@ -369,8 +373,8 @@ void ProjectConfig::setAPWifiConfig(const std::string& ssid,
 std::string ProjectConfig::DeviceConfig_t::toRepresentation() {
   std::string json = Helpers::format_string(
       "\"device_config\": {\"OTALogin\": \"%s\", \"OTAPassword\": \"%s\", "
-      "\"OTAPort\": %u}",
-      this->OTALogin.c_str(), this->OTAPassword.c_str(), this->OTAPort);
+      "\"OTAPort\": %u, \"UDPPort\": %u}",
+      this->OTALogin.c_str(), this->OTAPassword.c_str(), this->OTAPort, this->UDPPort);
   return json;
 }
 
