@@ -178,6 +178,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string ota_password;
       std::string ota_login;
       int ota_port;
+      int udp_port;
 
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
@@ -197,11 +198,13 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
           ota_login.assign(param->value().c_str());
         } else if (param->name() == "ota_password") {
           ota_password.assign(param->value().c_str());
+        } else if (param->name() == "udp_port"){
+            udp_port = atoi(param->value().c_str());
         }
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig.setDeviceConfig(ota_login, ota_password, ota_port, true);
+      projectConfig.setDeviceConfig(ota_login, ota_password, ota_port, udp_port, true);
       projectConfig.setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
@@ -272,6 +275,24 @@ void BaseAPI::factoryReset(AsyncWebServerRequest* request) {
       break;
     }
   }
+}
+
+void BaseAPI::streamControl(AsyncWebServerRequest *request) {
+    switch(_networkMethodsMap_enum[request->method()]){
+        case GET:{
+            bool startStream = (bool)atoi(request->arg("start").c_str());
+            if (startStream)
+                streamStateManager.setState(StreamState_e::Stream_ON);
+            else
+                streamStateManager.setState(StreamState_e::Stream_OFF);
+            log_d("Toggling stream, stream state: %d", startStream);
+            break;
+        }
+        default: {
+            request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+            break;
+        }
+    }
 }
 
 //*********************************************************************************************

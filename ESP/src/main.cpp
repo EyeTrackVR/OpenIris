@@ -65,7 +65,7 @@ void etvr_eye_tracker_web_init() {
     }
     case WiFiState_e::WiFiState_ADHOC: {
 #ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Websocket");
+//      log_d("[SETUP]: Starting Stream Websocket");
 //      webSocketHandler.begin();
 //      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
@@ -75,7 +75,7 @@ void etvr_eye_tracker_web_init() {
     }
     case WiFiState_e::WiFiState_Connected: {
 #ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Websocket");
+//      log_d("[SETUP]: Starting Stream Websocket");
 //      webSocketHandler.begin();
 //      streamServer.startStreamServer();
 #endif  // SIM_ENABLED

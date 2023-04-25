@@ -49,6 +49,7 @@ void APIServer::setupServer() {
   routes.emplace("setTxPower", &APIServer::setWiFiTXPower);
   // Camera Routes
 #ifndef SIM_ENABLED
+  routes.emplace("stream", &APIServer::streamControl);
   routes.emplace("setCamera", &APIServer::setCamera);
   routes.emplace("restartCamera", &APIServer::restartCamera);
 #endif  // SIM_ENABLED

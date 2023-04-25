@@ -2,6 +2,7 @@
 #include "data/StateManager/StateManager.hpp"
 #include <esp_camera.h>
 
+const char* const ETVR_HEADER = "\xff\xa0";
 
 UDPStreamHandler::UDPStreamHandler(ProjectConfig& configManager) : configManager(configManager) {}
 
@@ -16,6 +17,7 @@ std::string UDPStreamHandler::getName() {
 
 
 void UDPStreamHandler::begin() {
+    log_d("[SETUP]: Starting UDP Stream socket, stream not running yet");
     auto deviceConfig =  this->configManager.getDeviceConfig();
     this->port = deviceConfig.UDPPort;
 
@@ -51,7 +53,7 @@ void UDPStreamHandler::stream() {
 
     AsyncUDPMessage message = AsyncUDPMessage();
     message.write(this->lastFrameID);
-    message.write('\xff\xd9');
+    message.write((uint8_t)atoi(ETVR_HEADER));
 
     message.write(this->lastFrameTimestamp);
 

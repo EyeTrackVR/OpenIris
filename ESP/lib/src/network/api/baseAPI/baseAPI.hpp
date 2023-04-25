@@ -62,6 +62,7 @@ class BaseAPI {
   void factoryReset(AsyncWebServerRequest* request);
   void setDeviceConfig(AsyncWebServerRequest* request);
   void rebootDevice(AsyncWebServerRequest* request);
+  void streamControl(AsyncWebServerRequest* request);
   void ping(AsyncWebServerRequest* request);
   void save(AsyncWebServerRequest* request);
   void rssi(AsyncWebServerRequest* request);
