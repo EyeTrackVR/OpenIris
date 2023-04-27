@@ -7,36 +7,50 @@ const char* const ETVR_HEADER = "\xff\xa0";
 UDPStreamHandler::UDPStreamHandler(ProjectConfig& configManager) : configManager(configManager) {}
 
 void UDPStreamHandler::update(ConfigState_e event) {
-    if (event == ConfigState_e::deviceConfigUpdated)
-        this->begin();
+    if (event == ConfigState_e::configLoaded)
+        this->setup();
 }
 
 std::string UDPStreamHandler::getName() {
     return "UDPStreamHandler";
 }
 
-
-void UDPStreamHandler::begin() {
-    log_d("[SETUP]: Starting UDP Stream socket, stream not running yet");
+void UDPStreamHandler::setup(){
+    log_d("[SETUP]: Preparing UDP Stream socket, not connected yet, stream not running yet");
     auto deviceConfig =  this->configManager.getDeviceConfig();
     this->port = deviceConfig.UDPPort;
+}
 
-    auto address = IPAddress(255,255,255,255);
-    this->udp.connect(address, this->port);
-    if(this->udp.connected()){
+void UDPStreamHandler::begin() {
+    log_d("[SETUP]: UDP Stream socket connecting to a broadcast address, stream not running yet");
+    if (udp.listen(this->port)){
         this->udp.onPacket([&](AsyncUDPPacket packet){
             this->calculateLatency(packet);
         });
     }
+
+//    auto address = IPAddress(255,255,255,255);
+//    this->udp.connect(address, this->port);
+
+    // we may need to wait for a bit here, not sure
+//    if(this->udp.connected()){
+//        log_d("[SETUP]: UDP Stream socket connected! Stream not running yet");
+//        this->udp.onPacket([&](AsyncUDPPacket packet){
+//            this->calculateLatency(packet);
+//        });
+//    }
 }
 
 void UDPStreamHandler::stop() {
-    if (this->udp.connected()){
+    if (this->udp.connected() && streamStateManager.getCurrentState() == StreamState_e::Stream_STOP){
         this->udp.close();
+        streamStateManager.setState(StreamState_e::Stream_OFF);
     }
 }
 
 bool UDPStreamHandler::canStream() {
+    // we can add some password validation here as well, but make it cheap, like check a bool if authorized
+    // and under a map, like ip: authorized, but that would require having a receiver IP, can we do that?
     // we should stream if:
     auto streamState = streamStateManager.getCurrentState();
 
@@ -48,6 +62,7 @@ bool UDPStreamHandler::canStream() {
 
 void UDPStreamHandler::stream() {
     if(!this->canStream()){
+        this->stop();
         return;
     }
 
@@ -74,7 +89,8 @@ void UDPStreamHandler::stream() {
 
 void UDPStreamHandler::calculateLatency(AsyncUDPPacket packet) const {
     // todo test if this actually works
-    uint8_t* data = packet.data();
-    auto timestamp = data - this->lastTimeFrameSentTime;
-    Serial.printf("latency: %sms \n\r", timestamp);
+    int timestamp = atoi((char*)packet.data());
+    log_d("data %d", timestamp);
+    unsigned long latency = timestamp - this->lastFrameTimestamp - 2137;
+    log_d("latency: %lu ms i\n\r", latency);
 }

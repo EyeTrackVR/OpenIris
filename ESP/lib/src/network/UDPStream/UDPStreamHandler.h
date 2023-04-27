@@ -19,6 +19,7 @@ class UDPStreamHandler : public IObserver<ConfigState_e> {
     static const int fps = 60;
     static constexpr int timeBetweenFrames = 1000 / fps;
     bool canStream();
+    void setup();
 
 public:
     explicit UDPStreamHandler(ProjectConfig& configManager);

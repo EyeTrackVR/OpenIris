@@ -284,7 +284,9 @@ void BaseAPI::streamControl(AsyncWebServerRequest *request) {
             if (startStream)
                 streamStateManager.setState(StreamState_e::Stream_ON);
             else
-                streamStateManager.setState(StreamState_e::Stream_OFF);
+                streamStateManager.setState(StreamState_e::Stream_STOP);
+
+            request->send(200, MIMETYPE_JSON, "{\"msg\":\"Stream toggleg to:" + request->arg("start") + "\"}");
             log_d("Toggling stream, stream state: %d", startStream);
             break;
         }
