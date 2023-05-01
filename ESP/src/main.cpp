@@ -60,7 +60,7 @@ void etvr_eye_tracker_web_init() {
 
   switch (wifiStateManager.getCurrentState()) {
     case WiFiState_e::WiFiState_Disconnected: {
-      udpStreamHandler.stop();
+        udpStreamHandler.try_stop();
       break;
     }
     case WiFiState_e::WiFiState_ADHOC: {

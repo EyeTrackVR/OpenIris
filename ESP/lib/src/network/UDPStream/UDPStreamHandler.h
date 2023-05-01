@@ -25,8 +25,8 @@ public:
     explicit UDPStreamHandler(ProjectConfig& configManager);
     void update(ConfigState_e event) override;
     void begin();
-    void stop();
-    void calculateLatency(AsyncUDPPacket packet) const;
+    void try_stop();
+    void calculateLatency(AsyncUDPPacket packet);
     void stream();
 
     std::string getName() override;

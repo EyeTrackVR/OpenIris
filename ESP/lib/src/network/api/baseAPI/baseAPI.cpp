@@ -438,7 +438,7 @@ void BaseAPI::beginOTA() {
     log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
     checkAuthentication(request, login, password);
 
-    // turn off the camera and stop the stream
+    // turn off the camera and try to stop the stream
     esp_camera_deinit();                // deinitialize the camera driver
     digitalWrite(PWDN_GPIO_NUM, HIGH);  // turn power off to camera module
 
