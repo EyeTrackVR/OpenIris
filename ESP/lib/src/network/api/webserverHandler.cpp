@@ -4,12 +4,14 @@
 //!                                     API Server
 //*********************************************************************************************
 
-APIServer::APIServer(ProjectConfig& projectConfig,
+APIServer::APIServer(AsyncWebServer &server,
+                     ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
                      CameraHandler& camera,
 #endif  // SIM_ENABLED
                      const std::string& api_url)
-    : BaseAPI(projectConfig,
+    : BaseAPI(server,
+              projectConfig,
 #ifndef SIM_ENABLED
               camera,
 #endif  // SIM_ENABLED
@@ -47,6 +49,7 @@ void APIServer::setupServer() {
   routes.emplace("setTxPower", &APIServer::setWiFiTXPower);
   // Camera Routes
 #ifndef SIM_ENABLED
+  routes.emplace("stream", &APIServer::streamControl);
   routes.emplace("setCamera", &APIServer::setCamera);
   routes.emplace("restartCamera", &APIServer::restartCamera);
 #endif  // SIM_ENABLED

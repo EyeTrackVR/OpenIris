@@ -66,7 +66,7 @@ struct DeviceStates {
     Camera_Error
   };
 
-  enum StreamState_e { Stream_OFF, Stream_ON, Stream_Error };
+  enum StreamState_e { Stream_OFF, Stream_ON, Stream_STOP, Stream_Error };
   enum State_e { Starting, Started, Stopping, Stopped, Error };
 };
 

@@ -6,7 +6,9 @@
 
 class APIServer : public BaseAPI {
  public:
-  APIServer(ProjectConfig& projectConfig,
+  APIServer(
+            AsyncWebServer &server,
+            ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
             CameraHandler& camera,
 #endif  // SIM_ENABLED
