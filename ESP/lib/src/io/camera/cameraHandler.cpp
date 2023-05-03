@@ -76,11 +76,12 @@ void CameraHandler::setupBasicResolution() {
 
   log_d("Found psram, setting the higher image quality");
   config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency
-                            // and less fps   7 for most fps, 5 for best quality
+                            // and fewer fps   7 for most fps, 5 for best quality
   config.fb_count = 3;
 }
 
 void CameraHandler::setupCameraSensor() {
+  ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   // documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
@@ -89,7 +90,7 @@ void CameraHandler::setupCameraSensor() {
       0x00);  // banksel, here we're directly writing to the registers.
               // 0xFF==0x00 is the first bank, there's also 0xFF==0x01
   camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);  // clock
-  camera_sensor->set_brightness(camera_sensor, cameraConfig->brightness);       // -2 to 2
+  camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
   camera_sensor->set_contrast(camera_sensor, 2);         // -2 to 2
   camera_sensor->set_saturation(camera_sensor, -2);      // -2 to 2
 
@@ -101,13 +102,13 @@ void CameraHandler::setupCameraSensor() {
                                   // Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
 
   // controls the exposure
-  camera_sensor->set_exposure_ctrl(camera_sensor, cameraConfig->simple_auto_exposure_on);               // 0 = disable , 1 = enable
-  camera_sensor->set_aec2(camera_sensor, cameraConfig->fancy_auto_exposure_on);         // 0 = disable , 1 = enable
-  camera_sensor->set_ae_level(camera_sensor, cameraConfig->ae_level);     // -2 to 2
-  camera_sensor->set_aec_value(camera_sensor, cameraConfig->aec_value);  // 0 to 1200
+  camera_sensor->set_exposure_ctrl(camera_sensor, cameraConfig.simple_auto_exposure_on);               // 0 = disable , 1 = enable
+  camera_sensor->set_aec2(camera_sensor, cameraConfig.fancy_auto_exposure_on);         // 0 = disable , 1 = enable
+  camera_sensor->set_ae_level(camera_sensor, cameraConfig.ae_level);     // -2 to 2
+  camera_sensor->set_aec_value(camera_sensor, cameraConfig.aec_value);  // 0 to 1200
 
   // controls the gain
-  camera_sensor->set_gain_ctrl(camera_sensor, cameraConfig->auto_gain_on);  // 0 = disable , 1 = enable
+  camera_sensor->set_gain_ctrl(camera_sensor, cameraConfig.auto_gain_on);  // 0 = disable , 1 = enable
 
   // automatic gain control gain, controls by how much the resulting image
   // should be amplified
