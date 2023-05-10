@@ -166,12 +166,14 @@ bool CameraHandler::setupCamera() {
 }
 
 void CameraHandler::loadConfigData() {
+  log_d("Loading camera config data");
   ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
   this->setHFlip(cameraConfig.href);
   this->setVFlip(cameraConfig.vflip);
   this->setCameraResolution((framesize_t)cameraConfig.framesize);
   camera_sensor->set_quality(camera_sensor, cameraConfig.quality);
   camera_sensor->set_agc_gain(camera_sensor, cameraConfig.brightness);
+  log_d("Loading camera config data done");
 }
 
 int CameraHandler::setCameraResolution(framesize_t frameSize) {
