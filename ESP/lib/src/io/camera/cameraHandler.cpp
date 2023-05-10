@@ -82,6 +82,8 @@ void CameraHandler::setupBasicResolution() {
 }
 
 void CameraHandler::setupCameraSensor() {
+  log_d("Setting up camera sensor");
+
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   // documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
@@ -136,13 +138,19 @@ void CameraHandler::setupCameraSensor() {
       camera_sensor,
       2);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint,
            // 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+
+  log_d("Setting up camera sensor done");
 }
 
 bool CameraHandler::setupCamera() {
+  log_d("Setting up camera pinout");
   this->setupCameraPinout();
+  log_d("Setting up camera with resolution");
   this->setupBasicResolution();
-  esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+  log_d("Initializing camera...");
 
+  esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+  log_d("Camera initialized: 0x%x \r\n", hasCameraBeenInitialized);
   if (hasCameraBeenInitialized != ESP_OK) {
     log_e("Camera initialization failed with error: 0x%x \r\n",
           hasCameraBeenInitialized);
