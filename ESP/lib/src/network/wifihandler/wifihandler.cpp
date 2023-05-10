@@ -31,9 +31,9 @@ void WiFiHandler::begin() {
   auto txpower = configManager.getWiFiTxPowerConfig();
 
   log_d("Enabling STA mode \n\r");
-  //WiFi.mode(WIFI_STA);
+  // WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
-  WiFi.setSleep(WIFI_PS_NONE);
+  WiFi.setSleep(false);
 
   log_i("Initializing connection to wifi \n\r");
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
@@ -135,12 +135,14 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
 
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
   log_i("Trying to connect to: %s \n\r", ssid.c_str());
-
   auto mdnsConfig = configManager.getMDNSConfig();
+
+  log_d("Setting hostname %s \n\r");
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
               INADDR_NONE);  // need to call before setting hostname
   WiFi.setHostname(mdnsConfig.hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
+  log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
     currentMillis = millis();
