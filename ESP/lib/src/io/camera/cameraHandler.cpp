@@ -78,6 +78,7 @@ void CameraHandler::setupBasicResolution() {
   config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency
                             // and less fps   7 for most fps, 5 for best quality
   config.fb_count = 3;
+  log_d("Setting fb_location to CAMERA_FB_IN_PSRAM");
 }
 
 void CameraHandler::setupCameraSensor() {
