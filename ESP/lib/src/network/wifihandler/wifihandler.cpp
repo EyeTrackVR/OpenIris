@@ -31,9 +31,9 @@ void WiFiHandler::begin() {
   auto txpower = configManager.getWiFiTxPowerConfig();
 
   log_d("Enabling STA mode \n\r");
-  WiFi.mode(WIFI_STA);
+  //WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
-  //WiFi.setSleep(WIFI_PS_NONE);
+  WiFi.setSleep(WIFI_PS_NONE);
 
   log_i("Initializing connection to wifi \n\r");
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
