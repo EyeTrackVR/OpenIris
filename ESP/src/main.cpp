@@ -39,10 +39,14 @@ StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void etvr_eye_tracker_web_init() {
+  log_d("[SETUP]: Starting Network Handler");
   deviceConfig.attach(mdnsHandler);
-  //deviceConfig.attach(wifiHandler);
+  // deviceConfig.attach(wifiHandler);
+  log_d("[SETUP]: Checking ADHOC Settings");
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
+  log_d("[SETUP]: Starting WiFi Handler");
   wifiHandler.begin();
+  log_d("[SETUP]: Starting MDNS Handler");
   mdnsHandler.startMDNS();
 
   switch (wifiStateManager.getCurrentState()) {
