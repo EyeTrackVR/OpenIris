@@ -17,14 +17,23 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
+  log_i("Starting WiFi Handler \n\r");
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
+    log_d("ADHOC is enabled, setting up ADHOC network \n\r");
     this->setUpADHOC();
     return;
   }
+
+  log_d(
+      "ADHOC is disabled, setting up STA network and checking transmission "
+      "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
+
+  log_d("Enabling STA mode \n\r");
   WiFi.mode(WIFI_STA);
-  WiFi.setSleep(WIFI_PS_NONE);
+  log_d("Setting WiFi sleep mode to NONE \n\r");
+  //WiFi.setSleep(WIFI_PS_NONE);
 
   log_i("Initializing connection to wifi \n\r");
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
