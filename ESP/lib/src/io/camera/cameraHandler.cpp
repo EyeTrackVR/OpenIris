@@ -18,6 +18,24 @@ void CameraHandler::update(ConfigState_e event) {
     }
 }
 
+bool CameraHandler::setupCamera() {
+    this->setupCameraPinout();
+    this->setupCameraMemoryStorage();
+
+    esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+    if (hasCameraBeenInitialized != ESP_OK) {
+        log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
+        log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
+        ledStateManager.setState(LEDStates_e::_Camera_Error);
+        return false;
+    }
+
+    this->camera_sensor = esp_camera_sensor_get();
+    this->setupCameraSensor();
+    this->loadChangeableConfig();
+    return true;
+}
+
 void CameraHandler::setupCameraPinout() {
     // Workaround for espM5SStack not having a defined camera
 #ifdef CAMERA_MODULE_NAME
@@ -79,8 +97,7 @@ void CameraHandler::setupCameraPinout() {
 
 void CameraHandler::setupCameraMemoryStorage() {
     config.pixel_format = PIXFORMAT_JPEG;
-    // set here only for initialization purposes, proper framesize will be loaded from config
-    config.frame_size = FRAMESIZE_96X96;
+    config.frame_size = FRAMESIZE_240X240; // initial, the proper one will be loaded later
 
     if (!psramFound()) {
         log_e("Did not find psram, setting lower image quality");
@@ -145,8 +162,8 @@ void CameraHandler::setupCameraSensor() {
 void CameraHandler::loadChangeableConfig() {
     ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
 
-    // controls the exposure
-    camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
+    // controls the exposure [TODO] figure out why it makes the image bright af
+    //    camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
     camera_sensor->set_exposure_ctrl(camera_sensor,
                                      cameraConfig.simple_auto_exposure_on);               // 0 = disable , 1 = enable
     camera_sensor->set_aec2(camera_sensor, cameraConfig.fancy_auto_exposure_on);         // 0 = disable , 1 = enable
@@ -162,177 +179,11 @@ void CameraHandler::loadChangeableConfig() {
     camera_sensor->set_hmirror(camera_sensor, cameraConfig.href);
     camera_sensor->set_vflip(camera_sensor, cameraConfig.vflip);
 
-    config.pixel_format = PIXFORMAT_JPEG;
-    // set here only for initialization purposes, proper framesize will be loaded from config
-    config.frame_size = FRAMESIZE_96X96;
-
-    if (!psramFound()) {
-        log_e("Did not find psram, setting lower image quality");
-        config.fb_location = CAMERA_FB_IN_DRAM;
-        config.jpeg_quality = 9;
-        config.fb_count = 2;
-        return;
-    }
-
-    log_d("Found psram, setting the higher image quality");
-    config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency
-    // and fewer fps   7 for most fps, 5 for best quality
-    config.fb_location = CAMERA_FB_IN_PSRAM;
-    config.fb_count = 3;
-
-    // this somehow gets set to FRAMESIZE_CIF, what in the absolute fuck
     this->setCameraResolution(FRAMESIZE_240X240); //(framesize_t) cameraConfig.framesize
 }
 
-bool CameraHandler::setupCamera() {
-    // Workaround for espM5SStack not having a defined camera
-#ifdef CAMERA_MODULE_NAME
-    log_i("Camera module is %s", CAMERA_MODULE_NAME);
-#else
-    log_i("Camera module is undefined");
-#endif
-
-    // camera external clock signal frequencies
-    // 10000000 stable
-    // 16500000 optimal freq on ESP32-CAM (default)
-    // 20000000 max freq on ESP32-CAM
-    // 24000000 optimal freq on ESP32-S3
-    int xclk_freq_hz = 16500000;
-
-#if CONFIG_CAMERA_MODULE_ESP_EYE
-    /* IO13, IO14 is designed for JTAG by default,
-     * to use it as generalized input,
-     * firstly declare it as pullup input
-     **/
-    pinMode(13, INPUT_PULLUP);
-    pinMode(14, INPUT_PULLUP);
-    log_i("ESP_EYE");
-#elif CONFIG_CAMERA_MODULE_CAM_BOARD
-    /* IO13, IO14 is designed for JTAG by default,
-     * to use it as generalized input,
-     * firstly declare it as pullup input
-     **/
-    pinMode(13, INPUT_PULLUP);
-    pinMode(14, INPUT_PULLUP);
-    log_i("CAM_BOARD");
-#endif
-#if ETVR_EYE_TRACKER_USB_API
-    /* ESP32-S3 is capable of using higher freqs */
-    xclk_freq_hz = 24000000;
-#endif
-    config.ledc_channel = LEDC_CHANNEL_0;
-    config.ledc_timer = LEDC_TIMER_0;
-    config.grab_mode = CAMERA_GRAB_LATEST;
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-    config.pin_pwdn = PWDN_GPIO_NUM;
-    config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = xclk_freq_hz;
-    config.pixel_format = PIXFORMAT_JPEG;
-    config.frame_size = FRAMESIZE_240X240;
-
-    if(psramFound()){
-        config.jpeg_quality = 10;
-        config.fb_count = 3;
-    } else {
-        log_e("Did not find psram, setting lower image quality");
-        config.fb_location = CAMERA_FB_IN_DRAM;
-        config.jpeg_quality = 9;
-        config.fb_count = 2;
-    }
-
-    esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
-
-    if (hasCameraBeenInitialized != ESP_OK) {
-        log_e("Camera initialization failed with error: 0x%x \r\n", hasCameraBeenInitialized);
-        log_e("Camera most likely not seated properly in the socket. Please fix the camera and reboot the device.\r\n");
-        ledStateManager.setState(LEDStates_e::_Camera_Error);
-        return false;
-    }
-
-    this->camera_sensor = esp_camera_sensor_get();
-
-////    this->loadChangeableConfig();
-////    this->setupCameraSensor();
-
-    // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
-    // documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
-    camera_sensor->set_reg(
-            camera_sensor, 0xff, 0xff,
-            0x00);  // banksel, here we're directly writing to the registers.
-
-    // 0xFF==0x00 is the first bank, there's also 0xFF==0x01
-    camera_sensor->set_reg(camera_sensor, 0xd3, 0xff, 5);  // clock
-    camera_sensor->set_contrast(camera_sensor, 2);         // -2 to 2
-    camera_sensor->set_saturation(camera_sensor, -2);      // -2 to 2
-//
-//    // white balance control
-    camera_sensor->set_whitebal(camera_sensor, 1);  // 0 = disable , 1 = enable
-    camera_sensor->set_awb_gain(camera_sensor, 0);  // 0 = disable , 1 = enable
-    // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-
-    camera_sensor->set_wb_mode(camera_sensor, 0);
-//
-//    // automatic gain control gain, controls by how much the resulting image
-//    // should be amplified
-    camera_sensor->set_agc_gain(camera_sensor, 2);                    // 0 to 30
-    camera_sensor->set_gainceiling(camera_sensor, (gainceiling_t) 6);  // 0 to 6
-//
-//    // black and white pixel correction, averages the white and black spots
-    camera_sensor->set_bpc(camera_sensor, 1);  // 0 = disable , 1 = enable
-    camera_sensor->set_wpc(camera_sensor, 1);  // 0 = disable , 1 = enable
-    // digital clamp white balance
-
-    // this breaks things for some reason
-    camera_sensor->set_dcw(camera_sensor, 1);  // 0 = disable , 1 = enable
-//
-//    // gamma correction
-    camera_sensor->set_raw_gma(camera_sensor, 1);  // 0 = disable , 1 = enable (makes much lighter and noisy)
-
-    camera_sensor->set_lenc(camera_sensor, 0);  // 0 = disable , 1 = enable // 0 =
-    // disable , 1 = enable
-
-    camera_sensor->set_colorbar(camera_sensor, 0);  // 0 = disable , 1 = enable
-
-    camera_sensor->set_special_effect(camera_sensor, 1);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint,
-//    // 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-
-
-    ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
-    // controls the exposure
-    camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
-    camera_sensor->set_exposure_ctrl(camera_sensor,
-                                     cameraConfig.simple_auto_exposure_on);               // 0 = disable , 1 = enable
-    camera_sensor->set_aec2(camera_sensor, cameraConfig.fancy_auto_exposure_on);         // 0 = disable , 1 = enable
-    camera_sensor->set_ae_level(camera_sensor, cameraConfig.ae_level);     // -2 to 2
-    camera_sensor->set_aec_value(camera_sensor, cameraConfig.aec_value);  // 0 to 1200
-
-    camera_sensor->set_quality(camera_sensor, cameraConfig.quality);
-    camera_sensor->set_agc_gain(camera_sensor, cameraConfig.brightness);
-
-    // controls the gain
-    camera_sensor->set_gain_ctrl(camera_sensor, cameraConfig.auto_gain_on);  // 0 = disable , 1 = enable
-
-    camera_sensor->set_hmirror(camera_sensor, cameraConfig.href);
-    camera_sensor->set_vflip(camera_sensor, cameraConfig.vflip);
-
-    return true;
-}
-
-
 int CameraHandler::setCameraResolution(framesize_t frameSize) {
+    log_d("[CAMERA] trying to set resolution of %d", frameSize);
     if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
         try {
             int result = camera_sensor->set_framesize(camera_sensor, frameSize);
