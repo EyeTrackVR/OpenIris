@@ -153,25 +153,19 @@ void CameraHandler::setupCameraSensor() {
 
     camera_sensor->set_colorbar(camera_sensor, 0);  // 0 = disable , 1 = enable
 
-    camera_sensor->set_special_effect(
-            camera_sensor,
-            2);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint,
-    // 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+    camera_sensor->set_agc_gain(camera_sensor, 2);
 }
 
 void CameraHandler::loadChangeableConfig() {
     ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
 
-    // controls the exposure [TODO] figure out why it makes the image bright af
-    //    camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
-    camera_sensor->set_exposure_ctrl(camera_sensor,
-                                     cameraConfig.simple_auto_exposure_on);               // 0 = disable , 1 = enable
+    camera_sensor->set_brightness(camera_sensor, cameraConfig.brightness);       // -2 to 2
+    camera_sensor->set_exposure_ctrl(camera_sensor,cameraConfig.simple_auto_exposure_on);               // 0 = disable , 1 = enable
     camera_sensor->set_aec2(camera_sensor, cameraConfig.fancy_auto_exposure_on);         // 0 = disable , 1 = enable
     camera_sensor->set_ae_level(camera_sensor, cameraConfig.ae_level);     // -2 to 2
     camera_sensor->set_aec_value(camera_sensor, cameraConfig.aec_value);  // 0 to 1200
 
     camera_sensor->set_quality(camera_sensor, cameraConfig.quality);
-    camera_sensor->set_agc_gain(camera_sensor, cameraConfig.brightness);
 
     // controls the gain
     camera_sensor->set_gain_ctrl(camera_sensor, cameraConfig.auto_gain_on);  // 0 = disable , 1 = enable
@@ -179,23 +173,12 @@ void CameraHandler::loadChangeableConfig() {
     camera_sensor->set_hmirror(camera_sensor, cameraConfig.href);
     camera_sensor->set_vflip(camera_sensor, cameraConfig.vflip);
 
-    this->setCameraResolution(FRAMESIZE_240X240); //(framesize_t) cameraConfig.framesize
-}
-
-int CameraHandler::setCameraResolution(framesize_t frameSize) {
-    log_d("[CAMERA] trying to set resolution of %d", frameSize);
-    if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
-        try {
-            int result = camera_sensor->set_framesize(camera_sensor, frameSize);
-            return result;
-        } catch (...) {
-            log_d("[ERROR] Unsupported resolution %d", frameSize);
-            // they sent us a malformed or unsupported frameSize - rather than crash -
-            // tell them about it
-            return -1;
-        }
-    }
-    return -1;
+    // being set here because modification of brightness somehow disables this effect
+    // so, we first load the whole config, and then we tell the camera to go noir-style
+    camera_sensor->set_special_effect(
+            camera_sensor,
+            2);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint
+    camera_sensor->set_framesize(camera_sensor, (framesize_t)cameraConfig.framesize);
 }
 
 //! either hardware(1) or software(0)

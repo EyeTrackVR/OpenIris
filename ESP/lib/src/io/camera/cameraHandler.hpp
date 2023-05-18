@@ -14,7 +14,6 @@ class CameraHandler : public IObserver<ConfigState_e> {
 
  public:
   CameraHandler(ProjectConfig& configManager);
-  int setCameraResolution(framesize_t frameSize);
   void update(ConfigState_e event) override;
   std::string getName() override;
   void resetCamera(bool type = 0);
