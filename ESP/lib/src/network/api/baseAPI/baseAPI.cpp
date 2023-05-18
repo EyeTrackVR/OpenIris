@@ -286,8 +286,17 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
       uint8_t temp_camera_hflip = 0;
       uint8_t temp_camera_quality = 0;
       uint8_t temp_camera_brightness = 0;
+      uint8_t temp_simple_auto_exposure_on = SIMPLE_AUTO_EXPOSURE_ON;
+      uint8_t temp_fancy_auto_exposure_on = FANCY_AUTO_EXPOSURE_ON;
+      int temp_ae_level = AE_LEVEL;
+      unsigned int temp_aec_value = AEC_VALUE;
+      uint8_t temp_auto_gain_on = AUTO_GAIN_ON;
+
 
       int params = request->params();
+      // TODO we probably should refactor this at some point, maybe some serialization of sorts, or direct mapping of
+      // TODO get parameters? Can we even do that?
+
       //! Using the else if statements to ensure that the values do not need to
       //! be set in a specific order This means the order of the URL params does
       //! not matter
@@ -303,13 +312,25 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
           temp_camera_quality = (uint8_t)param->value().toInt();
         } else if (param->name() == "brightness") {
           temp_camera_brightness = (uint8_t)param->value().toInt();
+        } else if (param->name() == "simple_auto_exposure_on") {
+          temp_simple_auto_exposure_on = (uint8_t)param->value().toInt();
+        } else if (param->name() == "fancy_auto_exposure_on") {
+          temp_fancy_auto_exposure_on = (uint8_t)param->value().toInt();
+        } else if (param->name() == "ae_level") {
+          temp_ae_level = param->value().toInt();
+        } else if (param->name() == "aec_value") {
+          temp_aec_value = (uint8_t)param->value().toInt();
+        } else if (param->name() == "auto_gain_on") {
+          temp_auto_gain_on = (uint8_t)param->value().toInt();
         }
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
       projectConfig.setCameraConfig(temp_camera_vflip, temp_camera_framesize,
                                      temp_camera_hflip, temp_camera_quality,
-                                     temp_camera_brightness, true);
+                                     temp_camera_brightness, temp_simple_auto_exposure_on,
+                                    temp_fancy_auto_exposure_on, temp_ae_level,
+                                    temp_aec_value, temp_auto_gain_on, true);
 
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Camera Settings have been set.\"}");

@@ -69,6 +69,8 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
         long latency = (request_end - last_request_time);
         last_request_time = request_end;
         log_d("Size: %uKB, Time: %ums (%ifps)\n", _jpg_buf_len / 1024, latency, 1000 / latency);
+        auto sensor = esp_camera_sensor_get();
+        log_d(" ----current framesize is %d ", sensor->status.framesize);
     }
     last_frame = 0;
     return res;

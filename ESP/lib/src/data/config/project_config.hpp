@@ -44,9 +44,14 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
   struct CameraConfig_t {
     uint8_t vflip;
     uint8_t href;
-    uint8_t framesize;
+    int framesize;
     uint8_t quality;
-    uint8_t brightness;
+    int brightness;
+    bool simple_auto_exposure_on;
+    bool fancy_auto_exposure_on;
+    int ae_level;
+    int aec_value;
+    bool auto_gain_on;
 
     std::string toRepresentation();
   };
@@ -116,6 +121,11 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
                        uint8_t href,
                        uint8_t quality,
                        uint8_t brightness,
+                       bool simple_auto_exposure_on,
+                       bool fancy_auto_exposure_on,
+                       int ae_level,
+                       unsigned int aec_value,
+                       bool auto_gain_on,
                        bool shouldNotify);
   void setWifiConfig(const std::string& networkName,
                      const std::string& ssid,

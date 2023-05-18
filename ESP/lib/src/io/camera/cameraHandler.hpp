@@ -14,18 +14,14 @@ class CameraHandler : public IObserver<ConfigState_e> {
 
  public:
   CameraHandler(ProjectConfig& configManager);
-  int setCameraResolution(framesize_t frameSize);
-  int setVFlip(int direction);
-  int setHFlip(int direction);
-  int setVieWindow(int offsetX, int offsetY, int outputX, int outputY);
-  void update(ConfigState_e event);
-  std::string getName();
+  void update(ConfigState_e event) override;
+  std::string getName() override;
   void resetCamera(bool type = 0);
 
  private:
-  void loadConfigData();
+  void loadChangeableConfig();
   bool setupCamera();
   void setupCameraPinout();
-  void setupBasicResolution();
+  void setupCameraMemoryStorage();
   void setupCameraSensor();
 };
