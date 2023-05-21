@@ -138,9 +138,9 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   auto mdnsConfig = configManager.getMDNSConfig();
 
   log_d("Setting hostname %s \n\r");
-  /* WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
               INADDR_NONE);  // need to call before setting hostname
-  WiFi.setHostname(mdnsConfig.hostname.c_str()); */
+  WiFi.setHostname(mdnsConfig.hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
   log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
