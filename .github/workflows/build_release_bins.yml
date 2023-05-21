@@ -23,13 +23,19 @@ permissions:
   contents: write
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: echo "matrix={\"target_name\":[\"esp32AIThinker\",\"esp32M5Stack\",\"esp32Cam\",\"esp_eye,wrover\",\"wrooms3QIO\",\"wrooms3QIOUSB\",\"wrooms3\","\wrooms3USB\"], \"target_build_type\":[\"\", \"release\"]}" >> $GITHUB_OUTPUT
+
   build:
+    needs: setup
     strategy:
       fail-fast: false
-      matrix:
-        target_name:
-          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrooms3QIO, wrooms3QIOUSB, wrooms3, wrooms3USB]
-        target_build_type: ["", _release] #, _OTA] # OTA is not needed
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -100,15 +106,11 @@ jobs:
           chmod +x ./repo-tools/scripts/prepareCMD.sh 
           semantic-release
   cleanup:
+    needs: [setup, release-openiris]
     strategy:
       fail-fast: false
-      matrix:
-        target_name:
-          [esp32AIThinker, esp32M5Stack, esp32Cam, esp_eye, wrover, wrooms3QIO, wrooms3QIOUSB, wrooms3, wrooms3USB]
-        target_build_type: ["", _release]
+      matrix: ${{fromJson(needs.setup.outputs.matrix)}}
     name: Cleanup actions
-    needs:
-      - release-openiris
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
