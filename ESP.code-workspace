@@ -1,8 +1,13 @@
 {
   "folders": [
     {
+      "name": "ESP Source Code",
       "path": "ESP"
-    }
+    },
+    {
+      "name": "Repo Root",
+      "path": "."
+    },
   ],
   "settings": {
     "files.associations": {

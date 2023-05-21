@@ -45,6 +45,12 @@ jobs:
             export OPENIRIS_CI_BUILD=1
             mkdir build 
             mkdir build/${{ matrix.target_name }}${{ matrix.target_build_type }}
+            echo "::group::pio update"
+            pio upgrade
+            echo "::endgroup::"
+            echo "::group::pio update toolchain"
+            pio pkg update -p "platformio/espressif32"
+            echo "::endgroup::"
             echo "::group::pio run"
             pio run --environment ${{ matrix.target_name }}${{ matrix.target_build_type }}
             echo "::endgroup::"
