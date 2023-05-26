@@ -29,9 +29,9 @@ void WiFiHandler::begin() {
       "ADHOC is disabled, setting up STA network and checking transmission "
       "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
-  log_d("Setting Wifi Power to: %d"), txpower.power;
-  //log_d("Enabling STA mode \n\r");
-  //WiFi.mode(WIFI_STA);
+  log_d("Setting Wifi Power to: %d", txpower.power);
+  // log_d("Enabling STA mode \n\r");
+  // WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
   WiFi.setSleep(false);
 
