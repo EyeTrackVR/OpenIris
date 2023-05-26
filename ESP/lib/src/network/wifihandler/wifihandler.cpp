@@ -8,8 +8,8 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
                          const std::string& password,
                          uint8_t channel)
     : configManager(configManager),
-      ssid(ssid),
-      password(password),
+      ssid(std::move(ssid)),
+      password(std::move(password)),
       channel(channel),
       power(0),
       _enable_adhoc(false) {}
@@ -29,9 +29,9 @@ void WiFiHandler::begin() {
       "ADHOC is disabled, setting up STA network and checking transmission "
       "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
-
-  log_d("Enabling STA mode \n\r");
-  // WiFi.mode(WIFI_STA);
+  log_d("Setting Wifi Power to: %d"), txpower.power;
+  //log_d("Enabling STA mode \n\r");
+  //WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
   WiFi.setSleep(false);
 

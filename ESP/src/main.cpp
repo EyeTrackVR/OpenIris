@@ -22,7 +22,11 @@
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 
+#ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
+LEDManager ledManager(LED_BUILTIN);
+#else
 LEDManager ledManager(33);
+#endif  // ESP32S3_XIAO_SENSE
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(deviceConfig);
@@ -40,10 +44,10 @@ StreamServer streamServer;
 
 void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting Network Handler");
-  deviceConfig.attach(mdnsHandler);
   // deviceConfig.attach(wifiHandler);
   log_d("[SETUP]: Checking ADHOC Settings");
   wifiHandler._enable_adhoc = ENABLE_ADHOC;
+  deviceConfig.attach(mdnsHandler);
   log_d("[SETUP]: Starting WiFi Handler");
   wifiHandler.begin();
   log_d("[SETUP]: Starting MDNS Handler");
@@ -88,14 +92,12 @@ void setup() {
   setCpuFrequencyMhz(240);
   Serial.begin(115200);
   Logo::printASCII();
-  Serial.flush();
+  //  Serial.flush();
   ledManager.begin();
 
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-
-  deviceConfig.initConfig();
   deviceConfig.load();
 
 #ifndef ETVR_EYE_TRACKER_USB_API

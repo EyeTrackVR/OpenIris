@@ -7,7 +7,7 @@
     {
       "name": "Repo Root",
       "path": "."
-    },
+    }
   ],
   "settings": {
     "files.associations": {
@@ -65,6 +65,6 @@
       "typeinfo": "cpp",
       "iostream": "cpp"
     },
-    "cSpell.words": ["ESPS", "JTAG", "sccb", "txpower"]
+    "cSpell.words": ["ESPS", "JTAG", "sccb", "txpower", "XIAO"]
   }
 }

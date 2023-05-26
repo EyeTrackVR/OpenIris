@@ -33,7 +33,7 @@ void ProjectConfig::initConfig() {
   this->config.device = {OTA_LOGIN, OTA_PASSWORD, 3232};
 
   if (_mdnsName.empty()) {
-    log_e("MDNS name is null\n Autoassigning name to 'openiristracker'");
+    log_e("MDNS name is null\n Auto-assigning name to 'openiristracker'");
     _mdnsName = "openiristracker";
   }
   this->config.mdns = {
@@ -145,6 +145,8 @@ void ProjectConfig::load() {
     log_w("Project config already loaded");
     return;
   }
+
+  initConfig();
 
   /* Device Config */
   this->config.device.OTALogin = getString("OTALogin", "openiris").c_str();
