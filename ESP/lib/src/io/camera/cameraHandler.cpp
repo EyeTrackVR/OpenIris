@@ -150,12 +150,14 @@ bool CameraHandler::setupCamera() {
   log_d("[Camera]: Initializing camera...");
 
   esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
-  log_d("[Camera]: Camera initialized: 0x%x \r\n", hasCameraBeenInitialized);
+  log_d("[Camera]: Camera initialized: %s \r\n",
+        esp_err_to_name(hasCameraBeenInitialized));
   if (hasCameraBeenInitialized != ESP_OK) {
-    log_e("[Camera]: Camera initialization failed with error: 0x%x \r\n",
-          hasCameraBeenInitialized);
+    log_e("[Camera]: Camera initialization failed with error: %s \r\n",
+          esp_err_to_name(hasCameraBeenInitialized));
     log_e(
-        "[Camera]: Camera most likely not seated properly in the socket. Please "
+        "[Camera]: Camera most likely not seated properly in the socket. "
+        "Please "
         "fix the "
         "camera and reboot the device.\r\n");
     ledStateManager.setState(LEDStates_e::_Camera_Error);
