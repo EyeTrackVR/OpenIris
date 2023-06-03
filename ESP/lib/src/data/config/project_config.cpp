@@ -280,7 +280,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
 
       if (shouldNotify) {
         wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
-        WiFi.disconnect();
+        //WiFi.disconnect();
         this->wifiConfigSave();
         this->notifyAll(ConfigState_e::networksConfigUpdated);
       }
@@ -309,7 +309,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
 
   if (shouldNotify) {
     wifiStateManager.setState(WiFiState_e::WiFiState_None);
-    WiFi.disconnect();
+    //WiFi.disconnect();
     this->wifiConfigSave();
     this->notifyAll(ConfigState_e::networksConfigUpdated);
   }

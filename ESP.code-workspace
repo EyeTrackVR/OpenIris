@@ -10,6 +10,36 @@
     }
   ],
   "settings": {
+    "cSpell.words": [
+      "cctype",
+      "cinttypes",
+      "clocale",
+      "cmath",
+      "cstdarg",
+      "cstddef",
+      "cstdint",
+      "cstdio",
+      "cstdlib",
+      "cstring",
+      "cwchar",
+      "cwctype",
+      "deque",
+      "ESPS",
+      "fstream",
+      "iomanip",
+      "iosfwd",
+      "iostream",
+      "istream",
+      "JTAG",
+      "ostream",
+      "sccb",
+      "sstream",
+      "stdexcept",
+      "streambuf",
+      "txpower",
+      "typeinfo",
+      "XIAO"
+    ],
     "files.associations": {
       "*.Rmd": "rmd",
       "array": "cpp",
@@ -64,7 +94,6 @@
       "cinttypes": "cpp",
       "typeinfo": "cpp",
       "iostream": "cpp"
-    },
-    "cSpell.words": ["ESPS", "JTAG", "sccb", "txpower", "XIAO"]
+    }
   }
 }
