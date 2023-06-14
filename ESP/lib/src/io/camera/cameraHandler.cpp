@@ -6,9 +6,9 @@ CameraHandler::CameraHandler(ProjectConfig& configManager)
 void CameraHandler::setupCameraPinout() {
   // Workaround for espM5SStack not having a defined camera
 #ifdef CAMERA_MODULE_NAME
-  log_i("Camera module is %s", CAMERA_MODULE_NAME);
+  log_i("[Camera]: Camera module is %s", CAMERA_MODULE_NAME);
 #else
-  log_i("Camera module is undefined");
+  log_i("[Camera]: Camera module is undefined");
 #endif
 
   // camera external clock signal frequencies
@@ -67,20 +67,23 @@ void CameraHandler::setupBasicResolution() {
   config.frame_size = FRAMESIZE_240X240;
 
   if (!psramFound()) {
-    log_e("Did not find psram, setting lower image quality");
+    log_e("[Camera]: Did not find psram, setting lower image quality");
     config.fb_location = CAMERA_FB_IN_DRAM;
     config.jpeg_quality = 9;
     config.fb_count = 2;
     return;
   }
 
-  log_d("Found psram, setting the higher image quality");
+  log_d("[Camera]: Found psram, setting the higher image quality");
   config.jpeg_quality = 7;  // 0-63 lower number = higher quality, more latency
                             // and less fps   7 for most fps, 5 for best quality
   config.fb_count = 3;
+  log_d("[Camera]: Setting fb_location to CAMERA_FB_IN_PSRAM");
 }
 
 void CameraHandler::setupCameraSensor() {
+  log_d("[Camera]: Setting up camera sensor");
+
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   // documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
@@ -135,18 +138,27 @@ void CameraHandler::setupCameraSensor() {
       camera_sensor,
       2);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint,
            // 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+
+  log_d("[Camera]: Setting up camera sensor done");
 }
 
 bool CameraHandler::setupCamera() {
+  log_d("[Camera]: Setting up camera pinout");
   this->setupCameraPinout();
+  log_d("[Camera]: Setting up camera with resolution");
   this->setupBasicResolution();
-  esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+  log_d("[Camera]: Initializing camera...");
 
+  esp_err_t hasCameraBeenInitialized = esp_camera_init(&config);
+  log_d("[Camera]: Camera initialized: %s \r\n",
+        esp_err_to_name(hasCameraBeenInitialized));
   if (hasCameraBeenInitialized != ESP_OK) {
-    log_e("Camera initialization failed with error: 0x%x \r\n",
-          hasCameraBeenInitialized);
+    log_e("[Camera]: Camera initialization failed with error: %s \r\n",
+          esp_err_to_name(hasCameraBeenInitialized));
     log_e(
-        "Camera most likely not seated properly in the socket. Please fix the "
+        "[Camera]: Camera most likely not seated properly in the socket. "
+        "Please "
+        "fix the "
         "camera and reboot the device.\r\n");
     ledStateManager.setState(LEDStates_e::_Camera_Error);
     return false;
@@ -157,12 +169,14 @@ bool CameraHandler::setupCamera() {
 }
 
 void CameraHandler::loadConfigData() {
+  log_d("[Camera]: Loading camera config data");
   ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
   this->setHFlip(cameraConfig.href);
   this->setVFlip(cameraConfig.vflip);
   this->setCameraResolution((framesize_t)cameraConfig.framesize);
   camera_sensor->set_quality(camera_sensor, cameraConfig.quality);
   camera_sensor->set_agc_gain(camera_sensor, cameraConfig.brightness);
+  log_d("Loading camera config data done");
 }
 
 int CameraHandler::setCameraResolution(framesize_t frameSize) {

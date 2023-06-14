@@ -16,7 +16,6 @@ class WiFiHandler : public IObserver<ConfigState_e> {
   void update(ConfigState_e event) override;
   std::string getName() override;
 
-
   bool _enable_adhoc;
 
  private:

@@ -8,8 +8,8 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
                          const std::string& password,
                          uint8_t channel)
     : configManager(configManager),
-      ssid(ssid),
-      password(password),
+      ssid(std::move(ssid)),
+      password(std::move(password)),
       channel(channel),
       power(0),
       _enable_adhoc(false) {}
@@ -17,14 +17,23 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
+  log_i("Starting WiFi Handler \n\r");
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
+    log_d("ADHOC is enabled, setting up ADHOC network \n\r");
     this->setUpADHOC();
     return;
   }
+
+  log_d(
+      "ADHOC is disabled, setting up STA network and checking transmission "
+      "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleep(WIFI_PS_NONE);
+  log_d("Setting Wifi Power to: %d", txpower.power);
+  // log_d("Enabling STA mode \n\r");
+  // WiFi.mode(WIFI_STA);
+  log_d("Setting WiFi sleep mode to NONE \n\r");
+  WiFi.setSleep(false);
 
   log_i("Initializing connection to wifi \n\r");
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
@@ -126,12 +135,14 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
 
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
   log_i("Trying to connect to: %s \n\r", ssid.c_str());
-
   auto mdnsConfig = configManager.getMDNSConfig();
+
+  log_d("Setting hostname %s \n\r");
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
               INADDR_NONE);  // need to call before setting hostname
   WiFi.setHostname(mdnsConfig.hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
+  log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
     currentMillis = millis();
