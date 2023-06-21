@@ -3,16 +3,14 @@
 
 #include <Arduino.h>
 
-#include <data/config/project_config.hpp>
-#include <io/LEDManager/LEDManager.hpp>
-#include <io/camera/cameraHandler.hpp>
-#include <logo/logo.hpp>
+#include <local/data/config/config.hpp>
+#include <local/io/camera/camera_handler.hpp>
+#include <local/io/led_manager/led_manager.hpp>
+#include <local/logo/logo.hpp>
 
 #ifndef ETVR_EYE_TRACKER_USB_API
-#include <network/api/webserverHandler.hpp>
-#include <network/mDNS/MDNSManager.hpp>
-#include <network/stream/streamServer.hpp>
-#include <network/wifihandler/wifihandler.hpp>
+#include <local/network/api/api.hpp>
+#include <local/network/stream/stream_server.hpp>
 #else
 #include <usb/etvr_eye_tracker_usb.hpp>
 #endif  // ETVR_EYE_TRACKER_WEB_API

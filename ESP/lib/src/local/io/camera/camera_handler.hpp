@@ -1,19 +1,19 @@
 #pragma once
 #include <Arduino.h>
 #include <esp_camera.h>
-#include "data/utilities/Observer.hpp"
-#include "data/utilities/network_utilities.hpp"
-#include "data/config/project_config.hpp"
-#include "data/StateManager/StateManager.hpp"
+#include <utilities/observer.hpp>
+#include <utilities/network_utilities.hpp>
+#include "local/data/config/config.hpp"
+//#include "data/StateManager/StateManager.hpp"
 
 class CameraHandler : public IObserver<ConfigState_e> {
  private:
   sensor_t* camera_sensor;
   camera_config_t config;
-  ProjectConfig& configManager;
+  OpenIrisConfig& configManager;
 
  public:
-  CameraHandler(ProjectConfig& configManager);
+  CameraHandler(OpenIrisConfig& configManager);
   int setCameraResolution(framesize_t frameSize);
   int setVFlip(int direction);
   int setHFlip(int direction);
