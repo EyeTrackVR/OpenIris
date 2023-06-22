@@ -22,13 +22,11 @@ void OpenIrisConfig::initConfig() {
 }
 
 void OpenIrisConfig::save() {
-  log_d("Saving project config");
   cameraConfigSave();
   OpenIrisTasks::ScheduleRestart(2000);
 }
 
 void OpenIrisConfig::cameraConfigSave() {
-  /* Camera Config */
   projectConfig.putInt("vflip", this->config.camera.vflip);
   projectConfig.putInt("href", this->config.camera.href);
   projectConfig.putInt("framesize", this->config.camera.framesize);
@@ -41,12 +39,13 @@ void OpenIrisConfig::load() {
 }
 
 void OpenIrisConfig::cameraConfigLoad() {
-  /* Camera Config */
   this->config.camera.vflip = projectConfig.getInt("vflip", 0);
   this->config.camera.href = projectConfig.getInt("href", 0);
   this->config.camera.framesize = projectConfig.getInt("framesize", 4);
   this->config.camera.quality = projectConfig.getInt("quality", 7);
   this->config.camera.brightness = projectConfig.getInt("brightness", 2);
+
+  this->notifyAll(ConfigState_e::cameraConfigLoad);
 }
 
 void OpenIrisConfig::setCameraConfig(uint8_t vflip,
