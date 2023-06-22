@@ -7,10 +7,12 @@
 constexpr static const char* STREAM_CONTENT_TYPE =
     "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 constexpr static const char* STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
-constexpr static const char* STREAM_PART =
+/* constexpr static const char* STREAM_PART =
     "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: "
     "%d.%06d\r\n\r\n";
-
+ */
+constexpr static const char* STREAM_PART =
+    "Content-Type: %s\r\nContent-Length: %u\r\n\r\n";
 static const char* JPG_CONTENT_TYPE = "image/jpeg";
 
 // ***********************************************************************************
@@ -142,8 +144,8 @@ size_t AsyncJpegStreamResponse::_content(uint8_t* buffer,
     if (index && _frame.fb) {
       long end = millis();
       int fp = (end - lastAsyncRequest);
-      log_d("Size: %uKB, Time: %ums (%ifps)\n", _jpg_buf_len / 1024, fp,
-            1000 / fp);
+      log_d("[Stream Server]: Size: %uKB, Time: %ums (%ifps)\n",
+            _jpg_buf_len / 1024, fp, 1000 / fp);
       lastAsyncRequest = end;
       if (_frame.fb->format != PIXFORMAT_JPEG) {
         free(_jpg_buf);
@@ -163,7 +165,7 @@ size_t AsyncJpegStreamResponse::_content(uint8_t* buffer,
 
     _frame.fb = esp_camera_fb_get();
     if (_frame.fb == NULL) {
-      log_e("Camera frame failed");
+      log_e("[Stream Server]: Camera frame failed");
       return 0;
     }
 
@@ -171,14 +173,14 @@ size_t AsyncJpegStreamResponse::_content(uint8_t* buffer,
       unsigned long st = millis();
       bool jpeg_converted = frame2jpg(_frame.fb, 80, &_jpg_buf, &_jpg_buf_len);
       if (!jpeg_converted) {
-        log_e("JPEG compression failed");
+        log_e("[Stream Server]: JPEG compression failed");
         esp_camera_fb_return(_frame.fb);
         _frame.fb = NULL;
         _jpg_buf_len = 0;
         _jpg_buf = NULL;
         return 0;
       }
-      log_i("JPEG: %lums, %uB", millis() - st, _jpg_buf_len);
+      log_i("[Stream Server]: JPEG: %lums, %uB", millis() - st, _jpg_buf_len);
     } else {
       _jpg_buf_len = _frame.fb->len;
       _jpg_buf = _frame.fb->buf;
