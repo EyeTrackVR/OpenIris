@@ -1,3 +1,4 @@
+#include <network/mdns/mdns_manager.hpp>
 #include <openiris.hpp>
 
 /**
@@ -7,6 +8,8 @@
  * @param mdnsName The mDNS hostname to use
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
+ConfigHandler configHandler(deviceConfig);
+OpenIrisConfig projectConfig(deviceConfig);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -15,64 +18,38 @@ LEDManager ledManager(33);
 #endif  // ESP32S3_XIAO_SENSE
 
 #ifndef SIM_ENABLED
-CameraHandler cameraHandler(deviceConfig);
+CameraHandler cameraHandler(projectConfig);
 #endif  // SIM_ENABLED
 
 #ifndef ETVR_EYE_TRACKER_USB_API
-WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
-MDNSHandler mdnsHandler(deviceConfig);
+WiFiHandler network(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+MDNSHandler mdnsHandler(deviceConfig,
+                        "_openiristracker",
+                        "etvr_tracker",
+                        "_tcp",
+                        "stream_port",
+                        "80");
+RestAPI apiServer(deviceConfig, projectConfig);
 #ifdef SIM_ENABLED
-APIServer apiServer(deviceConfig, wifiStateManager, "/control");
 #else
-APIServer apiServer(deviceConfig, cameraHandler, "/control");
 StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting Network Handler");
-  // deviceConfig.attach(wifiHandler);
+  // deviceConfig.attach(network);
   log_d("[SETUP]: Checking ADHOC Settings");
-  wifiHandler._enable_adhoc = ENABLE_ADHOC;
+  // FIXME: This is not working
+  // network._enable_adhoc = ENABLE_ADHOC;
   deviceConfig.attach(mdnsHandler);
   log_d("[SETUP]: Starting WiFi Handler");
-  wifiHandler.begin();
+  network.begin();
   log_d("[SETUP]: Starting MDNS Handler");
-  mdnsHandler.startMDNS();
-
-  switch (wifiStateManager.getCurrentState()) {
-    case WiFiState_e::WiFiState_Disconnected: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_ADHOC: {
-#ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
-#endif  // SIM_ENABLED
-      log_d("[SETUP]: Starting API Server");
-      apiServer.setup();
-      break;
-    }
-    case WiFiState_e::WiFiState_Connected: {
-#ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
-#endif  // SIM_ENABLED
-      log_d("[SETUP]: Starting API Server");
-      apiServer.setup();
-      break;
-    }
-    case WiFiState_e::WiFiState_Connecting: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_Error: {
-      //! TODO: Implement
-      break;
-    }
-  }
-}
+  mdnsHandler.begin();
+  log_d("[SETUP]: Starting API Server");
+  apiServer.begin();
 #endif  // ETVR_EYE_TRACKER_WEB_API
+}
 
 void setup() {
   setCpuFrequencyMhz(240);
@@ -82,9 +59,14 @@ void setup() {
   ledManager.begin();
 
 #ifndef SIM_ENABLED
-  deviceConfig.attach(cameraHandler);
+  projectConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
-  deviceConfig.load();
+  //* Register the config handler
+  deviceConfig.attach(configHandler);
+  //* Register the project config
+  deviceConfig.registerUserConfig(&projectConfig);
+  //* Load Config from memory
+  configHandler.begin();
 
 #ifndef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_web_init();

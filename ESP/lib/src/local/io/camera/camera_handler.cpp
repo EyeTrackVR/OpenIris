@@ -1,6 +1,6 @@
-#include "cameraHandler.hpp"
+#include "camera_handler.hpp"
 
-CameraHandler::CameraHandler(ProjectConfig& configManager)
+CameraHandler::CameraHandler(OpenIrisConfig& configManager)
     : configManager(configManager) {}
 
 void CameraHandler::setupCameraPinout() {
@@ -170,7 +170,7 @@ bool CameraHandler::setupCamera() {
 
 void CameraHandler::loadConfigData() {
   log_d("[Camera]: Loading camera config data");
-  ProjectConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
+  OpenIrisConfig::CameraConfig_t cameraConfig = configManager.getCameraConfig();
   this->setHFlip(cameraConfig.href);
   this->setVFlip(cameraConfig.vflip);
   this->setCameraResolution((framesize_t)cameraConfig.framesize);
@@ -227,11 +227,11 @@ void CameraHandler::resetCamera(bool type) {
 
 void CameraHandler::update(ConfigState_e event) {
   switch (event) {
-    case ConfigState_e::configLoaded:
+    case ConfigState_e::cameraConfigLoad:
       this->setupCamera();
       this->loadConfigData();
       break;
-    case ConfigState_e::cameraConfigUpdated:
+    case ConfigState_e::cameraConfigUpdate:
       this->loadConfigData();
       break;
     default:

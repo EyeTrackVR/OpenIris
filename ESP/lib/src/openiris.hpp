@@ -10,6 +10,7 @@
 
 #ifndef ETVR_EYE_TRACKER_USB_API
 #include <local/network/api/api.hpp>
+#include <local/network/api_server/api_server.hpp>
 #include <local/network/stream/stream_server.hpp>
 #else
 #include <usb/etvr_eye_tracker_usb.hpp>

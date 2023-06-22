@@ -8,9 +8,11 @@
 #include "local/tasks/tasks.hpp"
 
 #include <data/config/project_config.hpp>
+#include <local/data/statemanager/state_manager.hpp>
 #include <unordered_map>
 
-class OpenIrisConfig : public CustomConfigInterface {
+class OpenIrisConfig : public CustomConfigInterface,
+                       public ISubject<ConfigState_e> {
   ProjectConfig& projectConfig;
 
  public:

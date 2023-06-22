@@ -9,10 +9,10 @@
 struct DeviceStates {
   enum LEDStates_e {
     _LedStateNone,
-   /*  _Improv_Start,
-    _Improv_Stop,
-    _Improv_Processing,
-    _Improv_Error, */
+    /*  _Improv_Start,
+     _Improv_Stop,
+     _Improv_Processing,
+     _Improv_Error, */
     _WebServerState_Error,
     _WiFiState_Error,
     _MDNSState_Error,
@@ -22,13 +22,11 @@ struct DeviceStates {
   };
 
   enum ConfigState_e {
-    configLoaded,
-    deviceConfigUpdated,
-    mdnsConfigUpdated,
-    networksConfigUpdated,
-    apConfigUpdated,
-    wifiTxPowerUpdated,
-    cameraConfigUpdated
+    cameraConfigLoad,
+    cameraConfigSave,
+    cameraConfigReset,
+    cameraConfigUpdate,
+    cameraConfigError,
   };
 
   enum CameraState_e {

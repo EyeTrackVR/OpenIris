@@ -64,9 +64,8 @@ void OpenIrisConfig::setCameraConfig(uint8_t vflip,
 
   log_d("Updating Camera config");
 
-  // FIXME: Fix this
-  /* if (shouldNotify)
-    this->notifyAll(ConfigState_e::cameraConfigUpdated); */
+  if (shouldNotify)
+    this->notifyAll(ConfigState_e::cameraConfigUpdate);
 }
 
 std::string OpenIrisConfig::CameraConfig_t::toRepresentation() {
