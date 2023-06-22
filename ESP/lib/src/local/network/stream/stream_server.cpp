@@ -1,129 +1,250 @@
 #include "stream_server.hpp"
 
-constexpr static const char *STREAM_CONTENT_TYPE =
+// ***********************************************************************************
+//!                             Global Variables
+// ***********************************************************************************
+
+constexpr static const char* STREAM_CONTENT_TYPE =
     "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-constexpr static const char *STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
-constexpr static const char *STREAM_PART =
+constexpr static const char* STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+constexpr static const char* STREAM_PART =
     "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: "
     "%d.%06d\r\n\r\n";
 
-esp_err_t StreamHelpers::stream(httpd_req_t *req)
-{
-    long last_request_time = 0;
-    camera_fb_t *fb = NULL;
-    struct timeval _timestamp;
+static const char* JPG_CONTENT_TYPE = "image/jpeg";
 
-    esp_err_t res = ESP_OK;
+// ***********************************************************************************
+//!                             AsyncBufferResponse
+// ***********************************************************************************
 
-    size_t _jpg_buf_len = 0;
-    uint8_t *_jpg_buf = NULL;
-
-    char *part_buf[256];
-
-    static int64_t last_frame = 0;
-    if (!last_frame)
-        last_frame = esp_timer_get_time();
-
-    res = httpd_resp_set_type(req, STREAM_CONTENT_TYPE);
-    if (res != ESP_OK)
-        return res;
-
-    httpd_resp_set_hdr(
-        req,
-        "Access-Control-Allow-Origin; Content-Type: multipart/x-mixed-replace; "
-        "boundary=123456789000000000000987654321\r\n",
-        "*");
-    httpd_resp_set_hdr(req, "X-Framerate", "60");
-
-    while (true)
-    {
-        fb = esp_camera_fb_get();
-        if (!fb)
-        {
-            log_e("Camera capture failed with response: %s", esp_err_to_name(res));
-            res = ESP_FAIL;
-        }
-        else
-        {
-            _timestamp.tv_sec = fb->timestamp.tv_sec;
-            _timestamp.tv_usec = fb->timestamp.tv_usec;
-            _jpg_buf_len = fb->len;
-            _jpg_buf = fb->buf;
-        }
-        if (res == ESP_OK)
-            res =
-                httpd_resp_send_chunk(req, STREAM_BOUNDARY, strlen(STREAM_BOUNDARY));
-        if (res == ESP_OK)
-        {
-            size_t hlen = snprintf((char *)part_buf, 128, STREAM_PART, _jpg_buf_len,
-                                   _timestamp.tv_sec, _timestamp.tv_usec);
-            res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
-        }
-        if (res == ESP_OK)
-            res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len);
-        if (fb)
-        {
-            esp_camera_fb_return(fb);
-            fb = NULL;
-            _jpg_buf = NULL;
-        }
-        else if (_jpg_buf)
-        {
-            free(_jpg_buf);
-            _jpg_buf = NULL;
-        }
-        if (res != ESP_OK)
-            break;
-        long request_end = millis();
-        long latency = (request_end - last_request_time);
-        last_request_time = request_end;
-        log_d("Size: %uKB, Time: %ums (%ifps)\n", _jpg_buf_len / 1024, latency,
-              1000 / latency);
-    }
-    last_frame = 0;
-    return res;
+AsyncBufferResponse::AsyncBufferResponse(uint8_t* buf,
+                                         size_t len,
+                                         const char* contentType)
+    : _buf(buf), _len(len) {
+  _callback = nullptr;
+  _code = 200;
+  _contentLength = _len;
+  _contentType = contentType;
+  _index = 0;
 }
 
-StreamServer::StreamServer(const int STREAM_PORT)
-    : STREAM_SERVER_PORT(STREAM_PORT) {}
+AsyncBufferResponse::~AsyncBufferResponse() {
+  if (_buf != nullptr) {
+    free(_buf);
+  }
+}
 
-int StreamServer::startStreamServer()
-{
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //! Turn-off the 'brownout
-    // detector'
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.stack_size = 20480;
-    config.max_uri_handlers = 1;
-    config.server_port = this->STREAM_SERVER_PORT;
-    config.ctrl_port = this->STREAM_SERVER_PORT;
-    config.stack_size = 20480;
+bool AsyncBufferResponse::_sourceValid() const {
+  return _buf != nullptr;
+}
 
-    httpd_uri_t stream_page = {.uri = "/",
-                               .method = HTTP_GET,
-                               .handler = &StreamHelpers::stream,
-                               .user_ctx = nullptr};
+size_t AsyncBufferResponse::_fillBuffer(uint8_t* buf, size_t maxLen) {
+  size_t ret = _content(buf, maxLen, _index);
+  if (ret != RESPONSE_TRY_AGAIN) {
+    _index += ret;
+  }
+  return ret;
+}
 
-    int status = httpd_start(&camera_stream, &config);
+size_t AsyncBufferResponse::_content(uint8_t* buffer,
+                                     size_t maxLen,
+                                     size_t index) {
+  memcpy(buffer, _buf + index, maxLen);
+  if ((index + maxLen) == _len) {
+    free(_buf);
+    _buf = nullptr;
+  }
+  return maxLen;
+}
 
-    if (status != ESP_OK)
-        return -1;
-    else
-    {
-        httpd_register_uri_handler(camera_stream, &stream_page);
-        Serial.println("Stream server initialized");
-        switch (wifiStateManager.getCurrentState())
-        {
-        case WiFiState_e::WiFiState_ADHOC:
-            Serial.printf("\n\rThe stream is under: http://%s:%i\n\r",
-                          WiFi.softAPIP().toString().c_str(),
-                          this->STREAM_SERVER_PORT);
-            break;
-        default:
-            Serial.printf("\n\rThe stream is under: http://%s:%i\n\r",
-                          WiFi.localIP().toString().c_str(),
-                          this->STREAM_SERVER_PORT);
-            break;
-        }
-        return 0;
+// ***********************************************************************************
+//!                             AsyncFrameResponse
+// ***********************************************************************************
+
+AsyncFrameResponse::AsyncFrameResponse(camera_fb_t* frame,
+                                       const char* contentType)
+    : fb(frame), _index(0) {
+  _callback = nullptr;
+  _code = 200;
+  _contentLength = frame->len;
+  _contentType = contentType;
+}
+
+AsyncFrameResponse::~AsyncFrameResponse() {
+  if (fb != nullptr) {
+    esp_camera_fb_return(fb);
+  }
+}
+
+bool AsyncFrameResponse::_sourceValid() const {
+  return fb != nullptr;
+}
+
+size_t AsyncFrameResponse::_content(uint8_t* buffer,
+                                    size_t maxLen,
+                                    size_t index) {
+  memcpy(buffer, fb->buf + index, maxLen);
+  if ((index + maxLen) == fb->len) {
+    esp_camera_fb_return(fb);
+    fb = nullptr;
+  }
+  return maxLen;
+}
+
+size_t AsyncFrameResponse::_fillBuffer(uint8_t* buf, size_t maxLen) {
+  size_t ret = _content(buf, maxLen, _index);
+  if (ret != RESPONSE_TRY_AGAIN) {
+    _index += ret;
+  }
+  return ret;
+}
+
+// ***********************************************************************************
+//!                             AsyncJpegStreamResponse
+// ***********************************************************************************
+
+AsyncJpegStreamResponse::AsyncJpegStreamResponse()
+    : _index(0), _jpg_buf_len(0), _jpg_buf(NULL), lastAsyncRequest(0) {
+  _callback = nullptr;
+  _code = 200;
+  _contentLength = 0;
+  _contentType = STREAM_CONTENT_TYPE;
+  _sendContentLength = false;
+  _chunked = true;
+  memset(&_frame, 0, sizeof(camera_frame_t));
+}
+
+AsyncJpegStreamResponse::~AsyncJpegStreamResponse() {
+  if (_frame.fb) {
+    if (_frame.fb->format != PIXFORMAT_JPEG) {
+      free(_jpg_buf);
     }
+    esp_camera_fb_return(_frame.fb);
+  }
+}
+
+bool AsyncJpegStreamResponse::_sourceValid() const {
+  return true;
+}
+
+size_t AsyncJpegStreamResponse::_fillBuffer(uint8_t* buf, size_t maxLen) {
+  size_t ret = _content(buf, maxLen, _index);
+  if (ret != RESPONSE_TRY_AGAIN) {
+    _index += ret;
+  }
+  return ret;
+}
+
+size_t AsyncJpegStreamResponse::_content(uint8_t* buffer,
+                                         size_t maxLen,
+                                         size_t index) {
+  if (!_frame.fb || _frame.index == _jpg_buf_len) {
+    if (index && _frame.fb) {
+      long end = millis();
+      int fp = (end - lastAsyncRequest);
+      log_d("Size: %uKB, Time: %ums (%ifps)\n", _jpg_buf_len / 1024, fp,
+            1000 / fp);
+      lastAsyncRequest = end;
+      if (_frame.fb->format != PIXFORMAT_JPEG) {
+        free(_jpg_buf);
+      }
+      esp_camera_fb_return(_frame.fb);
+      _frame.fb = NULL;
+      _jpg_buf_len = 0;
+      _jpg_buf = NULL;
+    }
+    if (maxLen < (strlen(STREAM_BOUNDARY) + strlen(STREAM_PART) +
+                  strlen(JPG_CONTENT_TYPE) + 8)) {
+      // log_w("Not enough space for headers");
+      return RESPONSE_TRY_AGAIN;
+    }
+    // get frame
+    _frame.index = 0;
+
+    _frame.fb = esp_camera_fb_get();
+    if (_frame.fb == NULL) {
+      log_e("Camera frame failed");
+      return 0;
+    }
+
+    if (_frame.fb->format != PIXFORMAT_JPEG) {
+      unsigned long st = millis();
+      bool jpeg_converted = frame2jpg(_frame.fb, 80, &_jpg_buf, &_jpg_buf_len);
+      if (!jpeg_converted) {
+        log_e("JPEG compression failed");
+        esp_camera_fb_return(_frame.fb);
+        _frame.fb = NULL;
+        _jpg_buf_len = 0;
+        _jpg_buf = NULL;
+        return 0;
+      }
+      log_i("JPEG: %lums, %uB", millis() - st, _jpg_buf_len);
+    } else {
+      _jpg_buf_len = _frame.fb->len;
+      _jpg_buf = _frame.fb->buf;
+    }
+
+    // send boundary
+    size_t blen = 0;
+    if (index) {
+      blen = strlen(STREAM_BOUNDARY);
+      memcpy(buffer, STREAM_BOUNDARY, blen);
+      buffer += blen;
+    }
+    // send header
+    size_t hlen =
+        sprintf((char*)buffer, STREAM_PART, JPG_CONTENT_TYPE, _jpg_buf_len);
+    buffer += hlen;
+    // send frame
+    hlen = maxLen - hlen - blen;
+    if (hlen > _jpg_buf_len) {
+      maxLen -= hlen - _jpg_buf_len;
+      hlen = _jpg_buf_len;
+    }
+    memcpy(buffer, _jpg_buf, hlen);
+    _frame.index += hlen;
+    return maxLen;
+  }
+
+  size_t available = _jpg_buf_len - _frame.index;
+  if (maxLen > available) {
+    maxLen = available;
+  }
+  memcpy(buffer, _jpg_buf + _frame.index, maxLen);
+  _frame.index += maxLen;
+
+  return maxLen;
+}
+
+// ***********************************************************************************
+//!                             Camera Server
+// ***********************************************************************************
+
+StreamServer::StreamServer(const int STREAM_PORT) : server(STREAM_PORT) {}
+
+void StreamServer::begin() {
+  server.on("/", HTTP_GET,
+            [this](AsyncWebServerRequest* request) { this->stream(request); });
+  server.begin();
+}
+
+void StreamServer::stream(AsyncWebServerRequest* request) {
+  camera_fb_t* fb = esp_camera_fb_get();
+  if (fb == NULL) {
+    log_e("%s", F("Webrequest: \"/stream\" -> Camera not Detected.\n"));
+    String s =
+        F("Camera not Detected.<script>setTimeout(function() "
+          "{window.parent.location.href= \"/\";s}, 3000);</script>");
+    request->send(200, "text/html", s);
+    return;
+  }
+  log_i("%s", F("Start JPG streaming\n"));
+  AsyncJpegStreamResponse* response = new AsyncJpegStreamResponse();
+  if (!response) {
+    request->send(501);
+    return;
+  }
+  response->addHeader("Access-Control-Allow-Origin", "*");
+  response->addHeader("X-Framerate", "60");
+  request->send(response);
 }

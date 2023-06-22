@@ -47,6 +47,7 @@ void web_init() {
   mdnsHandler.begin();
   log_d("[SETUP]: Starting API Server");
   apiServer.begin();
+  streamServer.begin();
 #endif  // ETVR_EYE_TRACKER_WEB_API
 }
 
