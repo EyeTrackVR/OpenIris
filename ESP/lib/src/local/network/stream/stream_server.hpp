@@ -67,10 +67,10 @@ class StreamServer {
   int STREAM_SERVER_PORT;
   AsyncWebServer server;
 
+  void stream(AsyncWebServerRequest* request);
  public:
   StreamServer(const int STREAM_PORT = 80);
   void begin();
-  void stream(AsyncWebServerRequest* request);
 };
 
 #endif  // STREAM_SERVER_HPP
