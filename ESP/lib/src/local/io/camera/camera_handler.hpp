@@ -21,6 +21,7 @@ class CameraHandler : public IObserver<ConfigState_e> {
   void update(ConfigState_e event);
   std::string getName();
   void resetCamera(bool type = 0);
+  void handleOTA();
 
  private:
   void loadConfigData();

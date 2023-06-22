@@ -1,17 +1,18 @@
 #ifndef API_SERVER_HPP
 #define API_SERVER_HPP
 #include <EasyNetworkManager.hpp>
-#include <local/data/statemanager/state_manager.hpp>
-#include <local/data/config/config.hpp>
+#include <local/data/api/api.hpp>
+
 class RestAPI {
  private:
+  API& api;
   APIServer server;
-  ProjectConfig& projectConfig;
-  OpenIrisConfig& configManager;
   void setupServer();
+  void setCamera(AsyncWebServerRequest* request);
+  void restartCamera(AsyncWebServerRequest* request);
 
  public:
-  RestAPI(ProjectConfig& projectConfig, OpenIrisConfig& configManager);
+  RestAPI(API& api);
   virtual ~RestAPI();
   void begin();
 };

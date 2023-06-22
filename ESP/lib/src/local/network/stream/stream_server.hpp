@@ -13,17 +13,19 @@
 #include "fb_gfx.h"
 #include "img_converters.h"
 
-namespace StreamHelpers {
-  esp_err_t stream(httpd_req_t* req);
+namespace StreamHelpers
+{
+    esp_err_t stream(httpd_req_t *req);
 }
-class StreamServer {
- private:
-  httpd_handle_t camera_stream = nullptr;
-  int STREAM_SERVER_PORT;
+class StreamServer
+{
+private:
+    httpd_handle_t camera_stream = nullptr;
+    int STREAM_SERVER_PORT;
 
- public:
-  StreamServer(const int STREAM_PORT = 80);
-  int startStreamServer();
+public:
+    StreamServer(const int STREAM_PORT = 80);
+    int startStreamServer();
 };
 
-#endif  // STREAM_SERVER_HPP
+#endif // STREAM_SERVER_HPP

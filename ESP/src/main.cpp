@@ -11,15 +11,13 @@ ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 ConfigHandler configHandler(deviceConfig);
 OpenIrisConfig projectConfig(deviceConfig);
 
+API api(deviceConfig, projectConfig);
+
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
 #else
 LEDManager ledManager(33);
 #endif  // ESP32S3_XIAO_SENSE
-
-#ifndef SIM_ENABLED
-CameraHandler cameraHandler(projectConfig);
-#endif  // SIM_ENABLED
 
 #ifndef ETVR_EYE_TRACKER_USB_API
 WiFiHandler network(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
@@ -29,13 +27,14 @@ MDNSHandler mdnsHandler(deviceConfig,
                         "_tcp",
                         "stream_port",
                         "80");
-RestAPI apiServer(deviceConfig, projectConfig);
+RestAPI apiServer(api);
 #ifdef SIM_ENABLED
 #else
 StreamServer streamServer;
 #endif  // SIM_ENABLED
 
-void etvr_eye_tracker_web_init() {
+void web_init() {
+  Serial.begin(115200);
   log_d("[SETUP]: Starting Network Handler");
   // deviceConfig.attach(network);
   log_d("[SETUP]: Checking ADHOC Settings");
@@ -53,13 +52,10 @@ void etvr_eye_tracker_web_init() {
 
 void setup() {
   setCpuFrequencyMhz(240);
-  Serial.begin(115200);
-  Logo::printASCII();
-  //  Serial.flush();
   ledManager.begin();
 
 #ifndef SIM_ENABLED
-  projectConfig.attach(cameraHandler);
+  projectConfig.attach(api.cameraHandler);
 #endif  // SIM_ENABLED
   //* Register the config handler
   deviceConfig.attach(configHandler);
@@ -69,16 +65,17 @@ void setup() {
   configHandler.begin();
 
 #ifndef ETVR_EYE_TRACKER_USB_API
-  etvr_eye_tracker_web_init();
+  web_init();
 #else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);
-  etvr_eye_tracker_usb_init();
+  usb_init();
 #endif  // ETVR_EYE_TRACKER_WEB_API
+  Logo::printASCII();
 }
 
 void loop() {
   ledManager.handleLED();
 #ifdef ETVR_EYE_TRACKER_USB_API
-  etvr_eye_tracker_usb_loop();
+  usb_loop();
 #endif  // ETVR_EYE_TRACKER_USB_API
 }

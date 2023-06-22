@@ -160,7 +160,7 @@ bool CameraHandler::setupCamera() {
         "Please "
         "fix the "
         "camera and reboot the device.\r\n");
-    ledStateManager.setState(LEDStates_e::_Camera_Error);
+    ledStateManager.setState(LEDStates_e::Camera_Error);
     return false;
   }
 
@@ -223,6 +223,11 @@ void CameraHandler::resetCamera(bool type) {
     Network_Utilities::my_delay(0.05);
     setupCamera();
   }
+}
+
+void CameraHandler::handleOTA() {
+  esp_camera_deinit();                // deinitialize the camera driver
+  digitalWrite(PWDN_GPIO_NUM, HIGH);  // turn power off to camera
 }
 
 void CameraHandler::update(ConfigState_e event) {

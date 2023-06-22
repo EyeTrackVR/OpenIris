@@ -8,17 +8,13 @@
  */
 struct DeviceStates {
   enum LEDStates_e {
-    _LedStateNone,
-    /*  _Improv_Start,
-     _Improv_Stop,
-     _Improv_Processing,
-     _Improv_Error, */
-    _WebServerState_Error,
-    _WiFiState_Error,
-    _MDNSState_Error,
-    _Camera_Error,
-    _WiFiState_Connecting,
-    _WiFiState_Connected
+    LedStateNone,
+    WebServerState_Error,
+    WiFiState_Error,
+    MDNSState_Error,
+    Camera_Error,
+    WiFiState_Connecting,
+    WiFiState_Connected
   };
 
   enum ConfigState_e {
@@ -33,7 +29,7 @@ struct DeviceStates {
     Camera_Disconnected,
     Camera_Success,
     Camera_Connected,
-    Camera_Error
+    _Camera_Error
   };
 
   enum StreamState_e { Stream_OFF, Stream_ON, Stream_Error };

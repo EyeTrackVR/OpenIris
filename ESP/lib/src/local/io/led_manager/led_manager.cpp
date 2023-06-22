@@ -10,20 +10,13 @@
  */
 
 LEDManager::ledStateMap_t LEDManager::ledStateMap = {
-    {LEDStates_e::_LedStateNone, {{0, 500}}},
-    {LEDStates_e::_Improv_Error,
-     {{1, 1000}, {0, 500}, {0, 1000}, {0, 500}, {1, 1000}}},
-    {LEDStates_e::_Improv_Start,
-     {{1, 500}, {0, 300}, {0, 300}, {0, 300}, {1, 500}}},
-    {LEDStates_e::_Improv_Stop,
-     {{1, 300}, {0, 500}, {0, 500}, {0, 500}, {1, 300}}},
-    {LEDStates_e::_Improv_Processing,
+    {LEDStates_e::LedStateNone,
+     {{0, 500}, {1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
+    {LEDStates_e::WebServerState_Error,
      {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
-    {LEDStates_e::_WebServerState_Error,
+    {LEDStates_e::WiFiState_Error,
      {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
-    {LEDStates_e::_WiFiState_Error,
-     {{1, 200}, {0, 100}, {0, 500}, {0, 100}, {1, 200}}},
-    {LEDStates_e::_MDNSState_Error,
+    {LEDStates_e::MDNSState_Error,
      {{1, 200},
       {0, 100},
       {1, 200},
@@ -33,11 +26,11 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
       {1, 200},
       {0, 100},
       {1, 200}}},
-    {LEDStates_e::_Camera_Error,
+    {LEDStates_e::Camera_Error,
      {{1, 5000}}},  // this also works as a more general error - something went
                     // critically wrong? We go here
-    {LEDStates_e::_WiFiState_Connecting, {{1, 100}, {0, 100}}},
-    {LEDStates_e::_WiFiState_Connected,
+    {LEDStates_e::WiFiState_Connecting, {{1, 100}, {0, 100}}},
+    {LEDStates_e::WiFiState_Connected,
      {{1, 100},
       {0, 100},
       {1, 100},
@@ -50,7 +43,7 @@ LEDManager::ledStateMap_t LEDManager::ledStateMap = {
       {0, 100}}}};
 
 std::vector<LEDStates_e> LEDManager::keepAliveStates = {
-    LEDStates_e::_WebServerState_Error, LEDStates_e::_Camera_Error};
+    LEDStates_e::WebServerState_Error, LEDStates_e::Camera_Error};
 
 LEDManager::LEDManager(byte pin) : _ledPin(pin), _ledState(false) {}
 
@@ -58,7 +51,7 @@ LEDManager::~LEDManager() {}
 
 void LEDManager::begin() {
   pinMode(_ledPin, OUTPUT);
-  // the defualt state is _LedStateNone so we're fine
+  // the default state is _LedStateNone so we're fine
   this->currentState = ledStateManager.getCurrentState();
   this->currentPatternIndex = 0;
   BlinkPatterns_t pattern =
@@ -88,7 +81,7 @@ void LEDManager::handleLED() {
       this->ledStateMap[this->currentState].size() - 1) {
     auto nextState = ledStateManager.getCurrentState();
     // we want to keep displaying the same state only if its an keepAlive one,
-    // but we should change if the incoming one is also an errours state, maybe
+    // but we should change if the incoming one is also an errors state, maybe
     // more serious one this time <- this may be a bad idea
     if ((std::find(this->keepAliveStates.begin(), this->keepAliveStates.end(),
                    this->currentState) != this->keepAliveStates.end() ||

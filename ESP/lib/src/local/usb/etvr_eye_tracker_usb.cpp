@@ -7,12 +7,12 @@
 const char* const ETVR_HEADER = "\xff\xa0";
 const char* const ETVR_HEADER_FRAME = "\xff\xa1";
 
-void etvr_eye_tracker_usb_init() {
+void usb_init() {
   Serial.begin(3000000);
   Serial.flush();
 }
 
-void etvr_eye_tracker_usb_loop() {
+void usb_loop() {
   int64_t last_frame = 0;
   if (!last_frame)
     last_frame = esp_timer_get_time();
