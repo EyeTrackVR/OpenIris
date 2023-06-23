@@ -34,7 +34,6 @@ StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void web_init() {
-  Serial.begin(115200);
   log_d("[SETUP]: Starting Network Handler");
   // deviceConfig.attach(network);
   log_d("[SETUP]: Checking ADHOC Settings");
@@ -52,6 +51,7 @@ void web_init() {
 }
 
 void setup() {
+  Serial.begin(115200);
   setCpuFrequencyMhz(240);
   ledManager.begin();
 
