@@ -52,6 +52,7 @@ void web_init() {
 
 void setup() {
   Serial.begin(115200);
+  Logo::printASCII();
   setCpuFrequencyMhz(240);
   ledManager.begin();
 
@@ -71,7 +72,6 @@ void setup() {
   WiFi.disconnect(true);
   usb_init();
 #endif  // ETVR_EYE_TRACKER_WEB_API
-  Logo::printASCII();
 }
 
 void loop() {
