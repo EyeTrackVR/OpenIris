@@ -243,7 +243,7 @@ void StreamServer::stream(AsyncWebServerRequest* request) {
   log_i("%s", F("Start JPG streaming\n"));
   AsyncJpegStreamResponse* response = new AsyncJpegStreamResponse();
   if (!response) {
-    request->send(501);
+    request->send(500);
     return;
   }
   response->addHeader("Access-Control-Allow-Origin", "*");
