@@ -7,11 +7,10 @@
  * @param name The name of the project config partition
  * @param mdnsName The mDNS hostname to use
  */
-ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
-ConfigHandler configHandler(deviceConfig);
-OpenIrisConfig projectConfig(deviceConfig);
+ConfigHandler configHandler("openiris", MDNS_HOSTNAME);
+OpenIrisConfig projectConfig(configHandler.config);
 
-API api(deviceConfig, projectConfig);
+API api(configHandler.config, projectConfig);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -20,8 +19,11 @@ LEDManager ledManager(33);
 #endif  // ESP32S3_XIAO_SENSE
 
 #ifndef ETVR_EYE_TRACKER_USB_API
-WiFiHandler network(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
-MDNSHandler mdnsHandler(deviceConfig,
+WiFiHandler network(configHandler.config,
+                    WIFI_SSID,
+                    WIFI_PASSWORD,
+                    WIFI_CHANNEL);
+MDNSHandler mdnsHandler(configHandler.config,
                         "_openiristracker",
                         "etvr_tracker",
                         "_tcp",
@@ -35,11 +37,11 @@ StreamServer streamServer;
 
 void web_init() {
   log_d("[SETUP]: Starting Network Handler");
-  // deviceConfig.attach(network);
+  // configHandler.config.attach(network);
   log_d("[SETUP]: Checking ADHOC Settings");
   // FIXME: This is not working
   // network._enable_adhoc = ENABLE_ADHOC;
-  deviceConfig.attach(mdnsHandler);
+  configHandler.config.attach(mdnsHandler);
   log_d("[SETUP]: Starting WiFi Handler");
   network.begin();
   log_d("[SETUP]: Starting MDNS Handler");
@@ -60,9 +62,9 @@ void setup() {
   projectConfig.attach(api.cameraHandler);
 #endif  // SIM_ENABLED
   //* Register the config handler
-  deviceConfig.attach(configHandler);
+  configHandler.config.attach(configHandler);
   //* Register the project config
-  deviceConfig.registerUserConfig(&projectConfig);
+  configHandler.config.registerUserConfig(&projectConfig);
   //* Load Config from memory
   configHandler.begin();
 
