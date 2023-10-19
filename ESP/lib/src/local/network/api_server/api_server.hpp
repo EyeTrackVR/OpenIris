@@ -6,6 +6,8 @@
 class RestAPI {
  private:
   API& api;
+  AsyncServer_t async_server;
+  AsyncOTA ota;
   APIServer server;
   void setupServer();
   void setCamera(AsyncWebServerRequest* request);

@@ -2,7 +2,13 @@
 
 RestAPI::RestAPI(API& api)
     : api(api),
-      server(80, api.projectConfig, "/control", "/wifimanager", "/openiris") {}
+      async_server(80,
+                   api.projectConfig,
+                   "/control",
+                   "/wifimanager",
+                   "/openiris"),
+      ota(api.projectConfig, async_server),
+      server(api.projectConfig, async_server, &ota) {}
 
 RestAPI::~RestAPI() {}
 
@@ -39,10 +45,10 @@ void RestAPI::begin() {
  * @note Add all the routes and handlers here
  */
 void RestAPI::setupServer() {
-  server.setOTAHandler([this](void) { api.cameraHandler.handleOTA(); });
-  server.addAPICommand("/setCamera", [this](AsyncWebServerRequest* request) {
-    setCamera(request);
-  });
+  ota.setOTAHandler([this](void) { api.cameraHandler.handleOTA(); });
+  server.addAPICommand(
+      "/setCamera",
+      [this](AsyncWebServerRequest* request) { setCamera(request); });
 
   server.addAPICommand(
       "/restartCamera",
@@ -52,7 +58,7 @@ void RestAPI::setupServer() {
 }
 
 void RestAPI::setCamera(AsyncWebServerRequest* request) {
-  switch (server._networkMethodsMap_enum[request->method()]) {
+  switch (async_server._networkMethodsMap_enum[request->method()]) {
     case BaseAPI::GET: {
       // create temporary variables to store the values
       uint8_t temp_camera_framesize = 0;
