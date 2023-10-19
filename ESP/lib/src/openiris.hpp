@@ -2,6 +2,7 @@
 #define OPENIRIS_HPP
 
 #include <Arduino.h>
+#include <EasyNetworkManager.hpp>
 
 #include <local/data/api/api.hpp>
 #include <local/data/config/config.hpp>
