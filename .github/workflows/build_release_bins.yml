@@ -29,7 +29,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - id: set-matrix
-        run: echo "matrix={\"target_name\":[\"esp32AIThinker\",\"esp32M5Stack\",\"esp32Cam\",\"esp_eye\",\"wrover\",\"wrooms3QIO\",\"wrooms3QIOUSB\",\"wrooms3\",\"wrooms3USB\"],\"target_build_type\":[\"\", \"_release\"]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"target_name\":[\"esp32AIThinker\",\"esp32M5Stack\",\"esp32Cam\",\"esp_eye\",\"wrover\",\"wrooms3QIO\",\"wrooms3QIOUSB\",\"wrooms3\",\"wrooms3USB\",\"xiaosenses3\",\"xiaosenses3_USB\"],\"target_build_type\":[\"\", \"_release\"]}" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
