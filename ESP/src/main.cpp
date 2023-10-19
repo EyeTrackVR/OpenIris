@@ -49,8 +49,8 @@ void web_init() {
   log_d("[SETUP]: Starting API Server");
   apiServer.begin();
   streamServer.begin();
-#endif  // ETVR_EYE_TRACKER_WEB_API
 }
+#endif  // ETVR_EYE_TRACKER_WEB_API
 
 void setup() {
   Serial.begin(115200);
