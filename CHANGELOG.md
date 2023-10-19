@@ -3,6 +3,14 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.4](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.3...v2.2.4) (2023-10-19)
+
+
+### 🔁 Continuous Integration
+
+* add xiaosense envs to CI pipeline ([29bd8c9](https://github.com/EyeTrackVR/OpenIris/commit/29bd8c978231eca809e857085a89c0bd77ecbcf9))
+* **ci-fix:** Fix release step ([4e1a177](https://github.com/EyeTrackVR/OpenIris/commit/4e1a177fa2ae316a6ec4cd1afd599d384d35e915))
+
 ## [2.2.3](https://github.com/lorow/OpenIris/compare/v2.2.2...v2.2.3) (2023-04-22)
 
 
