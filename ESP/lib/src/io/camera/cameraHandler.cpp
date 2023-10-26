@@ -182,7 +182,64 @@ void CameraHandler::loadConfigData() {
 int CameraHandler::setCameraResolution(framesize_t frameSize) {
   if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
     try {
-      return camera_sensor->set_framesize(camera_sensor, frameSize);
+        /*
+        sensor crop is relitive to one of these base resolutions
+        baseRes = 0 \\ 1600 x 1200 UXGA
+        baseRes = 1 \\  800 x  600 SVGA
+        baseRes = 2 \\  400 x  296 CIF
+        
+        Setting your ROIsize to its respective Y-value above will prevent scaling
+
+        OutputSize should always be 240
+        */
+        int outputSize = 240;
+
+        // CIF samples
+        /*// mimic old way FRAMESIZE_240X240 without breaking aspect ratio
+        int baseRes = 2; //CIF 
+        int ROIsize = 296; 
+        int startPointX = 52; 
+        int startPointY = 0; */
+
+        // crop into the middle of a CIF image
+        int baseRes = 2; //CIF 
+        int ROIsize = 240; // only cropping. no scaling.  if using a 160º camera, this will look like a 130º lens.
+        int startPointX = 80; 
+        int startPointY = 28; 
+
+        /*// crop into the top left right of a CIF image
+        int baseRes = 2; //CIF 
+        int ROIsize = 240; // only cropping. no scaling.  if using a 160º camera, this will look like a 130º lens.
+        int startPointX = 0; 
+        int startPointY = 0;*/
+        
+        /*// crop into the bottom right of a CIF image
+        //int baseRes = 2; //CIF 
+        //int ROIsize = 240;  // only cropping. no scaling.  if using a 160º camera, this will look like a 130º lens.
+        //int startPointX = 160; 
+        //int startPointY = 56;*/
+
+        //SVGA samples
+        /*// crop into the middle of a SVGA image and rescale to 240. if using a 160º camera, it will look like a 120º lens.
+        int baseRes = 1; //SVGA
+        int ROIsize = 450;
+        int startPointX = 175; 
+        int startPointY = 75;*/
+
+        /*// crop into the middle of a SVGA image and rescale to 240. if using a 160º camera, it will look like a 90º lens.
+        int baseRes = 1; //SVGA
+        int ROIsize = 340;
+        int startPointX = 230; 
+        int startPointY = 130;*/
+
+        /*// pure crop into the middle of a SVGA image no scaling. if using a 160º camera, it will look like a 66º lens.
+        int baseRes = 1; //SVGA
+        int ROIsize = 240;
+        int startPointX = 280; 
+        int startPointY = 180;*/
+
+        return camera_sensor->set_res_raw(camera_sensor, baseRes, 0, 0, 0, startPointX, startPointY, ROIsize, ROIsize, outputSize, outputSize, 0, 0);
+
     } catch (...) {
       // they sent us a malformed or unsupported frameSize - rather than crash -
       // tell them about it
