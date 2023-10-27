@@ -55,21 +55,36 @@ def createZip(source, target, env):
 
                 # detect if the PIOENV has QIO flash mode
                 flash_mode = env["BOARD_FLASH_MODE"]
+
                 flash_freq = env["BOARD_F_FLASH"]
+
+                if flash_freq == "80000000L":
+                    flash_freq = "80m"
+                elif flash_freq == "40000000L":
+                    flash_freq = "40m"
+
                 # detect the chip type
                 chip_type = env["BOARD_MCU"]
+
+                flash_size = '4'
+
+                # TODO: detect the flash size from the board manifest
+                if chip_type == "esp32s3":
+                    flash_size = '8'
 
                 # capitalize the chip type
                 chip_type = chip_type.upper()
 
                 print("Flash Mode: %s" % flash_mode)
                 print("Chip Type: %s" % chip_type)
+                print("Flash Frequency: %s" % flash_freq)
+                print("Flash Size: %s" % flash_size)
 
                 """
                 python esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB
                 0x1000 bootloader.bin 0x8000 partitions.bin 0xe000 boot.bin 0x10000 OpenIris-v1.3.0-esp32AIThinker-8229a3a-master.bin
                 """
-                execute_cmd = "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip {chip} merge_bin -o merged-firmware.bin --flash_mode {flash_mode} --flash_freq {flash_freq} --flash_size 4MB %s" % (
+                execute_cmd = "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip {chip} merge_bin -o merged-firmware.bin --flash_mode {flash_mode} --flash_freq {flash_freq} --flash_size {flash_size}MB %s" % (
                     " ".join(temp)
                 )
 
@@ -77,7 +92,7 @@ def createZip(source, target, env):
 
                 env.Execute(
                     execute_cmd.format(
-                        chip=chip_type, flash_mode=flash_mode, flash_freq=flash_freq)
+                        chip=chip_type, flash_mode=flash_mode, flash_freq=flash_freq, flash_size=flash_size)
                 )
 
                 filename = basename("merged-firmware.bin")
