@@ -3,5 +3,7 @@
 build/
 *.log
 /tools/firmware_name.txt
+/tools/env_dump.txt
+/tools/env_dump.json
 /tools/version.txt
 /tools/__pycache__/

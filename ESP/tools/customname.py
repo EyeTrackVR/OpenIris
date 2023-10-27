@@ -152,10 +152,18 @@ try:
     flags = env["BUILD_FLAGS"]
     my_flags = env.ParseFlags(flags)
 
+    # detect if the PIOENV has QIO flash mode
+    flash_mode = env["BOARD_FLASH_MODE"]
+    # detect the chip type
+    chip_type = env["BOARD_MCU"]
+
+    print("Flash Mode: %s" % flash_mode)
+    print("Chip Type: %s" % chip_type)
+
     # Dump global construction environment (for debug purpose)
     # write env.Dump() to a file
-    # with open("env_dump.txt", "w") as f:
-    #    f.write(env.Dump())
+    with open("./tools/env_dump.txt", "w") as f:
+       f.write(env.Dump())
 
     handleGit()
 except ValueError as ex:
@@ -165,6 +173,6 @@ except ValueError as ex:
         "[Warning]: Apostrophes are not allowed in the build flags. Please remove them from the \033[;1m\033[1;36m`user-config.ini` \033[1;31mfile and try again."
     )
     raise Exception(
-        "Could not parse BUILD_FLAGS - Possible apostrophy used in user configuration",
+        "Could not parse BUILD_FLAGS - Possible apostrophe used in user configuration",
         ex,
     )

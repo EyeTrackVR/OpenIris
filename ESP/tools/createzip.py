@@ -53,13 +53,31 @@ def createZip(source, target, env):
                     # join the offset and path into a space separated string
                     temp.append("{} {}".format(offset, path))
 
+                # detect if the PIOENV has QIO flash mode
+                flash_mode = env["BOARD_FLASH_MODE"]
+                flash_freq = env["BOARD_F_FLASH"]
+                # detect the chip type
+                chip_type = env["BOARD_MCU"]
+
+                # capitalize the chip type
+                chip_type = chip_type.upper()
+
+                print("Flash Mode: %s" % flash_mode)
+                print("Chip Type: %s" % chip_type)
+
                 """
                 python esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB
                 0x1000 bootloader.bin 0x8000 partitions.bin 0xe000 boot.bin 0x10000 OpenIris-v1.3.0-esp32AIThinker-8229a3a-master.bin
                 """
+                execute_cmd = "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip {chip} merge_bin -o merged-firmware.bin --flash_mode {flash_mode} --flash_freq {flash_freq} --flash_size 4MB %s" % (
+                    " ".join(temp)
+                )
+
+                print("Executing: %s" % execute_cmd)
+
                 env.Execute(
-                    "$PYTHONEXE $PROJECT_PACKAGES_DIR/tool-esptoolpy/esptool.py --chip ESP32 merge_bin -o merged-firmware.bin --flash_mode dio --flash_freq 40m --flash_size 4MB %s"
-                    % (" ".join(temp))
+                    execute_cmd.format(
+                        chip=chip_type, flash_mode=flash_mode, flash_freq=flash_freq)
                 )
 
                 filename = basename("merged-firmware.bin")
@@ -77,7 +95,7 @@ def createZip(source, target, env):
                     "new_install_prompt_erase": new_install_prompt_erase,
                     "builds": [
                         {
-                            "chipFamily": "ESP32",
+                            "chipFamily": chip_type,
                             "parts": parts,
                         }
                     ],
