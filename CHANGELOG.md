@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.6](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.5...v2.2.6) (2023-10-27)
+
+
+### 🔁 Continuous Integration
+
+* **ci-fix:** fix build bug related to esp32s3 ([1a39c35](https://github.com/EyeTrackVR/OpenIris/commit/1a39c35534fd8e87b8f02e978e8a46faf8cc1d51))
+
 ## [2.2.5](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.4...v2.2.5) (2023-10-27)
 
 
