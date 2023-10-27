@@ -75,6 +75,9 @@ def createZip(source, target, env):
                 # capitalize the chip type
                 chip_type = chip_type.upper()
 
+                # add hyphen between ESP32 and the suffix (WROOM, WROVER, etc)
+                chip_type = chip_type.replace("ESP32", "ESP32-")
+
                 print("Flash Mode: %s" % flash_mode)
                 print("Chip Type: %s" % chip_type)
                 print("Flash Frequency: %s" % flash_freq)
