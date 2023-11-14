@@ -10,7 +10,6 @@
 #include "esp_camera.h"
 #include "esp_http_server.h"
 #include "esp_timer.h"
-#include "fb_gfx.h"
 #include "img_converters.h"
 
 namespace StreamHelpers
