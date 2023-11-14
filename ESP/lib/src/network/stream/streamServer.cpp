@@ -47,7 +47,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
             res = httpd_resp_send_chunk(req, STREAM_BOUNDARY, strlen(STREAM_BOUNDARY));
         if (res == ESP_OK)
         {
-            size_t hlen = snprintf((char *)part_buf, 128, STREAM_PART, _jpg_buf_len, _timestamp.tv_sec, _timestamp.tv_usec);
+            size_t hlen = snprintf((char *)part_buf, 128, STREAM_PART, _jpg_buf_len, static_cast<int>(_timestamp.tv_sec), static_cast<int>(_timestamp.tv_usec % 1000000));
             res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
         }
         if (res == ESP_OK)
