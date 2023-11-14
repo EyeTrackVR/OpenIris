@@ -204,6 +204,12 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       projectConfig.setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
+      break;
+    }
+    default: {
+      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+      request->redirect("/");
+      break;
     }
   }
 }
@@ -242,6 +248,12 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
       projectConfig.wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
+      break;
+    }
+    default: {
+      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
+      request->redirect("/");
+      break;
     }
   }
 }
@@ -251,6 +263,7 @@ void BaseAPI::rebootDevice(AsyncWebServerRequest* request) {
     case GET: {
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
       OpenIrisTasks::ScheduleRestart(2000);
+      break;
     }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
@@ -265,6 +278,7 @@ void BaseAPI::factoryReset(AsyncWebServerRequest* request) {
       log_d("Factory Reset");
       projectConfig.reset();
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Factory Reset\"}");
+      break;
     }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
