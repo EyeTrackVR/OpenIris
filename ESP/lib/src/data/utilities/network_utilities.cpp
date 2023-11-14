@@ -77,20 +77,28 @@ void Network_Utilities::checkWiFiState()
     {
         case wl_status_t::WL_IDLE_STATUS:
             wifiStateManager.setState(WiFiState_e::WiFiState_Idle);
+            break;
         case wl_status_t::WL_NO_SSID_AVAIL:
             wifiStateManager.setState(WiFiState_e::WiFiState_Error);
+            break;
         case wl_status_t::WL_SCAN_COMPLETED:
             wifiStateManager.setState(WiFiState_e::WiFiState_None);
+            break;
         case wl_status_t::WL_CONNECTED:
             wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
+            break;
         case wl_status_t::WL_CONNECT_FAILED:
             wifiStateManager.setState(WiFiState_e::WiFiState_Error);
+            break;
         case wl_status_t::WL_CONNECTION_LOST:
             wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+            break;
         case wl_status_t::WL_DISCONNECTED:
             wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+            break;
         default:
             wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+            break;
     }
 }
 
