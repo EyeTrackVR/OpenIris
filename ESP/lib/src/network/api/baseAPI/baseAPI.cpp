@@ -176,7 +176,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string service;
       std::string ota_password;
       std::string ota_login;
-      int ota_port;
+      int ota_port = 0;
 
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
