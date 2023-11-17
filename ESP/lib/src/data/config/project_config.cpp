@@ -81,7 +81,7 @@ void ProjectConfig::wifiConfigSave() {
   std::string ssid = "ssid";
   std::string password = "pass";
   std::string channel = "channel";
-  std::string power = "power";
+  std::string power = "txpower";
   for (int i = 0; i < this->config.networks.size(); i++) {
     char buffer[2];
     std::string iter_str = Helpers::itoa(i, buffer, 10);
@@ -122,7 +122,7 @@ void ProjectConfig::mdnsConfigSave() {
 
 void ProjectConfig::wifiTxPowerConfigSave() {
   /* Device Config */
-  putInt("power", this->config.txpower.power);
+  putInt("txpower", this->config.txpower.power);
 }
 
 void ProjectConfig::cameraConfigSave() {
@@ -159,14 +159,16 @@ void ProjectConfig::load() {
   this->config.mdns.service = getString("service").c_str();
 
   /* Wifi TX Power Config */
-  this->config.txpower.power = getUInt("power", 52);
+  // 11dBm is the default value
+  this->config.txpower.power = getUInt("txpower", 52);
+
   /* WiFi Config */
   int networkCount = getInt("networkCount", 0);
   std::string name = "name";
   std::string ssid = "ssid";
   std::string password = "pass";
   std::string channel = "channel";
-  std::string power = "power";
+  std::string power = "txpower";
   for (int i = 0; i < networkCount; i++) {
     char buffer[2];
     std::string iter_str = Helpers::itoa(i, buffer, 10);
@@ -280,7 +282,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
 
       if (shouldNotify) {
         wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
-        //WiFi.disconnect();
+        // WiFi.disconnect();
         this->wifiConfigSave();
         this->notifyAll(ConfigState_e::networksConfigUpdated);
       }
@@ -309,7 +311,7 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
 
   if (shouldNotify) {
     wifiStateManager.setState(WiFiState_e::WiFiState_None);
-    //WiFi.disconnect();
+    // WiFi.disconnect();
     this->wifiConfigSave();
     this->notifyAll(ConfigState_e::networksConfigUpdated);
   }
@@ -342,7 +344,6 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
 
 void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
   this->config.txpower.power = power;
-
   log_d("Updating wifi tx power");
   if (shouldNotify)
     this->notifyAll(ConfigState_e::wifiTxPowerUpdated);

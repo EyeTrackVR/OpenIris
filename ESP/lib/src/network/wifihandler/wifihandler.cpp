@@ -56,7 +56,7 @@ void WiFiHandler::begin() {
   for (auto& network : networks) {
     log_i("Trying to connect to network: %s \n\r", network.ssid.c_str());
     if (this->iniSTA(network.ssid, network.password, network.channel,
-                     (wifi_power_t)txpower.power)) {
+                     (wifi_power_t)network.power)) {
       return;
     }
   }
@@ -130,7 +130,7 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          wifi_power_t power) {
   unsigned long currentMillis = millis();
   unsigned long startingMillis = currentMillis;
-  int connectionTimeout = 30000;  // 30 seconds
+  int connectionTimeout = 45000;  // 30 seconds
   int progress = 0;
 
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
@@ -142,6 +142,7 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
               INADDR_NONE);  // need to call before setting hostname
   WiFi.setHostname(mdnsConfig.hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
+  WiFi.setTxPower(power);
   log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
@@ -157,7 +158,6 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
   log_i("Successfully connected to %s \n\r", ssid.c_str());
   log_i("Setting TX power to: %d \n\r", (uint8_t)power);
-  WiFi.setTxPower(power);
   return true;
 }
 
