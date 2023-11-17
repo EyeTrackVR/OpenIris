@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.9](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.8...v2.2.9) (2023-11-17)
+
+
+### 🐛 Bug Fixes
+
+* minor bugs related to the Wifi logging ([dca378c](https://github.com/EyeTrackVR/OpenIris/commit/dca378c0488bed6af7da80c7da94d2ba998e076b))
+
 ## [2.2.8](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.7...v2.2.8) (2023-11-17)
 
 
