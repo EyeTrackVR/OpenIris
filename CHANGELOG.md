@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.11](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.10...v2.2.11) (2023-11-18)
+
+
+### 🔁 Continuous Integration
+
+* **ci-fix:** esp32 chipset capitalization issue ([a0835a6](https://github.com/EyeTrackVR/OpenIris/commit/a0835a6403cc2a1acb07e1170ddd1eaaee8dece3))
+
 ## [2.2.10](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.9...v2.2.10) (2023-11-18)
 
 
