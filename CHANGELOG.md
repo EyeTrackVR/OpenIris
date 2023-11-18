@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.10](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.9...v2.2.10) (2023-11-18)
+
+
+### 🔁 Continuous Integration
+
+* **ci-fix:** esp32 chipset type hyphen issue ([660ca84](https://github.com/EyeTrackVR/OpenIris/commit/660ca84d8ebfbf16a970c695e621ff64b23c467f))
+
 ## [2.2.9](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.8...v2.2.9) (2023-11-17)
 
 
