@@ -75,12 +75,14 @@ def createZip(source, target, env):
                 elif chip_type == "esp32s3":
                     flash_size = '8'
 
+
+                if chip_type == "esp32c3" or chip_type == "esp32s3" or chip_type == "esp32s2":
+                    chip_type = chip_type.replace("esp32", "esp32-")
+
                 # capitalize the chip type
                 chip_type = chip_type.upper()
 
-                if chip_type == "esp32c3" or chip_type == "esp32s3" or chip_type == "esp32s2":
-                    chip_type = chip_type.replace("ESP32", "ESP32-")
-
+                sys.stdout.write(BLUE)
                 print("Flash Mode: %s" % flash_mode)
                 print("Chip Type: %s" % chip_type)
                 print("Flash Frequency: %s" % flash_freq)
@@ -95,6 +97,8 @@ def createZip(source, target, env):
                 )
 
                 print("Executing: %s" % execute_cmd)
+
+                sys.stdout.write(RESET)
 
                 env.Execute(
                     execute_cmd.format(
