@@ -30,8 +30,6 @@ void WiFiHandler::begin() {
       "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
   log_d("Setting Wifi Power to: %d", txpower.power);
-  // log_d("Enabling STA mode \n\r");
-  // WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
   WiFi.setSleep(false);
 
@@ -147,8 +145,10 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
     currentMillis = millis();
-   /*  Helpers::update_progress_bar(progress, 100);
-    delay(301); */
+    log_i(".");
+    log_d("Progress: %d \n\r", progress);
+    /*  Helpers::update_progress_bar(progress, 100);
+     delay(301); */
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
