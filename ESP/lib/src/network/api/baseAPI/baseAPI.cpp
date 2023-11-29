@@ -100,7 +100,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       // note: We're passing empty params by design, this is done to reset
       // specific fields
       projectConfig.setWifiConfig(networkName, ssid, password, channel, power,
-                                   adhoc, true);
+                                  adhoc, true);
 
       /* if (WiFiStateManager->getCurrentState() ==
       WiFiState_e::WiFiState_ADHOC)
@@ -118,8 +118,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       break;
     }
     case DELETE: {
-      projectConfig.deleteWifiConfig(request->arg("networkName").c_str(),
-                                      true);
+      projectConfig.deleteWifiConfig(request->arg("networkName").c_str(), true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Wifi Creds have been deleted.\"}");
       break;
@@ -210,23 +209,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
 
 void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
-    case GET: {
-      int params = request->params();
-
-      uint8_t txPower = 0;
-
-      for (int i = 0; i < params; i++) {
-        AsyncWebParameter* param = request->getParam(i);
-        if (param->name() == "txPower") {
-          txPower = atoi(param->value().c_str());
-        }
-      }
-      projectConfig.setWiFiTxPower(txPower, true);
-      projectConfig.wifiTxPowerConfigSave();
-      request->send(200, MIMETYPE_JSON,
-                    "{\"msg\":\"Done. TX Power has been set.\"}");
-      break;
-    }
+    case GET:
     case POST: {
       int params = request->params();
 
@@ -234,7 +217,7 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
 
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
-        if (param->name() == "txPower") {
+        if (param->name() == "txpower" || param->name() == "txPower") {
           txPower = atoi(param->value().c_str());
         }
       }
@@ -308,8 +291,8 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
       // note: We're passing empty params by design, this is done to reset
       // specific fields
       projectConfig.setCameraConfig(temp_camera_vflip, temp_camera_framesize,
-                                     temp_camera_hflip, temp_camera_quality,
-                                     temp_camera_brightness, true);
+                                    temp_camera_hflip, temp_camera_quality,
+                                    temp_camera_brightness, true);
 
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Camera Settings have been set.\"}");
@@ -330,7 +313,7 @@ void BaseAPI::restartCamera(AsyncWebServerRequest* request) {
   request->send(200, MIMETYPE_JSON,
                 "{\"msg\":\"Done. Camera had been restarted.\"}");
 }
-#endif // SIM_ENABLED
+#endif  // SIM_ENABLED
 
 //*********************************************************************************************
 //!                                     General Command Functions

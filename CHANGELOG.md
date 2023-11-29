@@ -3,6 +3,34 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.2.11](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.10...v2.2.11) (2023-11-18)
+
+
+### 🔁 Continuous Integration
+
+* **ci-fix:** esp32 chipset capitalization issue ([a0835a6](https://github.com/EyeTrackVR/OpenIris/commit/a0835a6403cc2a1acb07e1170ddd1eaaee8dece3))
+
+## [2.2.10](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.9...v2.2.10) (2023-11-18)
+
+
+### 🔁 Continuous Integration
+
+* **ci-fix:** esp32 chipset type hyphen issue ([660ca84](https://github.com/EyeTrackVR/OpenIris/commit/660ca84d8ebfbf16a970c695e621ff64b23c467f))
+
+## [2.2.9](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.8...v2.2.9) (2023-11-17)
+
+
+### 🐛 Bug Fixes
+
+* minor bugs related to the Wifi logging ([dca378c](https://github.com/EyeTrackVR/OpenIris/commit/dca378c0488bed6af7da80c7da94d2ba998e076b))
+
+## [2.2.8](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.7...v2.2.8) (2023-11-17)
+
+
+### 🧑‍💻 Code Refactoring
+
+* comment out progress indicator during wifi setup ([1bbb61b](https://github.com/EyeTrackVR/OpenIris/commit/1bbb61beeeb20a730001737bd670b6c0873130d8))
+
 ## [2.2.7](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.6...v2.2.7) (2023-10-27)
 
 

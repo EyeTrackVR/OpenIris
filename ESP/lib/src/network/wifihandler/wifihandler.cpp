@@ -30,8 +30,6 @@ void WiFiHandler::begin() {
       "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
   log_d("Setting Wifi Power to: %d", txpower.power);
-  // log_d("Enabling STA mode \n\r");
-  // WiFi.mode(WIFI_STA);
   log_d("Setting WiFi sleep mode to NONE \n\r");
   WiFi.setSleep(false);
 
@@ -56,7 +54,7 @@ void WiFiHandler::begin() {
   for (auto& network : networks) {
     log_i("Trying to connect to network: %s \n\r", network.ssid.c_str());
     if (this->iniSTA(network.ssid, network.password, network.channel,
-                     (wifi_power_t)txpower.power)) {
+                     (wifi_power_t)network.power)) {
       return;
     }
   }
@@ -130,7 +128,7 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          wifi_power_t power) {
   unsigned long currentMillis = millis();
   unsigned long startingMillis = currentMillis;
-  int connectionTimeout = 30000;  // 30 seconds
+  int connectionTimeout = 45000;  // 30 seconds
   int progress = 0;
 
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
@@ -142,12 +140,15 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
               INADDR_NONE);  // need to call before setting hostname
   WiFi.setHostname(mdnsConfig.hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
+  WiFi.setTxPower(power);
   log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
     currentMillis = millis();
-    Helpers::update_progress_bar(progress, 100);
-    delay(301);
+    log_i(".");
+    log_d("Progress: %d \n\r", progress);
+    /*  Helpers::update_progress_bar(progress, 100);
+     delay(301); */
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
@@ -157,7 +158,6 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
   log_i("Successfully connected to %s \n\r", ssid.c_str());
   log_i("Setting TX power to: %d \n\r", (uint8_t)power);
-  WiFi.setTxPower(power);
   return true;
 }
 
