@@ -6,8 +6,7 @@ MDNSHandler::MDNSHandler(ProjectConfig& configManager)
 bool MDNSHandler::startMDNS() {
   const std::string service = "_openiristracker";
   auto mdnsConfig = configManager.getMDNSConfig();
-  if (!MDNS.begin(mdnsConfig.hostname
-                      .c_str()))  // lowercase only - as this will be the url
+  if (!MDNS.begin(mdnsConfig.hostname.c_str()))  // lowercase only - as this will be the url
   {
     mdnsStateManager.setState(MDNSState_e::MDNSState_Error);
     log_e("Error initializing MDNS");
