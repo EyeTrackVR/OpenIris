@@ -42,8 +42,7 @@ void WiFiHandler::begin() {
     
     // since networks may not have a password, we only need to check if we have an ssid
     // bail if we don't  
-    if (this->ssid != ""  &&
-        this->iniSTA(
+    if (this->iniSTA(
           this->ssid,
           this->password,
           this->channel, 
@@ -135,6 +134,12 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          const std::string& password,
                          uint8_t channel,
                          wifi_power_t power) {
+  
+  if (ssid == ""){
+    log_d("ssid missing, bailing");
+    return false; 
+  }
+
   unsigned long currentMillis = millis();
   unsigned long startingMillis = currentMillis;
   int connectionTimeout = 45000;  // 30 seconds
