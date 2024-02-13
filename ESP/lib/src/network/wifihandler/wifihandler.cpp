@@ -6,13 +6,14 @@
 WiFiHandler::WiFiHandler(ProjectConfig& configManager,
                          const std::string& ssid,
                          const std::string& password,
-                         uint8_t channel)
+                         uint8_t channel,
+                         bool enable_adhoc)
     : configManager(configManager),
       ssid(std::move(ssid)),
       password(std::move(password)),
       channel(channel),
       power(0),
-      _enable_adhoc(false) {}
+      _enable_adhoc(enable_adhoc) {}
 
 WiFiHandler::~WiFiHandler() {}
 
@@ -25,9 +26,7 @@ void WiFiHandler::begin() {
     return;
   }
 
-  log_d(
-      "ADHOC is disabled, setting up STA network and checking transmission "
-      "power \n\r");
+  log_d("ADHOC is disabled, setting up STA network and checking transmission power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
   log_d("Setting Wifi Power to: %d", txpower.power);
   log_d("Setting WiFi sleep mode to NONE \n\r");
@@ -40,10 +39,19 @@ void WiFiHandler::begin() {
 
   if (networks.empty()) {
     log_i("No networks found in config, trying the default one \n\r");
-    if (this->iniSTA(this->ssid, this->password, this->channel,
-                     (wifi_power_t)txpower.power)) {
+    
+    // since networks may not have a password, we only need to check if we have an ssid
+    // bail if we don't  
+    if (this->iniSTA(
+          this->ssid,
+          this->password,
+          this->channel, 
+          (wifi_power_t)txpower.power
+        )
+    ) {
       return;
     }
+
     log_i(
         "Could not connect to the hardcoded network, setting up ADHOC "
         "network \n\r");
@@ -126,6 +134,12 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          const std::string& password,
                          uint8_t channel,
                          wifi_power_t power) {
+  
+  if (ssid == ""){
+    log_d("ssid missing, bailing");
+    return false; 
+  }
+
   unsigned long currentMillis = millis();
   unsigned long startingMillis = currentMillis;
   int connectionTimeout = 45000;  // 30 seconds
@@ -147,8 +161,6 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
     currentMillis = millis();
     log_i(".");
     log_d("Progress: %d \n\r", progress);
-    /*  Helpers::update_progress_bar(progress, 100);
-     delay(301); */
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());

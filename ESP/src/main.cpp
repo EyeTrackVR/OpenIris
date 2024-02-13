@@ -1,5 +1,4 @@
 #include <openiris.hpp>
-
 /**
  * @brief ProjectConfig object
  * @brief This is the main configuration object for the project
@@ -7,6 +6,8 @@
  * @param mdnsName The mDNS hostname to use
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
+CommandManager commandManager(&deviceConfig);
+SerialManager serialManager(&commandManager);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -19,7 +20,7 @@ CameraHandler cameraHandler(deviceConfig);
 #endif  // SIM_ENABLED
 
 #ifndef ETVR_EYE_TRACKER_USB_API
-WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
+WiFiHandler wifiHandler(deviceConfig, WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL, ENABLE_ADHOC);
 MDNSHandler mdnsHandler(deviceConfig);
 #ifdef SIM_ENABLED
 APIServer apiServer(deviceConfig, wifiStateManager, "/control");
@@ -30,9 +31,6 @@ StreamServer streamServer;
 
 void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting Network Handler");
-  // deviceConfig.attach(wifiHandler);
-  log_d("[SETUP]: Checking ADHOC Settings");
-  wifiHandler._enable_adhoc = ENABLE_ADHOC;
   deviceConfig.attach(mdnsHandler);
   log_d("[SETUP]: Starting WiFi Handler");
   wifiHandler.begin();
@@ -78,7 +76,6 @@ void setup() {
   setCpuFrequencyMhz(240);
   Serial.begin(115200);
   Logo::printASCII();
-  //  Serial.flush();
   ledManager.begin();
 
 #ifndef SIM_ENABLED
@@ -86,17 +83,16 @@ void setup() {
 #endif  // SIM_ENABLED
   deviceConfig.load();
 
+serialManager.init();
+
 #ifndef ETVR_EYE_TRACKER_USB_API
   etvr_eye_tracker_web_init();
 #else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);
-  etvr_eye_tracker_usb_init();
 #endif  // ETVR_EYE_TRACKER_WEB_API
 }
 
 void loop() {
   ledManager.handleLED();
-#ifdef ETVR_EYE_TRACKER_USB_API
-  etvr_eye_tracker_usb_loop();
-#endif  // ETVR_EYE_TRACKER_USB_API
+  serialManager.run();
 }

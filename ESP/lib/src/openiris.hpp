@@ -7,6 +7,8 @@
 #include <io/LEDManager/LEDManager.hpp>
 #include <io/camera/cameraHandler.hpp>
 #include <logo/logo.hpp>
+#include <io/Serial/SerialManager.hpp>
+#include <data/CommandManager/CommandManager.hpp>
 
 #ifndef ETVR_EYE_TRACKER_USB_API
 #include <network/api/webserverHandler.hpp>
