@@ -10,13 +10,12 @@ class WiFiHandler : public IObserver<ConfigState_e> {
   WiFiHandler(ProjectConfig& configManager,
               const std::string& ssid,
               const std::string& password,
-              uint8_t channel);
+              uint8_t channel,
+              bool enable_adhoc);
   virtual ~WiFiHandler();
   void begin();
   void update(ConfigState_e event) override;
   std::string getName() override;
-
-  bool _enable_adhoc;
 
  private:
   void setUpADHOC();
@@ -30,6 +29,8 @@ class WiFiHandler : public IObserver<ConfigState_e> {
 
   ProjectConfig& configManager;
 
+
+  bool _enable_adhoc;
   std::string ssid;
   std::string password;
   uint8_t channel;
