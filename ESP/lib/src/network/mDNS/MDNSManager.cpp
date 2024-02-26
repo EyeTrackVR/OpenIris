@@ -19,6 +19,7 @@ bool MDNSHandler::startMDNS() {
   //! Add service needs leading _ on ESP32 implementation for some reason
   //! (according to the docs)
   MDNS.addServiceTxt(service.c_str(), "_tcp", "stream_port", "80");
+  MDNS.addServiceTxt(service.c_str(), "_tcp", "api_port", "81");
   log_i("MDNS initialized!");
   mdnsStateManager.setState(MDNSState_e::MDNSState_Started);
   return true;
