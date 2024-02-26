@@ -58,9 +58,6 @@ void SerialManager::init() {
 }
 
 void SerialManager::run() {
-  while (true) {
-    // we're getting a command, read it whole and process.
-    // otherwise, send a frame if we're supposed to
     if (Serial.available()) {
       JsonDocument doc;
       DeserializationError deserializationError = deserializeJson(doc, Serial);
@@ -68,7 +65,6 @@ void SerialManager::run() {
       if (deserializationError) {
         log_e("Command deserialization failed: %s",
               deserializationError.c_str());
-        continue;
       }
 
       Command command = {doc};
@@ -79,5 +75,4 @@ void SerialManager::run() {
       this->send_frame();
     }
 #endif
-  }
 }
