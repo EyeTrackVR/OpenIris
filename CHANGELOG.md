@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.3.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.11...v2.3.0) (2024-02-18)
+
+
+### 🍕 Features
+
+* Add a PoC implementation of command manager responding to commands send over serial. ([#59](https://github.com/EyeTrackVR/OpenIris/issues/59)) ([54e4e0a](https://github.com/EyeTrackVR/OpenIris/commit/54e4e0abd92b6d3233f81bbbc3d74e1370239b4f))
+
 ## [2.2.11](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.10...v2.2.11) (2023-11-18)
 
 
