@@ -54,7 +54,9 @@ void SerialManager::send_frame() {
 
 void SerialManager::init() {
   Serial.begin(3000000);
-  Serial.flush();
+  if (SERIAL_FLUSH_ENABLED){
+    Serial.flush();
+  }
 }
 
 void SerialManager::run() {
