@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.4.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.3.0...v2.4.0) (2024-03-11)
+
+
+### 🍕 Features
+
+* Fix the serial command manager preventing the boards from connecting to wi-fi ([#60](https://github.com/EyeTrackVR/OpenIris/issues/60)) ([09f0b25](https://github.com/EyeTrackVR/OpenIris/commit/09f0b25377a6d74c6320891a5b978f3077760ed6))
+
 ## [2.3.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.2.11...v2.3.0) (2024-02-18)
 
 
