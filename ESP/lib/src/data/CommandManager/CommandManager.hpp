@@ -9,6 +9,7 @@ enum CommandType {
     None,
     PING,
     SET_WIFI,
+    SET_MDNS,
 };
 
 
@@ -22,9 +23,12 @@ private:
 const std::unordered_map<std::string, CommandType> commandMap = {
     {"ping", CommandType::PING},
     {"set_wifi", CommandType::SET_WIFI},
+    {"set_mdns", CommandType::SET_MDNS},
 };
 
 ProjectConfig* deviceConfig;
+
+bool hasHasDataField(Command &command);
 
 public:
     CommandManager(ProjectConfig *deviceConfig); 
