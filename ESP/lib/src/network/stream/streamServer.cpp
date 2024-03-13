@@ -25,7 +25,7 @@ esp_err_t StreamHelpers::stream(httpd_req_t *req)
     if (res != ESP_OK)
         return res;
 
-    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin; Content-Type: multipart/x-mixed-replace; boundary=123456789000000000000987654321\r\n", "*");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_hdr(req, "X-Framerate", "60");
 
     while (true)
