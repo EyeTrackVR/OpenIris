@@ -199,7 +199,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       }
       // note: We're passing empty params by design, this is done to reset
       // specific fields
-      projectConfig.setDeviceConfig(ota_login, ota_password, ota_port, true);
+      projectConfig.setDeviceConfig(ota_login, ota_password, "", ota_port, true);
       projectConfig.setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
