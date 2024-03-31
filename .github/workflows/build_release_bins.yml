@@ -7,11 +7,13 @@ on:
     branches:
       - "master"
       - "main"
+      - "beta"
       - "feature/improv"
   pull_request:
     branches:
       - "master"
       - "main"
+      - "beta"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
