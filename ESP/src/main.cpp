@@ -7,7 +7,7 @@
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 CommandManager commandManager(&deviceConfig);
-SerialManager serialManager(&commandManager);
+SerialManager serialManager(&commandManager, deviceConfig);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -90,6 +90,11 @@ serialManager.init();
 #else   // ETVR_EYE_TRACKER_WEB_API
   WiFi.disconnect(true);
 #endif  // ETVR_EYE_TRACKER_WEB_API
+
+Serial.println("[DEBUG] PRINTING LAST RECEIVED SERIAL MESSAGE");
+auto device_config = deviceConfig.getDeviceConfig();
+Serial.println(device_config.SerialJSONData.c_str());
+Serial.println("[DEBUG] END");
 }
 
 void loop() {

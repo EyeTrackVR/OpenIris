@@ -16,6 +16,7 @@ class SerialManager {
  private:
   esp_err_t err = ESP_OK;
   CommandManager* commandManager;
+  ProjectConfig& configManager;
 
 #ifdef ETVR_EYE_TRACKER_USB_API
   int64_t last_frame = 0;
@@ -25,7 +26,7 @@ class SerialManager {
 #endif
 
  public:
-  SerialManager(CommandManager* commandManager);
+  SerialManager(CommandManager* commandManager, ProjectConfig& configManager);
   void init();
   void run();
 };
