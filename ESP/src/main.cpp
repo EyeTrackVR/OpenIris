@@ -7,7 +7,7 @@
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 CommandManager commandManager(&deviceConfig);
-SerialManager serialManager(&commandManager, deviceConfig);
+SerialManager serialManager(&commandManager);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
