@@ -1,7 +1,7 @@
 #include "SerialManager.hpp"
 
-SerialManager::SerialManager(CommandManager* commandManager, ProjectConfig& configManager)
-    : commandManager(commandManager), configManager(configManager) {}
+SerialManager::SerialManager(CommandManager* commandManager)
+    : commandManager(commandManager) {}
 
 #ifdef ETVR_EYE_TRACKER_USB_API
 void SerialManager::send_frame() {
@@ -61,21 +61,18 @@ void SerialManager::init() {
 
 void SerialManager::run() {
     if (Serial.available()) {
-      auto serialData = Serial.readString();
       JsonDocument doc;
-      DeserializationError deserializationError = deserializeJson(doc, serialData);
+      DeserializationError deserializationError = deserializeJson(doc, Serial);
 
       if (deserializationError) {
         log_e("Command deserialization failed: %s",
               deserializationError.c_str());
+
+        return;
       }
 
-      Command command = {doc};
-
-      configManager.setDeviceConfig("", "", serialData.c_str(), 81, true);
-      configManager.deviceConfigSave();
-      this->commandManager->handleCommand(command);
-      configManager.save(); // in case we receive something totally different than supported command, save anyway and restart
+      CommandsPayload commands = {doc};
+      this->commandManager->handleCommands(commands);
     }
 #ifdef ETVR_EYE_TRACKER_USB_API
     else {
