@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.5.0-beta.2](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.1...v2.5.0-beta.2) (2024-04-01)
+
+
+### 🍕 Features
+
+* Test fix for serial manager ([62314f4](https://github.com/EyeTrackVR/OpenIris/commit/62314f4de96b675cc49582afe3b1b18acd5d3c19))
+
 ## [2.5.0-beta.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.4.0...v2.5.0-beta.1) (2024-04-01)
 
 
