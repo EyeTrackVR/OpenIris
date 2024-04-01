@@ -67,10 +67,12 @@ void SerialManager::run() {
       if (deserializationError) {
         log_e("Command deserialization failed: %s",
               deserializationError.c_str());
+        
+        return;
       }
 
-      Command command = {doc};
-      this->commandManager->handleCommand(command);
+      CommandsPayload commands = {doc};
+      this->commandManager->handleCommands(commands);
     }
 #ifdef ETVR_EYE_TRACKER_USB_API
     else {

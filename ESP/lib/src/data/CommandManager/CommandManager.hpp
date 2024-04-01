@@ -13,7 +13,7 @@ enum CommandType {
 };
 
 
-struct Command { 
+struct CommandsPayload { 
     JsonDocument data;
 };
 
@@ -28,12 +28,13 @@ const std::unordered_map<std::string, CommandType> commandMap = {
 
 ProjectConfig* deviceConfig;
 
-bool hasHasDataField(Command &command);
+bool hasDataField(JsonVariant &command);
+void handleCommand(JsonVariant command);
+const CommandType getCommandType(JsonVariant &command);
 
 public:
     CommandManager(ProjectConfig *deviceConfig); 
-    void handleCommand(Command command);
-    const CommandType getCommandType(Command &command);
+    void handleCommands(CommandsPayload commandsPayload);
 };
 
 #endif
