@@ -30,7 +30,7 @@ void ProjectConfig::initConfig() {
   ! Do not initialize the WiFiConfig_t struct here,
   ! as it will create a blank network which breaks the WiFiManager
    */
-  this->config.device = {OTA_LOGIN, OTA_PASSWORD, "", 3232};
+  this->config.device = {OTA_LOGIN, OTA_PASSWORD, "", "", 3232};
 
   if (_mdnsName.empty()) {
     log_e("MDNS name is null\n Auto-assigning name to 'openiristracker'");
@@ -111,7 +111,9 @@ void ProjectConfig::deviceConfigSave() {
   /* Device Config */
   putString("OTAPassword", this->config.device.OTAPassword.c_str());
   putString("OTALogin", this->config.device.OTALogin.c_str());
+  putString("OTALogin", this->config.device.OTALogin.c_str());
   putString("SerialJSONData", this->config.device.SerialJSONData.c_str());
+  putString("LastWifiError", this->config.device.LastWifiError.c_str());
   putInt("OTAPort", this->config.device.OTAPort);
 }
 
@@ -155,6 +157,7 @@ void ProjectConfig::load() {
       getString("OTAPassword", "12345678").c_str();
   this->config.device.OTAPort = getInt("OTAPort", 3232);
   this->config.device.SerialJSONData = getString("SerialJSONData", "").c_str();
+  this->config.device.LastWifiError = getString("LastWifiError", "").c_str();
 
   /* MDNS Config */
   this->config.mdns.hostname = getString("hostname", _mdnsName.c_str()).c_str();
@@ -218,6 +221,7 @@ void ProjectConfig::load() {
 void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
                                     const std::string& OTAPassword,
                                     const std::string& SerialJSONData,
+                                    const std::string& LastWifiError,
                                     int OTAPort,
                                     bool shouldNotify) {
   log_d("Updating device config");
@@ -225,6 +229,7 @@ void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
   this->config.device.OTAPassword.assign(OTAPassword);
   this->config.device.OTAPort = OTAPort;
   this->config.device.SerialJSONData.assign(SerialJSONData);
+  this->config.device.LastWifiError.assign(LastWifiError);
 
   if (shouldNotify)
     this->notifyAll(ConfigState_e::deviceConfigUpdated);

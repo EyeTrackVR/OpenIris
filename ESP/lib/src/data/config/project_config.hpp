@@ -32,6 +32,7 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     std::string OTALogin;
     std::string OTAPassword;
     std::string SerialJSONData;
+    std::string LastWifiError;
     int OTAPort;
     std::string toRepresentation();
   };
@@ -108,6 +109,7 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
   void setDeviceConfig(const std::string& OTALogin,
                        const std::string& OTAPassword,
                        const std::string& SerialJSONData,
+                       const std::string& LastWifiError,
                        int OTAPort,
                        bool shouldNotify);
   void setMDNSConfig(const std::string& hostname,

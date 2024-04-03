@@ -19,6 +19,10 @@ WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
   log_i("Starting WiFi Handler \n\r");
+  
+  // forcefully disconnect to reset anything that could've been saved before
+  WiFi.disconnect();
+  
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
     log_d("ADHOC is enabled, setting up ADHOC network \n\r");
@@ -146,24 +150,41 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   int progress = 0;
 
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
-  log_i("Trying to connect to: %s \n\r", ssid.c_str());
+  log_i("Trying to connect to: %s with password: %s\n\r", ssid.c_str(), password.c_str());
   auto mdnsConfig = configManager.getMDNSConfig();
 
   log_d("Setting hostname %s \n\r");
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
               INADDR_NONE);  // need to call before setting hostname
   WiFi.setHostname(mdnsConfig.hostname.c_str());
+  
+  WiFi.setTxPower(power); // https://github.com/espressif/arduino-esp32/issues/5698
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
-  WiFi.setTxPower(power);
   log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
     currentMillis = millis();
-    log_i(".");
-    log_d("Progress: %d \n\r", progress);
+    
+    // log_i(".");
+    // log_d("Progress: %d \n\r", progress);
+    
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
-      log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
+
+      char encountered_errror[256];
+      snprintf(encountered_errror, sizeof(encountered_errror), "Connection to: %s TIMEOUT \n\r", ssid.c_str());
+      log_e("%s", encountered_errror);
+
+      auto deviceConfig = this->configManager.getDeviceConfig();
+      configManager.setDeviceConfig(
+        deviceConfig.OTALogin,
+        deviceConfig.OTAPassword,
+        deviceConfig.SerialJSONData,
+        encountered_errror,
+        deviceConfig.OTAPort,
+        false
+        );
+
       return false;
     }
   }

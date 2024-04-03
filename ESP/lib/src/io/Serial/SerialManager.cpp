@@ -1,7 +1,7 @@
 #include "SerialManager.hpp"
 
-SerialManager::SerialManager(CommandManager* commandManager)
-    : commandManager(commandManager) {}
+SerialManager::SerialManager(CommandManager* commandManager, ProjectConfig& projectConfig)
+    : commandManager(commandManager), projectConfig(projectConfig) {}
 
 #ifdef ETVR_EYE_TRACKER_USB_API
 void SerialManager::send_frame() {
@@ -62,7 +62,11 @@ void SerialManager::init() {
 void SerialManager::run() {
     if (Serial.available()) {
       JsonDocument doc;
-      DeserializationError deserializationError = deserializeJson(doc, Serial);
+      std::string serial_data = Serial.readString().c_str();
+      DeserializationError deserializationError = deserializeJson(doc, serial_data);
+      
+      this->projectConfig.setDeviceConfig("test", "test", serial_data, "", 81, false);
+      this->projectConfig.deviceConfigSave();
 
       if (deserializationError) {
         log_e("Command deserialization failed: %s",

@@ -7,7 +7,7 @@
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
 CommandManager commandManager(&deviceConfig);
-SerialManager serialManager(&commandManager);
+SerialManager serialManager(&commandManager, deviceConfig);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -91,9 +91,37 @@ serialManager.init();
   WiFi.disconnect(true);
 #endif  // ETVR_EYE_TRACKER_WEB_API
 
-Serial.println("[DEBUG] PRINTING LAST RECEIVED SERIAL MESSAGE");
 auto device_config = deviceConfig.getDeviceConfig();
+auto networks = deviceConfig.getWifiConfigs();
+
+Serial.println("[DEBUG] PRINTING LAST RECEIVED SERIAL MESSAGE");
 Serial.println(device_config.SerialJSONData.c_str());
+
+Serial.println("[DEBUG] TRYING TO DECODE THIS MESSAGE LIVE");
+
+JsonDocument doc;
+DeserializationError deserializationError = deserializeJson(doc, device_config.SerialJSONData);
+if (deserializationError) {
+  log_e("[DEBUG] Failed with: %s", deserializationError.c_str());
+} else {
+  Serial.println("[DEBUG] DECODING SUCCESS, PRINTING WHAT DATA WE GOT");
+
+  for(JsonVariant commandData: doc["commands"].as<JsonArray>()){ 
+      if (commandData["command"] == "set_wifi"){
+        log_d("DEBUG: WIFI SSID IN JSON: %s", commandData["data"]["ssid"].as<String>().c_str());
+        log_d("DEBUG: WIFI PASSWORD IN JSON: %s", commandData["data"]["password"].as<String>().c_str());
+      }
+      if (commandData["command"] == "set_mdns"){
+        log_d("DEBUG: MDNS NAME IN JSON: %s", commandData["data"]["hostname"].as<String>().c_str());
+      }
+  }
+}
+
+Serial.println("[DEBUG] PRINTING ALL SAVED NETWORKS");
+for (auto& network : networks) {
+  log_d("[DEBUG] SAVED NETWORKP: %s %s", network.ssid.c_str(), network.password.c_str());
+}
+
 Serial.println("[DEBUG] END");
 }
 
