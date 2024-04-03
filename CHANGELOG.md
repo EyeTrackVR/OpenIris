@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.5.0-beta.3](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.2...v2.5.0-beta.3) (2024-04-03)
+
+
+### 🍕 Features
+
+* add even more logging, forcefully disconnect wifi in the beginning, move setting tx power to before wifi begin ([d053ece](https://github.com/EyeTrackVR/OpenIris/commit/d053ece63ee57889dc89a310955a182eb4c40927))
+
 ## [2.5.0-beta.2](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.1...v2.5.0-beta.2) (2024-04-01)
 
 
