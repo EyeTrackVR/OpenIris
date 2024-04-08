@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.5.0-beta.4](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.3...v2.5.0-beta.4) (2024-04-08)
+
+
+### 🍕 Features
+
+* set min security level to WIFI_AUTH_WEP ([d995060](https://github.com/EyeTrackVR/OpenIris/commit/d9950609ef3f4ccabc2058cd9a11f5c7ef70bba5))
+
 ## [2.5.0-beta.3](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.2...v2.5.0-beta.3) (2024-04-03)
 
 
