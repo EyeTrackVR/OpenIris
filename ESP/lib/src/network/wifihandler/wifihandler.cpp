@@ -23,6 +23,9 @@ void WiFiHandler::begin() {
   // forcefully disconnect to reset anything that could've been saved before
   WiFi.disconnect();
   
+  // we purposefully set the lowest min required security level, some boards have problems connecting otherwise
+  WiFi.setMinSecurity(WIFI_AUTH_WEP);
+  
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
     log_d("ADHOC is enabled, setting up ADHOC network \n\r");
