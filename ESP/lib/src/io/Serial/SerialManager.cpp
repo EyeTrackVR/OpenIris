@@ -54,7 +54,7 @@ void SerialManager::send_frame() {
 #endif
 
 void SerialManager::init() {
-  #ifndef SERIAL_MANAGER_USE_LOWER_FREQUENCY
+  #ifndef SERIAL_MANAGER_USE_HIGHER_FREQUENCY
   Serial.begin(3000000);
   #endif
   if (SERIAL_FLUSH_ENABLED) {
