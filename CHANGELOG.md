@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.5.0-beta.5](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.4...v2.5.0-beta.5) (2024-05-31)
+
+
+### 🍕 Features
+
+* Move logging in serial streaming so that we at least attempt to get new frame ([53a3d4b](https://github.com/EyeTrackVR/OpenIris/commit/53a3d4bcd603e2fd07546621628e69de88e4139a))
+
 ## [2.5.0-beta.4](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0-beta.3...v2.5.0-beta.4) (2024-04-08)
 
 
