@@ -1,7 +1,9 @@
 #include "SerialManager.hpp"
 
 SerialManager::SerialManager(CommandManager* commandManager)
-    : commandManager(commandManager) {}
+    : commandManager(commandManager) {
+  this->queryManager = new QueryManager();
+}
 
 #ifdef ETVR_EYE_TRACKER_USB_API
 void SerialManager::send_frame() {
@@ -56,6 +58,14 @@ void SerialManager::init() {
   if (SERIAL_FLUSH_ENABLED) {
     Serial.flush();
   }
+
+  QueryPayload* setupFinishedMessage =
+      new QueryPayload(QueryAction::READY_TO_RECEIVE, QueryStatus::NONE, "");
+  this->snedQuery(setupFinishedMessage);
+}
+
+void SerialManager::snedQuery(QueryPayload* messagePayload) {
+  Serial.println(this->queryManager->formatMessage(messagePayload).c_str());
 }
 
 void SerialManager::run() {

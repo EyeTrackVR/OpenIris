@@ -7,6 +7,7 @@
 #include <USBCDC.h>
 #include <esp_camera.h>
 #include "data/CommandManager/CommandManager.hpp"
+#include "data/QueryManager/QueryManager.hpp"
 #include "data/config/project_config.hpp"
 
 const char* const ETVR_HEADER = "\xff\xa0";
@@ -16,6 +17,7 @@ class SerialManager {
  private:
   esp_err_t err = ESP_OK;
   CommandManager* commandManager;
+  QueryManager* queryManager;
 
 #ifdef ETVR_EYE_TRACKER_USB_API
   int64_t last_frame = 0;
@@ -26,6 +28,7 @@ class SerialManager {
 
  public:
   SerialManager(CommandManager* commandManager);
+  void snedQuery(QueryPayload* messagePayload);
   void init();
   void run();
 };
