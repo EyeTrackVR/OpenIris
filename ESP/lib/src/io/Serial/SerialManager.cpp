@@ -59,13 +59,19 @@ void SerialManager::init() {
     Serial.flush();
   }
 
-  QueryPayload* setupFinishedMessage =
-      new QueryPayload(QueryAction::READY_TO_RECEIVE, QueryStatus::NONE, "");
-  this->snedQuery(setupFinishedMessage);
+  this->sendQuery(QueryAction::READY_TO_RECEIVE, QueryStatus::NONE, "");
 }
 
-void SerialManager::snedQuery(QueryPayload* messagePayload) {
-  Serial.println(this->queryManager->formatMessage(messagePayload).c_str());
+void SerialManager::(QueryAction action,
+                     QueryStatus status,
+                     std::string additional_info) {
+  JsonDocument doc;
+  doc["action"] = queryActionMap.at(action);
+  doc["status"] = status;
+  doc["additional_info"] = additional_info;
+
+  doc.shrinkToFit();  // optional
+  serializeJson(doc, Serial);
 }
 
 void SerialManager::run() {

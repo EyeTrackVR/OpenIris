@@ -13,11 +13,28 @@
 const char* const ETVR_HEADER = "\xff\xa0";
 const char* const ETVR_HEADER_FRAME = "\xff\xa1";
 
+enum QueryAction {
+  READY_TO_RECEIVE,
+  PARSE_COMMANDS,
+  CONNECT_TO_WIFI,
+};
+
+enum QueryStatus {
+  NONE,
+  SUCCESS,
+  ERROR,
+};
+
+const std::unordered_map<QueryAction, std::string> queryActionMap = {
+    {QueryAction::READY_TO_RECEIVE, "ready_to_receive"},
+    {QueryAction::PARSE_COMMANDS, "parse_commands"},
+    {QueryAction::CONNECT_TO_WIFI, "connect_to_wifi"},
+};
+
 class SerialManager {
  private:
   esp_err_t err = ESP_OK;
   CommandManager* commandManager;
-  QueryManager* queryManager;
 
 #ifdef ETVR_EYE_TRACKER_USB_API
   int64_t last_frame = 0;
@@ -28,7 +45,9 @@ class SerialManager {
 
  public:
   SerialManager(CommandManager* commandManager);
-  void snedQuery(QueryPayload* messagePayload);
+  void sendQuery(QueryAction action,
+                 QueryStatus status,
+                 std::string additional_info);
   void init();
   void run();
 };
