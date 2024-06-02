@@ -7,7 +7,6 @@
 #include <USBCDC.h>
 #include <esp_camera.h>
 #include "data/CommandManager/CommandManager.hpp"
-#include "data/QueryManager/QueryManager.hpp"
 #include "data/config/project_config.hpp"
 
 const char* const ETVR_HEADER = "\xff\xa0";
