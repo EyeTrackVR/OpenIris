@@ -1,9 +1,7 @@
 #include "SerialManager.hpp"
 
 SerialManager::SerialManager(CommandManager* commandManager)
-    : commandManager(commandManager) {
-  this->queryManager = new QueryManager();
-}
+    : commandManager(commandManager) {}
 
 #ifdef ETVR_EYE_TRACKER_USB_API
 void SerialManager::send_frame() {
@@ -54,26 +52,12 @@ void SerialManager::send_frame() {
 #endif
 
 void SerialManager::init() {
-  #ifndef SERIAL_MANAGER_USE_HIGHER_FREQUENCY
+#ifndef SERIAL_MANAGER_USE_HIGHER_FREQUENCY
   Serial.begin(3000000);
-  #endif
+#endif
   if (SERIAL_FLUSH_ENABLED) {
     Serial.flush();
   }
-
-  this->sendQuery(QueryAction::READY_TO_RECEIVE, QueryStatus::NONE, "");
-}
-
-void SerialManager::(QueryAction action,
-                     QueryStatus status,
-                     std::string additional_info) {
-  JsonDocument doc;
-  doc["action"] = queryActionMap.at(action);
-  doc["status"] = status;
-  doc["additional_info"] = additional_info;
-
-  doc.shrinkToFit();  // optional
-  serializeJson(doc, Serial);
 }
 
 void SerialManager::run() {
