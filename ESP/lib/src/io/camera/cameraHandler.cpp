@@ -35,9 +35,20 @@ void CameraHandler::setupCameraPinout() {
   pinMode(14, INPUT_PULLUP);
   log_i("CAM_BOARD");
 #endif
-#if ETVR_EYE_TRACKER_USB_API
-  /* ESP32-S3 is capable of using higher freqs */
-  xclk_freq_hz = 24000000;
+#ifdef ETVR_EYE_TRACKER_USB_API
+  auto camera_id = camera_sensor->id.PID;
+
+  switch (camera_id)
+  {
+    // Thanks to lick_it, we discovered that OV5640 likes to overheat when
+    // running at higher than usual xclk frequencies.
+    // Hence why we're limit the faster ones for OV2640
+    case OV2640_PID:
+      xclk_freq_hz = 24000000;
+      break;
+    default:
+      break;
+ }
 #endif
 
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -83,7 +94,7 @@ void CameraHandler::setupBasicResolution() {
 
 void CameraHandler::setupCameraSensor() {
   log_d("[Camera]: Setting up camera sensor");
-
+  
   camera_sensor = esp_camera_sensor_get();
   // fixes corrupted jpegs, https://github.com/espressif/esp32-camera/issues/203
   // documentation https://www.uctronics.com/download/cam_module/OV2640DS.pdf
