@@ -18,6 +18,13 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
+
+  // just to be sure, we reeset everything before we do anything, some boards were having problems otherwise
+  WiFi.disconnect();
+  // we purposefully set the lowest min required security level, some boards have problems connecting otherwise
+  // https://github.com/espressif/arduino-esp32/issues/8770
+  WiFi.setMinSecurity(WIFI_AUTH_WEP);
+
   log_i("Starting WiFi Handler \n\r");
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
@@ -40,8 +47,6 @@ void WiFiHandler::begin() {
   if (networks.empty()) {
     log_i("No networks found in config, trying the default one \n\r");
     
-    // since networks may not have a password, we only need to check if we have an ssid
-    // bail if we don't  
     if (this->iniSTA(
           this->ssid,
           this->password,
@@ -135,6 +140,8 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          uint8_t channel,
                          wifi_power_t power) {
   
+  // since networks may not have a password, we only need to check if we have an ssid
+  // bail if we don't  
   if (ssid == ""){
     log_d("ssid missing, bailing");
     return false; 
@@ -148,13 +155,14 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   wifiStateManager.setState(WiFiState_e::WiFiState_Connecting);
   log_i("Trying to connect to: %s \n\r", ssid.c_str());
   auto mdnsConfig = configManager.getMDNSConfig();
-
-  log_d("Setting hostname %s \n\r");
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE,
               INADDR_NONE);  // need to call before setting hostname
+  log_d("Setting hostname %s \n\r");
   WiFi.setHostname(mdnsConfig.hostname.c_str());
+    log_i("Setting TX power to: %d \n\r", (uint8_t)power);
+  WiFi.setTxPower(power); // https://github.com/espressif/arduino-esp32/issues/5698
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
-  WiFi.setTxPower(power);
+
   log_d("Waiting for WiFi to connect... \n\r");
   while (WiFi.status() != WL_CONNECTED) {
     progress++;
@@ -169,7 +177,6 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
   }
   wifiStateManager.setState(WiFiState_e::WiFiState_Connected);
   log_i("Successfully connected to %s \n\r", ssid.c_str());
-  log_i("Setting TX power to: %d \n\r", (uint8_t)power);
   return true;
 }
 

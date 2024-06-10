@@ -6,34 +6,33 @@
 #include "data/config/project_config.hpp"
 
 enum CommandType {
-    None,
-    PING,
-    SET_WIFI,
-    SET_MDNS,
+  None,
+  PING,
+  SET_WIFI,
+  SET_MDNS,
 };
 
-
-struct Command { 
-    JsonDocument data;
+struct CommandsPayload {
+  JsonDocument data;
 };
 
-class CommandManager{
-    
-private:
-const std::unordered_map<std::string, CommandType> commandMap = {
-    {"ping", CommandType::PING},
-    {"set_wifi", CommandType::SET_WIFI},
-    {"set_mdns", CommandType::SET_MDNS},
-};
+class CommandManager {
+ private:
+  const std::unordered_map<std::string, CommandType> commandMap = {
+      {"ping", CommandType::PING},
+      {"set_wifi", CommandType::SET_WIFI},
+      {"set_mdns", CommandType::SET_MDNS},
+  };
 
-ProjectConfig* deviceConfig;
+  ProjectConfig* deviceConfig;
 
-bool hasHasDataField(Command &command);
+  bool hasDataField(JsonVariant& command);
+  void handleCommand(JsonVariant command);
+  const CommandType getCommandType(JsonVariant& command);
 
-public:
-    CommandManager(ProjectConfig *deviceConfig); 
-    void handleCommand(Command command);
-    const CommandType getCommandType(Command &command);
+ public:
+  CommandManager(ProjectConfig* deviceConfig);
+  void handleCommands(CommandsPayload commandsPayload);
 };
 
 #endif
