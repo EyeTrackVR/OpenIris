@@ -1,10 +1,14 @@
 #pragma once
 #include <Arduino.h>
 #include <esp_camera.h>
+#include "data/StateManager/StateManager.hpp"
+#include "data/config/project_config.hpp"
 #include "data/utilities/Observer.hpp"
 #include "data/utilities/network_utilities.hpp"
-#include "data/config/project_config.hpp"
-#include "data/StateManager/StateManager.hpp"
+
+#define DEFAULT_XCLK_FREQ_HZ 16500000
+#define USB_DEFAULT_XCLK_FREQ_HZ 24000000
+#define OV5640_XCLK_FREQ_HZ DEFAULT_XCLK_FREQ_HZ
 
 class CameraHandler : public IObserver<ConfigState_e> {
  private:
