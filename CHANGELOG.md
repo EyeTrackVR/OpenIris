@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.5.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.4.0...v2.5.0) (2024-06-21)
+
+
+### 🍕 Features
+
+* Release 2.5.0 ([81cda52](https://github.com/EyeTrackVR/OpenIris/commit/81cda523bb14fe81f8a910a4e23b417a6fd36d2f))
+
 ## [2.5.0-beta.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.4.0...v2.5.0-beta.1) (2024-06-11)
 
 
