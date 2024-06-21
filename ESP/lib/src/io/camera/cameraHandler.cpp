@@ -16,7 +16,7 @@ void CameraHandler::setupCameraPinout() {
   // 16500000 optimal freq on ESP32-CAM (default)
   // 20000000 max freq on ESP32-CAM
   // 24000000 optimal freq on ESP32-S3
-  int xclk_freq_hz = 16500000;
+  int xclk_freq_hz = DEFAULT_XCLK_FREQ_HZ;
 
 #if CONFIG_CAMERA_MODULE_ESP_EYE
   /* IO13, IO14 is designed for JTAG by default,
@@ -36,8 +36,7 @@ void CameraHandler::setupCameraPinout() {
   log_i("CAM_BOARD");
 #endif
 #if ETVR_EYE_TRACKER_USB_API
-  /* ESP32-S3 is capable of using higher freqs */
-  xclk_freq_hz = 24000000;
+  xclk_freq_hz = USB_DEFAULT_XCLK_FREQ_HZ;
 #endif
 
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -163,6 +162,23 @@ bool CameraHandler::setupCamera() {
     ledStateManager.setState(LEDStates_e::_Camera_Error);
     return false;
   }
+
+#if ETVR_EYE_TRACKER_USB_API
+  auto temp_sensor = esp_camera_sensor_get();
+  auto camera_id = temp_sensor->id.PID;
+  switch (camera_id) {
+    // Thanks to lick_it, we discovered that OV5640 likes to overheat when
+    // running at higher than usual xclk frequencies.
+    // Hence why we're limit the faster ones for OV2640
+    case OV5640_PID:
+      config.xclk_freq_hz = OV5640_XCLK_FREQ_HZ;
+      esp_camera_deinit();
+      esp_camera_init(&config);
+      break;
+    default:
+      break;
+  }
+#endif
 
   this->setupCameraSensor();
   return true;

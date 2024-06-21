@@ -5,10 +5,6 @@ SerialManager::SerialManager(CommandManager* commandManager)
 
 #ifdef ETVR_EYE_TRACKER_USB_API
 void SerialManager::send_frame() {
-  // if we failed to capture the frame, we bail, but we still want to listen to commands
-  if (err != ESP_OK)
-    return;
-
   if (!last_frame)
     last_frame = esp_timer_get_time();
 
@@ -21,14 +17,17 @@ void SerialManager::send_frame() {
   if (fb) {
     len = fb->len;
     buf = fb->buf;
-  } else {
-    log_e("Camera capture failed with response: %s", esp_err_to_name(err));
+  } else
     err = ESP_FAIL;
+
+  // if we failed to capture the frame, we bail, but we still want to listen to
+  // commands
+  if (err != ESP_OK) {
+    log_e("Camera capture failed with response: %s", esp_err_to_name(err));
+    return;
   }
 
-  if (err == ESP_OK)
-    Serial.write(ETVR_HEADER, 2);
-
+  Serial.write(ETVR_HEADER, 2);
   Serial.write(ETVR_HEADER_FRAME, 2);
   len_bytes[0] = len & 0xFF;
   len_bytes[1] = (len >> CHAR_BIT) & 0xFF;
@@ -53,28 +52,31 @@ void SerialManager::send_frame() {
 #endif
 
 void SerialManager::init() {
+#ifndef SERIAL_MANAGER_USE_HIGHER_FREQUENCY
   Serial.begin(3000000);
-  if (SERIAL_FLUSH_ENABLED){
+#endif
+  if (SERIAL_FLUSH_ENABLED) {
     Serial.flush();
   }
 }
 
 void SerialManager::run() {
-    if (Serial.available()) {
-      JsonDocument doc;
-      DeserializationError deserializationError = deserializeJson(doc, Serial);
+  if (Serial.available()) {
+    JsonDocument doc;
+    DeserializationError deserializationError = deserializeJson(doc, Serial);
 
-      if (deserializationError) {
-        log_e("Command deserialization failed: %s",
-              deserializationError.c_str());
-      }
+    if (deserializationError) {
+      log_e("Command deserialization failed: %s", deserializationError.c_str());
 
-      Command command = {doc};
-      this->commandManager->handleCommand(command);
+      return;
     }
+
+    CommandsPayload commands = {doc};
+    this->commandManager->handleCommands(commands);
+  }
 #ifdef ETVR_EYE_TRACKER_USB_API
-    else {
-      this->send_frame();
-    }
+  else {
+    this->send_frame();
+  }
 #endif
 }

@@ -1,74 +1,81 @@
 #include "CommandManager.hpp"
 
-CommandManager::CommandManager(ProjectConfig *deviceConfig) : deviceConfig(deviceConfig) {}
+CommandManager::CommandManager(ProjectConfig* deviceConfig)
+    : deviceConfig(deviceConfig) {}
 
-
-const CommandType CommandManager::getCommandType(Command &command){ 
-    if (!command.data.containsKey("command"))
-        return CommandType::None;
-
-    if (auto search = commandMap.find(command.data["command"]); search != commandMap.end())
-        return search->second;
-    
+const CommandType CommandManager::getCommandType(JsonVariant& command) {
+  if (!command.containsKey("command"))
     return CommandType::None;
+
+  if (auto search = commandMap.find(command["command"]);
+      search != commandMap.end())
+    return search->second;
+
+  return CommandType::None;
 }
 
-bool CommandManager::hasHasDataField(Command &command) {
-    return command.data.containsKey("data");
+bool CommandManager::hasDataField(JsonVariant& command) {
+  return command.containsKey("data");
 }
 
-void CommandManager::handleCommand(Command command) {
-    auto command_type = this->getCommandType(command); 
+void CommandManager::handleCommands(CommandsPayload commandsPayload) {
+  if (!commandsPayload.data.containsKey("commands")) {
+    log_e("Json data sent not supported, lacks commands field");
+    return;
+  }
 
-    switch(command_type)
-    {
-        case CommandType::SET_WIFI: {
-            if (!this->hasHasDataField(command))
-                // malformed command, lacked data field
-                break; 
+  for (JsonVariant commandData :
+       commandsPayload.data["commands"].as<JsonArray>()) {
+    this->handleCommand(commandData);
+  }
 
+  this->deviceConfig->save();
+}
 
-            if(!command.data["data"].containsKey("ssid") || !command.data["data"].containsKey("password"))
-                break;
+void CommandManager::handleCommand(JsonVariant command) {
+  auto command_type = this->getCommandType(command);
 
-            std::string customNetworkName = "main";
-            if (command.data["data"].containsKey("network_name"))
-                customNetworkName = command.data["data"]["network_name"].as<std::string>();
+  switch (command_type) {
+    case CommandType::SET_WIFI: {
+      if (!this->hasDataField(command))
+        // malformed command, lacked data field
+        break;
 
-            this->deviceConfig->setWifiConfig(
-                customNetworkName,
-                command.data["data"]["ssid"],
-                command.data["data"]["password"],
-                0, // channel, should this be zero?
-                0, // power, should this be zero? 
-                false, 
-                false
-            );
-            
-            // we purposefully save here
-            this->deviceConfig->save();
-            break;
-        }
-        case CommandType::SET_MDNS: {
-            if (!this->hasHasDataField(command))
-                break;
+      if (!command["data"].containsKey("ssid") ||
+          !command["data"].containsKey("password"))
+        break;
 
-            if(!command.data["data"].containsKey("hostname") || !strlen(command.data["data"]["hostname"]))
-                break;
+      std::string customNetworkName = "main";
+      if (command["data"].containsKey("network_name"))
+        customNetworkName = command["data"]["network_name"].as<std::string>();
 
-            this->deviceConfig->setMDNSConfig(
-                command.data["data"]["hostname"],
-                "openiristracker",
-                false
-            );
+      this->deviceConfig->setWifiConfig(customNetworkName,
+                                        command["data"]["ssid"],
+                                        command["data"]["password"],
+                                        0,  // channel, should this be zero?
+                                        0,  // power, should this be zero?
+                                        false, false);
 
-            break;
-        }
-        case CommandType::PING: {
-            Serial.println("PONG \n\r");
-            break;
-        }
-        default:
-            break;
+      break;
     }
+    case CommandType::SET_MDNS: {
+      if (!this->hasDataField(command))
+        break;
+
+      if (!command["data"].containsKey("hostname") ||
+          !strlen(command["data"]["hostname"]))
+        break;
+
+      this->deviceConfig->setMDNSConfig(command["data"]["hostname"],
+                                        "openiristracker", false);
+
+      break;
+    }
+    case CommandType::PING: {
+      Serial.println("PONG \n\r");
+      break;
+    }
+    default:
+      break;
+  }
 }
