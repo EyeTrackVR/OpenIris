@@ -11,6 +11,10 @@ SerialManager serialManager(&commandManager);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
+
+#elif CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+LEDManager ledManager(38);
+
 #else
 LEDManager ledManager(33);
 #endif  // ESP32S3_XIAO_SENSE
@@ -81,6 +85,17 @@ void setup() {
   Serial.begin(115200);
   Logo::printASCII();
   ledManager.begin();
+
+  #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to 100%.  
+    const int ledPin = 1;                       // Replace this with a command endpoint eventually.
+    const int freq = 5000;
+    const int ledChannel = 0;
+    const int resolution = 8;
+    const int dutyCycle = 255;
+    ledcSetup(ledChannel, freq, resolution);
+    ledcAttachPin(1, ledChannel);
+    ledcWrite(ledChannel, dutyCycle); 
+  #endif
 
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
