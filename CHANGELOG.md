@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.6.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0...v2.6.0) (2024-07-14)
+
+
+### 🍕 Features
+
+* Update Babble Board Pinout and Enable Emitters ([#74](https://github.com/EyeTrackVR/OpenIris/issues/74)) ([a8c1603](https://github.com/EyeTrackVR/OpenIris/commit/a8c16039414d40a9bd12f9246219901b07141537))
+
 ## [2.5.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.4.0...v2.5.0) (2024-06-21)
 
 
