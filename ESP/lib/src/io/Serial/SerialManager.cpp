@@ -72,7 +72,7 @@ void SerialManager::run() {
     }
 
     CommandsPayload commands = {doc};
-    this->commandManager->handleCommands(commands);
+    this->commandManager->handleBatchCommands(commands);
   }
 #ifdef ETVR_EYE_TRACKER_USB_API
   else {

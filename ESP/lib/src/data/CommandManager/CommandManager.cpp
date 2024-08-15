@@ -1,9 +1,20 @@
 #include "CommandManager.hpp"
 
-CommandManager::CommandManager(ProjectConfig* deviceConfig)
-    : deviceConfig(deviceConfig) {}
+std::unique_ptr<ICommand> CommandManager::createCommand(CommandType commandType,
+                                                        JsonVariant& data) {
+  switch (commandType) {
+    case CommandType::PING:
+      return std::make_unique<PingCommand>();
+    case CommandType::SET_WIFI:
+      return std::make_unique<SetWiFiCommand>(this->projectConfig, data);
+    case CommandType::SET_MDNS:
+      return std::make_unique<SetMDNSCommand>(this->projectConfig, data);
+    case CommandType::SAVE_CONFIG:
+      return std::make_unique<SaveConfigCommand>(this->projectConfig);
+  }
+}
 
-const CommandType CommandManager::getCommandType(JsonVariant& command) {
+CommandType CommandManager::getCommandType(JsonVariant& command) {
   if (!command.containsKey("command"))
     return CommandType::None;
 
@@ -18,64 +29,87 @@ bool CommandManager::hasDataField(JsonVariant& command) {
   return command.containsKey("data");
 }
 
-void CommandManager::handleCommands(CommandsPayload commandsPayload) {
+std::variant<std::vector<CommandResult>, CommandResult>
+CommandManager::handleBatchCommands(CommandsPayload commandsPayload) {
+  std::vector<CommandResult> results = {};
+  std::vector<std::string> errors = {};
+  std::vector<std::unique_ptr<ICommand>> commands;
+
   if (!commandsPayload.data.containsKey("commands")) {
-    log_e("Json data sent not supported, lacks commands field");
-    return;
+    std::string error = "Json data sent not supported, lacks commands field";
+    log_e("%s", error.c_str());
+    return CommandResult::getErrorResult(
+        Helpers::format_string("\"error\":\"%s\"", error));
   }
 
   for (JsonVariant commandData :
        commandsPayload.data["commands"].as<JsonArray>()) {
-    this->handleCommand(commandData);
+    auto command_or_result = this->createCommandFromJsonVariant(commandData);
+
+    if (auto command_ptr =
+            std::get_if<std::unique_ptr<ICommand>>(&command_or_result)) {
+      auto validation_result = (*command_ptr)->validate();
+      if (validation_result.isSuccess())
+        commands.emplace_back(std::move((*command_ptr)));
+      else
+        errors.push_back(validation_result.getErrorMessage());
+    } else {
+      errors.push_back(
+          std::get<CommandResult>(command_or_result).getErrorMessage());
+      continue;
+    }
   }
 
-  this->deviceConfig->save();
+  // if we have any errors, consolidate them into a single message and return
+  if (errors.size() > 0) {
+    return CommandResult::getErrorResult(Helpers::format_string(
+        "\"error\":\"[%s]\"", this->join_strings(errors, ",")));
+  }
+
+  for (auto& valid_command : commands) {
+    results.push_back(valid_command->execute());
+  }
+
+  return results;
 }
 
-void CommandManager::handleCommand(JsonVariant command) {
-  auto command_type = this->getCommandType(command);
+CommandResult CommandManager::handleSingleCommand(
+    CommandsPayload commandsPayload) {
+  if (!commandsPayload.data.containsKey("command")) {
+    std::string error = "Json data sent not supported, lacks commands field";
+    log_e("%s", error.c_str());
 
-  switch (command_type) {
-    case CommandType::SET_WIFI: {
-      if (!this->hasDataField(command))
-        // malformed command, lacked data field
-        break;
-
-      if (!command["data"].containsKey("ssid") ||
-          !command["data"].containsKey("password"))
-        break;
-
-      std::string customNetworkName = "main";
-      if (command["data"].containsKey("network_name"))
-        customNetworkName = command["data"]["network_name"].as<std::string>();
-
-      this->deviceConfig->setWifiConfig(customNetworkName,
-                                        command["data"]["ssid"],
-                                        command["data"]["password"],
-                                        0,  // channel, should this be zero?
-                                        0,  // power, should this be zero?
-                                        false, false);
-
-      break;
-    }
-    case CommandType::SET_MDNS: {
-      if (!this->hasDataField(command))
-        break;
-
-      if (!command["data"].containsKey("hostname") ||
-          !strlen(command["data"]["hostname"]))
-        break;
-
-      this->deviceConfig->setMDNSConfig(command["data"]["hostname"],
-                                        "openiristracker", false);
-
-      break;
-    }
-    case CommandType::PING: {
-      Serial.println("PONG \n\r");
-      break;
-    }
-    default:
-      break;
+    CommandResult::getErrorResult(
+        Helpers::format_string("\"error\":\"%s\"", error));
   }
+
+  JsonVariant commandData = commandsPayload.data["command"];
+  auto command_or_result = this->createCommandFromJsonVariant(commandData);
+
+  if (std::holds_alternative<CommandResult>(command_or_result)) {
+    return std::get<CommandResult>(command_or_result);
+  }
+
+  auto command =
+      std::move(std::get<std::unique_ptr<ICommand>>(command_or_result));
+
+  auto validation_result = command->validate();
+  if (!validation_result.isSuccess()) {
+    return validation_result;
+  };
+
+  return command->execute();
+}
+
+std::variant<std::unique_ptr<ICommand>, CommandResult>
+CommandManager::createCommandFromJsonVariant(JsonVariant& command) {
+  auto command_type = this->getCommandType(command);
+  if (command_type == CommandType::None) {
+    std::string error =
+        Helpers::format_string("Command not supported: %s", command["command"]);
+    log_e("%s", error.c_str());
+    throw CommandResult::getErrorResult(
+        Helpers::format_string("\"error\":\"%s\"", error));
+  }
+  return this->createCommand(command_type, command);
 }
