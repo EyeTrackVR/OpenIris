@@ -1,8 +1,12 @@
 #pragma once
 #ifndef WIFIHANDLER_HPP
 #define WIFIHANDLER_HPP
+#include <WiFi.h>
 #include <string>
+#include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
+#include "data/utilities/helpers.hpp"
+
 #include "data/utilities/Observer.hpp"
 
 class WiFiHandler : public IObserver<ConfigState_e> {
@@ -28,7 +32,6 @@ class WiFiHandler : public IObserver<ConfigState_e> {
               wifi_power_t power);
 
   ProjectConfig& configManager;
-
 
   bool _enable_adhoc;
   std::string ssid;

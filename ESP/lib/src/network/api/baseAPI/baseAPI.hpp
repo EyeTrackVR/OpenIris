@@ -3,7 +3,6 @@
 
 //! Warning do not format this file with clang-format or it will break the code
 
-#include <unordered_map>
 #include <string>
 #include <unordered_map>
 
@@ -31,7 +30,6 @@ constexpr int HTTP_ANY = 0b01111111;
 
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
-#include "Hash.h"
 
 #include "data/utilities/network_utilities.hpp"
 #include "tasks/tasks.hpp"
@@ -100,33 +98,34 @@ class BaseAPI {
   typedef std::unordered_map<std::string, WebRequestMethodComposite>
       networkMethodsMap_t;
 
-	ProjectConfig &projectConfig;
-	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-    AsyncWebServer server;
+  ProjectConfig& projectConfig;
+  /// @brief Local instance of the AsyncWebServer - so that we dont need to use
+  /// new and delete
+  AsyncWebServer server;
 #ifndef SIM_ENABLED
-        CameraHandler &camera;
+  CameraHandler& camera;
 #endif  // SIM_ENABLED
 
-public :
-    BaseAPI(ProjectConfig& projectConfig,
+ public:
+  BaseAPI(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
-            CameraHandler& camera,
+          CameraHandler& camera,
 #endif  // SIM_ENABLED
-            const std::string& api_url,
+          const std::string& api_url,
 #ifndef SIM_ENABLED
-            int port = 81
+          int port = 81
 #else
-            int port = 80
+          int port = 80
 #endif
   );
 
- virtual ~BaseAPI();
- virtual void begin();
- void checkAuthentication(AsyncWebServerRequest* request,
-                          const char* login,
-                          const char* password);
- void beginOTA();
- void notFound(AsyncWebServerRequest* request) const;
+  virtual ~BaseAPI();
+  virtual void begin();
+  void checkAuthentication(AsyncWebServerRequest* request,
+                           const char* login,
+                           const char* password);
+  void beginOTA();
+  void notFound(AsyncWebServerRequest* request) const;
 };
 
 #endif  // BASEAPI_HPP
