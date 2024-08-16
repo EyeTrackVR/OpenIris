@@ -38,8 +38,7 @@ CommandManager::handleBatchCommands(CommandsPayload commandsPayload) {
   if (!commandsPayload.data.containsKey("commands")) {
     std::string error = "Json data sent not supported, lacks commands field";
     log_e("%s", error.c_str());
-    return CommandResult::getErrorResult(
-        Helpers::format_string("\"error\":\"%s\"", error));
+    return CommandResult::getErrorResult(error);
   }
 
   for (JsonVariant commandData :
@@ -62,8 +61,8 @@ CommandManager::handleBatchCommands(CommandsPayload commandsPayload) {
 
   // if we have any errors, consolidate them into a single message and return
   if (errors.size() > 0) {
-    return CommandResult::getErrorResult(Helpers::format_string(
-        "\"error\":\"[%s]\"", this->join_strings(errors, ",")));
+    return CommandResult::getErrorResult(
+        Helpers::format_string("\"[%s]\"", this->join_strings(errors, ", ")));
   }
 
   for (auto& valid_command : commands) {
@@ -79,11 +78,10 @@ CommandResult CommandManager::handleSingleCommand(
     std::string error = "Json data sent not supported, lacks commands field";
     log_e("%s", error.c_str());
 
-    CommandResult::getErrorResult(
-        Helpers::format_string("\"error\":\"%s\"", error));
+    CommandResult::getErrorResult(error);
   }
 
-  JsonVariant commandData = commandsPayload.data["command"];
+  JsonVariant commandData = commandsPayload.data;
   auto command_or_result = this->createCommandFromJsonVariant(commandData);
 
   if (std::holds_alternative<CommandResult>(command_or_result)) {
@@ -108,8 +106,16 @@ CommandManager::createCommandFromJsonVariant(JsonVariant& command) {
     std::string error =
         Helpers::format_string("Command not supported: %s", command["command"]);
     log_e("%s", error.c_str());
-    throw CommandResult::getErrorResult(
-        Helpers::format_string("\"error\":\"%s\"", error));
+    return CommandResult::getErrorResult(error);
   }
-  return this->createCommand(command_type, command);
+
+  if (!this->hasDataField(command)) {
+    std::string error = Helpers::format_string(
+        "Command is missing data field: %s", command["command"]);
+    log_e("%s", error.c_str());
+    return CommandResult::getErrorResult(error);
+  }
+
+  auto command_data = command["data"].as<JsonVariant>();
+  return this->createCommand(command_type, command_data);
 }

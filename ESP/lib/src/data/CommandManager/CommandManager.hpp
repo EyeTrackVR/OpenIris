@@ -32,7 +32,7 @@ const std::unordered_map<std::string, CommandType> commandMap = {
     {"ping", CommandType::PING},
     {"set_wifi", CommandType::SET_WIFI},
     {"set_mdns", CommandType::SET_MDNS},
-};
+    {"save_config", CommandType::SAVE_CONFIG}};
 
 class CommandManager {
  private:

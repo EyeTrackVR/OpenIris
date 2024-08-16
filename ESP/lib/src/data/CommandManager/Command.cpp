@@ -6,9 +6,9 @@ CommandResult PingCommand::execute() {
 
 CommandResult SetWiFiCommand::validate() {
   if (!data.containsKey("ssid"))
-    return CommandResult::getErrorResult("{\"error\": \"Missing ssid\"}");
+    return CommandResult::getErrorResult("Missing ssid");
   if (!data.containsKey("password"))
-    return CommandResult::getErrorResult("{\"error\": \"Missing password\"}");
+    return CommandResult::getErrorResult("Missing password");
   return CommandResult::getSuccessResult("");
 }
 
@@ -19,20 +19,21 @@ CommandResult SetWiFiCommand::execute() {
 
   projectConfig.setWifiConfig(network_name, data["ssid"], data["password"], 0,
                               0, false, false);
-
-  return CommandResult::getSuccessResult("WIFI SET");
+  return CommandResult::getSuccessResult("WIFI Set to: " +
+                                         data["ssid"].as<std::string>());
 }
 
 CommandResult SetMDNSCommand::validate() {
   if (!data.containsKey("hostname") || !strlen(data["hostname"]))
-    return CommandResult::getErrorResult("{\"error\": \"Missing hostname\"}");
+    return CommandResult::getErrorResult("Missing hostname");
 
   return CommandResult::getSuccessResult("");
 }
 
 CommandResult SetMDNSCommand::execute() {
   projectConfig.setMDNSConfig(data["hostname"], "openiristracker", false);
-  return CommandResult::getSuccessResult("MDNS SET");
+  return CommandResult::getSuccessResult("MDNS set to:" +
+                                         data["hostname"].as<std::string>());
 }
 
 CommandResult SaveConfigCommand::execute() {

@@ -8,14 +8,23 @@
 
 class CommandResult {
  private:
-  // or maybe std::optional?
   std::optional<std::string> successMessage;
   std::optional<std::string> errorMessage;
 
  public:
-  CommandResult(std::optional<std::string> successMessage,
-                std::optional<std::string> errorMessage)
-      : successMessage(successMessage), errorMessage(errorMessage) {}
+  CommandResult(std::optional<std::string> success_message,
+                std::optional<std::string> error_message) {
+    if (success_message.has_value()) {
+      this->successMessage =
+          "{\"message\":\"" + success_message.value() + "\"}";
+    } else
+      this->successMessage = std::nullopt;
+
+    if (error_message.has_value())
+      this->errorMessage = "{\"error\":\"" + error_message.value() + "\"}";
+    else
+      this->errorMessage = std::nullopt;
+  }
 
   bool isSuccess() const { return successMessage.has_value(); }
 
