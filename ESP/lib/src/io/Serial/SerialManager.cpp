@@ -71,25 +71,25 @@ void SerialManager::run() {
     }
 
     CommandsPayload commands = {doc};
-    auto results = this->commandManager->handleBatchCommands(commands);
+    CommandResult result = CommandResult::getSuccessResult("");
 
-    if (std::holds_alternative<CommandResult>(results)) {
-      auto error = std::get<CommandResult>(results);
-      Serial.printf("%s \n\r", error.getErrorMessage().c_str());
+    if (doc.containsKey("command")) {
+      result = this->commandManager->handleSingleCommand(commands);
     } else {
-      for (auto& result : std::get<std::vector<CommandResult>>(results)) {
-        Serial.printf("%s \n\r", result.getSuccessMessage().c_str());
-      }
-      // we should only call save on the config when the commands where
-      // successful, no point otherwise
+      result = this->commandManager->handleBatchCommands(commands);
+    }
 
-      // also, I'm not really vibing with havin to create
-      // an entire JsonDocument for this, though it's light
+    if (result.isSuccess()) {
+      Serial.printf("%s \n\r", result.getSuccessMessage().c_str());
+
+      // we also save the config if the commands were successful
       JsonDocument saveCommanddDoc;
       saveCommanddDoc["command"] = "save_config";
       saveCommanddDoc["data"].to<JsonObject>();
       CommandsPayload saveCommandPayload = {saveCommanddDoc};
       this->commandManager->handleSingleCommand(saveCommandPayload);
+    } else {
+      Serial.printf("%s \n\r", result.getErrorMessage().c_str());
     }
   }
 #ifdef ETVR_EYE_TRACKER_USB_API

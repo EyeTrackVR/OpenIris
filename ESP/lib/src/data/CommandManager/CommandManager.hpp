@@ -64,7 +64,6 @@ class CommandManager {
       : projectConfig(projectConfig) {};
 
   CommandResult handleSingleCommand(CommandsPayload commandsPayload);
-  std::variant<std::vector<CommandResult>, CommandResult> handleBatchCommands(
-      CommandsPayload commandsPayload);
+  CommandResult handleBatchCommands(CommandsPayload commandsPayload);
 };
 #endif
