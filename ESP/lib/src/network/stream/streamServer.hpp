@@ -11,6 +11,8 @@
 #include <sstream>
 
 #include "data/StateManager/StateManager.hpp"
+#include "data/config/project_config.hpp"
+#include "data/utilities/Observer.hpp"
 #include "data/utilities/helpers.hpp"
 
 // Camera includes
@@ -26,32 +28,41 @@ namespace StreamHelpers {
   esp_err_t stream(httpd_req_t* req);
 }
 // namespace StreamHelpers
-class StreamServer {
+class StreamServer : public IObserver<ConfigState_e> {
  private:
-  AsyncUDP socket;
+  ProjectConfig& configManager;
+  int64_t last_frame = 0;
+
   AsyncServer* tcp_server;
   AsyncClient* tcp_connected_client;
   httpd_handle_t camera_stream = nullptr;
-  uint8_t initial_packet_buffer[6];
-  uint8_t packet_buffer[CHUNK_SIZE];
 
-  int64_t last_frame = 0;
   long last_request_time = 0;
+  int STREAM_SERVER_PORT = 80;
+  int TCP_STREAM_SERVER_PORT = 82;
 
-  int STREAM_SERVER_PORT;
+  int last_time_frame_sent = 0;
+  float target_fps_time = 1000 / 30;
+
+  bool pauseTCPStream = true;
 
  public:
-  StreamServer(const int STREAM_PORT = 80);
+  StreamServer(ProjectConfig& configManager,
+               const int STREAM_PORT,
+               const int TPC_SERVER_PORT)
+      : configManager(configManager),
+        STREAM_SERVER_PORT(STREAM_PORT),
+        TCP_STREAM_SERVER_PORT(TPC_SERVER_PORT) {};
+
   int startStreamServer();
-  bool startUDPStreamServer();
   bool startTCPStreamServer();
 
-  // rewrite this to an RTOS task pinned to the second core, for testing this is
-  // fine https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
-  void sendUDPFrame();
-
+  void toggleTCPStream(bool state);
   void sendTCPFrame();
   void handleNewTCPClient(void* arg, AsyncClient* client);
+
+  void update(ConfigState_e event) override;
+  std::string getName() override;
 };
 
 #endif  // STREAM_SERVER_HPP

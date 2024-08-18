@@ -40,3 +40,32 @@ CommandResult SaveConfigCommand::execute() {
   projectConfig.save();
   return CommandResult::getSuccessResult("CONFIG SAVED");
 }
+
+CommandResult SetFPSCommand::validate() {
+  if (!data.containsKey("fps") || !data["hostname"])
+    return CommandResult::getErrorResult("Missing fps or FPS were negative");
+
+  return CommandResult::getSuccessResult("");
+}
+
+CommandResult SetFPSCommand::execute() {
+  // handle FPS here, poc of the interface:
+  // auto defaultCameraSettings = projectConfig.getDefaultCameraSettings();
+  // projectConfig.setCamera(..defaultCameraSettings, data["fps"]);
+  return CommandResult::getSuccessResult("FPS set to:" +
+                                         data["fps"].as<std::string>());
+}
+
+CommandResult ToggleStreamCommand::validate() {
+  if (!data.containsKey("state"))
+    return CommandResult::getErrorResult("Missing state field");
+
+  return CommandResult::getSuccessResult("");
+}
+
+CommandResult ToggleStreamCommand::execute() {
+  this->streamServer.toggleTCPStream(data["state"].as<bool>());
+
+  return CommandResult::getSuccessResult("TCP Stream state set to:" +
+                                         data["state"].as<std::string>());
+}

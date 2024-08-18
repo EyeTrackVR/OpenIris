@@ -5,6 +5,7 @@
 #include <string>
 #include <variant>
 #include "data/config/project_config.hpp"
+#include "network/stream/streamServer.hpp"
 
 class CommandResult {
  private:
@@ -91,4 +92,27 @@ class SaveConfigCommand : public ICommand {
   CommandResult execute() override;
 };
 
+class SetFPSCommand : public ICommand {
+  ProjectConfig& projectConfig;
+  JsonVariant data;
+
+ public:
+  SetFPSCommand(ProjectConfig& projectConfig, JsonVariant data)
+      : projectConfig(projectConfig), data(data) {}
+
+  CommandResult validate() override;
+  CommandResult execute() override;
+};
+
+class ToggleStreamCommand : public ICommand {
+  StreamServer& streamServer;
+  JsonVariant data;
+
+ public:
+  ToggleStreamCommand(StreamServer& streamServer, JsonVariant data)
+      : streamServer(streamServer), data(data) {}
+
+  CommandResult validate() override;
+  CommandResult execute() override;
+};
 #endif

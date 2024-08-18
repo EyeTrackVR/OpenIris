@@ -71,18 +71,12 @@ esp_err_t StreamHelpers::stream(httpd_req_t* req) {
   return res;
 }
 
-StreamServer::StreamServer(const int STREAM_PORT)
-    : STREAM_SERVER_PORT(STREAM_PORT) {
-  memcpy(initial_packet_buffer, ETVR_HEADER, sizeof(ETVR_HEADER));
-}
-
 int StreamServer::startStreamServer() {
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.stack_size = 20480;
   config.max_uri_handlers = 1;
   config.server_port = this->STREAM_SERVER_PORT;
   config.ctrl_port = this->STREAM_SERVER_PORT;
-  config.stack_size = 20480;
 
   httpd_uri_t stream_page = {.uri = "/",
                              .method = HTTP_GET,
@@ -96,90 +90,28 @@ int StreamServer::startStreamServer() {
   else {
     httpd_register_uri_handler(camera_stream, &stream_page);
     Serial.println("Stream server initialized");
+    String serverStatusMessage = "The stream is under: http://";
+
     switch (wifiStateManager.getCurrentState()) {
       case WiFiState_e::WiFiState_ADHOC:
-        Serial.printf("\n\rThe stream is under: http://%s:%i\n\r",
-                      WiFi.softAPIP().toString().c_str(),
-                      this->STREAM_SERVER_PORT);
+        // this should be Serial.printf but for some odd reason
+        // Serial.printf shows up only on debug, not in release
+        Serial.println((serverStatusMessage + WiFi.softAPIP().toString() + ":" +
+                        this->STREAM_SERVER_PORT + "\n\r")
+                           .c_str());
         break;
       default:
-        Serial.printf("\n\rThe stream is under: http://%s:%i\n\r",
-                      WiFi.localIP().toString().c_str(),
-                      this->STREAM_SERVER_PORT);
+        Serial.println((serverStatusMessage + WiFi.localIP().toString() + ":" +
+                        this->STREAM_SERVER_PORT + "\n\r")
+                           .c_str());
         break;
     }
     return 0;
   }
 }
 
-bool StreamServer::startUDPStreamServer() {
-  socket = AsyncUDP();
-  return socket.listen(this->STREAM_SERVER_PORT + 1);
-}
-
-void StreamServer::sendUDPFrame() {
-  ///////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////
-  //   TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-  //
-  //   ADD PROTOCOL VERSION
-  //
-  //   TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-  ///////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////
-
-  if (!last_frame)
-    last_frame = esp_timer_get_time();
-
-  size_t len = 0;
-  uint8_t* buf = NULL;
-
-  auto fb = esp_camera_fb_get();
-  if (fb) {
-    len = fb->len;
-    buf = fb->buf;
-  } else {
-    log_e("Camera capture failed");
-    return;
-  }
-
-  // we're sending the initial header with the total number of chunks first
-  // we can then later detect new frame with the header packets
-  uint8_t totalChunks = (len + CHUNK_SIZE - 1) / CHUNK_SIZE;
-  initial_packet_buffer[sizeof(ETVR_HEADER)] = totalChunks;
-  socket.broadcastTo(initial_packet_buffer, sizeof(initial_packet_buffer),
-                     this->STREAM_SERVER_PORT);
-
-  for (uint8_t i = 0; i < totalChunks; i++) {
-    auto offset = i * CHUNK_SIZE;
-    // we need to make sure we don't overread
-    auto chunkSize = (offset + CHUNK_SIZE <= len) ? CHUNK_SIZE : len - offset;
-    packet_buffer[0] = static_cast<uint8_t>(i);
-    // since this is a pointer, we can just add an offset to it, with a
-    // chunksize to read and we're done
-    memcpy(packet_buffer + 1, buf + offset, chunkSize);
-    socket.broadcastTo(packet_buffer, chunkSize + 1, this->STREAM_SERVER_PORT);
-  }
-
-  if (fb) {
-    esp_camera_fb_return(fb);
-    fb = NULL;
-    buf = NULL;
-  } else if (buf) {
-    free(buf);
-    buf = NULL;
-  }
-
-  long request_end = millis();
-  long latency = request_end - last_request_time;
-  last_request_time = request_end;
-
-  log_d("Size: %uKB, Time: %ums (%ifps) chunks: %u \n", len / 1024, latency,
-        1000 / latency, totalChunks);
-}
-
 bool StreamServer::startTCPStreamServer() {
-  tcp_server = new AsyncServer(this->STREAM_SERVER_PORT);
+  tcp_server = new AsyncServer(this->TCP_STREAM_SERVER_PORT);
   tcp_server->onClient(
       [this](void* arg, AsyncClient* client) {
         this->handleNewTCPClient(arg, client);
@@ -220,12 +152,16 @@ void StreamServer::handleNewTCPClient(void* arg, AsyncClient* client) {
 
 void StreamServer::sendTCPFrame() {
   if (this->tcp_connected_client == nullptr ||
-      !this->tcp_connected_client->connected()) {
+      !this->tcp_connected_client->connected() || this->pauseTCPStream) {
     return;
   }
 
-  if (!last_frame)
-    last_frame = esp_timer_get_time();
+  // todo test this
+  if (last_time_frame_sent &&
+      last_time_frame_sent - millis() < target_fps_time) {
+    return;
+  }
+  last_time_frame_sent = millis();
 
   auto fb = esp_camera_fb_get();
   if (!fb) {
@@ -234,7 +170,6 @@ void StreamServer::sendTCPFrame() {
   }
 
   size_t len = fb->len;
-
   this->tcp_connected_client->write(ETVR_HEADER_BYTES, 4);
   this->tcp_connected_client->write((const char*)fb->buf, fb->len);
 
@@ -247,4 +182,22 @@ void StreamServer::sendTCPFrame() {
   last_request_time = request_end;
   log_d("Size: %uKB, Time: %ums (%ifps)\n", len / 1024, latency,
         1000 / latency);
+}
+
+std::string StreamServer::getName() {
+  return "StreamServer";
+}
+
+void StreamServer::toggleTCPStream(bool state) {
+  pauseTCPStream = state;
+}
+
+void StreamServer::update(ConfigState_e event) {
+  switch (event) {
+    case ConfigState_e::cameraConfigUpdated:
+      // add FPS update here
+      break;
+    default:
+      break;
+  }
 }

@@ -6,8 +6,6 @@
  * @param mdnsName The mDNS hostname to use
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
-CommandManager commandManager(deviceConfig);
-SerialManager serialManager(&commandManager);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
@@ -32,8 +30,11 @@ MDNSHandler mdnsHandler(deviceConfig);
 APIServer apiServer(deviceConfig, cameraHandler, "/control");
 
 #ifndef SIM_ENABLED
-StreamServer streamServer;
+StreamServer streamServer(deviceConfig, 80, 82);
 #endif  // SIM_ENABLED
+
+CommandManager commandManager(deviceConfig, streamServer);
+SerialManager serialManager(&commandManager);
 
 void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting Network Handler");
@@ -48,13 +49,18 @@ void etvr_eye_tracker_web_init() {
   if (wifiState == WiFiState_e::WiFiState_Connected ||
       wifiState == WiFiState_e::WiFiState_ADHOC) {
     {
-      log_d("[SETUP]: Starting Stream Server");
-      auto result = streamServer.startTCPStreamServer();
-      // streamServer.startStreamServer();
-      // auto result = streamServer.startUDPStreamServer();
+      log_d("[SETUP]: Starting HTTP Stream Server");
+      auto httpd_result = streamServer.startStreamServer();
 
-      log_d("[SETUP]: Stream Server state: %s",
-            result ? "Connected" : "Failed to connect");
+      log_d("[SETUP]: Starting TPC Stream Server");
+      auto tpc_result = streamServer.startTCPStreamServer();
+
+      log_d("[SETUP]: Stream Server states: HTTP: %s, TCP: %s",
+            httpd_result
+                ? "Failed to connect"
+                : "Connected",  // we return 0 in case of successful connection
+            tpc_result ? "Connected" : "Failed to connect");
+
       log_d("[SETUP]: Starting API Server");
       apiServer.setup();
     }
@@ -86,7 +92,6 @@ void loop() {
 #ifndef ETVR_EYE_TRACKER_USB_API
   streamServer.sendTCPFrame();
 #endif
-  // streamServer.sendUDPFrame();
   ledManager.handleLED();
   serialManager.run();
 }

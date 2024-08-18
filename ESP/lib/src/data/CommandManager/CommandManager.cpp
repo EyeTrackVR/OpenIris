@@ -11,6 +11,12 @@ std::unique_ptr<ICommand> CommandManager::createCommand(CommandType commandType,
       return std::make_unique<SetMDNSCommand>(this->projectConfig, data);
     case CommandType::SAVE_CONFIG:
       return std::make_unique<SaveConfigCommand>(this->projectConfig);
+    case CommandType::SET_FPS:
+      return std::make_unique<SetFPSCommand>(this->projectConfig, data);
+    case CommandType::TOGGLE_STREAM:
+      return std::make_unique<ToggleStreamCommand>(this->streamServer, data);
+    default:
+      return nullptr;
   }
 }
 
@@ -130,5 +136,14 @@ CommandManager::createCommandFromJsonVariant(JsonVariant& command) {
   }
 
   auto command_data = command["data"].as<JsonVariant>();
-  return this->createCommand(command_type, command_data);
+  auto command_ptr = this->createCommand(command_type, command_data);
+
+  if (!command_ptr) {
+    std::string error = Helpers::format_string("Command is not supported: %s",
+                                               command["command"]);
+    log_e("%s", error.c_str());
+    return CommandResult::getErrorResult(error);
+  }
+
+  return command_ptr;
 }
