@@ -213,59 +213,44 @@ void ProjectConfig::load() {
 //!                                                DeviceConfig
 //*
 //**********************************************************************************************************************
-void ProjectConfig::setDeviceConfig(const std::string& OTALogin,
-                                    const std::string& OTAPassword,
-                                    int OTAPort,
-                                    bool shouldNotify) {
+void ProjectConfig::setDeviceConfig(JsonVariant& data, bool shouldNotify) {
   log_d("Updating device config");
-  this->config.device.OTALogin.assign(OTALogin);
-  this->config.device.OTAPassword.assign(OTAPassword);
-  this->config.device.OTAPort = OTAPort;
+  for (JsonPair kv : data.as<JsonObject>()) {
+    config.device.update(kv.key().c_str(), kv.value());
+  }
 
   if (shouldNotify)
     this->notifyAll(ConfigState_e::deviceConfigUpdated);
 }
 
-void ProjectConfig::setMDNSConfig(const std::string& hostname,
-                                  const std::string& service,
-                                  bool shouldNotify) {
+void ProjectConfig::setMDNSConfig(JsonVariant& data, bool shouldNotify) {
   log_d("Updating MDNS config");
-  this->config.mdns.hostname.assign(hostname);
-  this->config.mdns.service.assign(service);
+
+  for (JsonPair kv : data.as<JsonObject>()) {
+    this->config.mdns.update(kv.key().c_str(), kv.value());
+  }
 
   if (shouldNotify)
     this->notifyAll(ConfigState_e::mdnsConfigUpdated);
 }
 
-void ProjectConfig::setCameraConfig(uint8_t vflip,
-                                    uint8_t framesize,
-                                    uint8_t href,
-                                    uint8_t quality,
-                                    uint8_t brightness,
-                                    bool shouldNotify) {
+void ProjectConfig::setCameraConfig(JsonVariant& data, bool shouldNotify) {
   log_d("Updating camera config");
-  this->config.camera.vflip = vflip;
-  this->config.camera.href = href;
-  this->config.camera.framesize = framesize;
-  this->config.camera.quality = quality;
-  this->config.camera.brightness = brightness;
 
-  log_d("Updating Camera config");
+  for (JsonPair kv : data.as<JsonObject>()) {
+    this->config.camera.update(kv.key().c_str(), kv.value());
+  }
+
   if (shouldNotify)
     this->notifyAll(ConfigState_e::cameraConfigUpdated);
 }
 
-void ProjectConfig::setWifiConfig(const std::string& networkName,
-                                  const std::string& ssid,
-                                  const std::string& password,
-                                  uint8_t channel,
-                                  uint8_t power,
-                                  bool adhoc,
-                                  bool shouldNotify) {
+void ProjectConfig::setWifiConfig(JsonVariant& data, bool shouldNotify) {
   // we store the ADHOC flag as false because the networks we store in the
   // config are the ones we want the esp to connect to, rather than host as AP,
   // and here we're just updating them
   size_t size = this->config.networks.size();
+  auto networkName = data["name"].as<std::string>();
 
   for (auto it = this->config.networks.begin();
        it != this->config.networks.end();) {
@@ -273,12 +258,10 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
       log_i("[Project Config]: Found network %s, updating it ...",
             it->name.c_str());
 
-      it->name = networkName;
-      it->ssid = ssid;
-      it->password = password;
-      it->channel = channel;
-      it->power = power;
-      it->adhoc = false;
+      // we found the network, so we can just update it with the new values
+      for (JsonPair kv : data.as<JsonObject>()) {
+        it->update(kv.key().c_str(), kv.value());
+      }
 
       if (shouldNotify) {
         wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
@@ -293,20 +276,19 @@ void ProjectConfig::setWifiConfig(const std::string& networkName,
     }
   }
 
-  if (size < 3 && size > 0) {
-    Serial.println("We're adding a new network");
+  if (size < 3) {
+    if (size == 0)
+      Serial.println("No networks, We're adding a new network");
+    else
+      Serial.println("We're adding a new network");
     // we don't have that network yet, we can add it as we still have some
     // space we're using emplace_back as push_back will create a copy of it,
     // we want to avoid that
-    this->config.networks.emplace_back(networkName, ssid, password, channel,
-                                       power, false);
-  }
-
-  // we're allowing to store up to three additional networks
-  if (size == 0) {
-    Serial.println("No networks, We're adding a new network");
-    this->config.networks.emplace_back(networkName, ssid, password, channel,
-                                       power, false);
+    this->config.networks.emplace_back(
+        networkName, data["ssid"].as<std::string>(),
+        // todo add validation for this, maybe deconstruct it before emplacing
+        data["password"].as<std::string>(), data["channel"].as<std::string>(),
+        data["power"].as<std::string>(), false);
   }
 
   if (shouldNotify) {
@@ -324,17 +306,19 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
     Serial.println("No networks, nothing to delete");
   }
 
-  for (auto it = this->config.networks.begin();
-       it != this->config.networks.end();) {
-    if (it->name == networkName) {
-      log_i("[Project Config]: Found network %s", it->name.c_str());
-      it = this->config.networks.erase(it);
-      log_i("[Project Config]: Deleted network %s", networkName.c_str());
+  auto networkPredicate = [networkName](WiFiConfig_t network) {
+    return network.name == networkName;
+  };
 
-    } else {
-      ++it;
-    }
-  }
+  if (auto networkToBeDeleted =
+          std::find_if(this->config.networks.begin(),
+                       this->config.networks.end(), networkPredicate);
+      networkToBeDeleted != this->config.networks.end()) {
+    log_i("[Project Config]: Found network %s",
+          networkToBeDeleted->name.c_str());
+    this->config.networks.erase(networkToBeDeleted);
+    log_i("[Project Config]: Deleted network %s", networkName.c_str());
+  };
 
   if (shouldNotify) {
     this->wifiConfigSave();
@@ -343,23 +327,19 @@ void ProjectConfig::deleteWifiConfig(const std::string& networkName,
 }
 
 void ProjectConfig::setWiFiTxPower(uint8_t power, bool shouldNotify) {
-  this->config.txpower.power = power;
   log_d("Updating wifi tx power");
+
+  this->config.txpower.power = power;
   if (shouldNotify)
     this->notifyAll(ConfigState_e::wifiTxPowerUpdated);
 }
 
-void ProjectConfig::setAPWifiConfig(const std::string& ssid,
-                                    const std::string& password,
-                                    uint8_t channel,
-                                    bool adhoc,
-                                    bool shouldNotify) {
-  this->config.ap_network.ssid.assign(ssid);
-  this->config.ap_network.password.assign(password);
-  this->config.ap_network.channel = channel;
-  this->config.ap_network.adhoc = adhoc;
-
+void ProjectConfig::setAPWifiConfig(JsonVariant& data, bool shouldNotify) {
   log_d("Updating access point config");
+
+  for (JsonPair kv : data.as<JsonObject>()) {
+    config.device.update(kv.key().c_str(), kv.value());
+  }
 
   if (shouldNotify) {
     wifiStateManager.setState(WiFiState_e::WiFiState_None);

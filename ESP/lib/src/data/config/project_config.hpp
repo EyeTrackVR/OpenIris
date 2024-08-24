@@ -2,9 +2,12 @@
 #ifndef PROJECT_CONFIG_HPP
 #define PROJECT_CONFIG_HPP
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <Preferences.h>
+
 #include <algorithm>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "data/StateManager/StateManager.hpp"
@@ -33,22 +36,62 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     std::string OTAPassword;
     int OTAPort;
     std::string toRepresentation();
+
+    void update(std::string field, JsonVariant value) {
+      // this technically could be done with a hashmap that takes
+      // and std::function<void(JsonVariant)> and some lambda captures
+      // but it seemed too unvieldy for the time being
+
+      if (field == "OTALogin") {
+        this->OTALogin = value.as<std::string>();
+      } else if (field == "OTAPassword") {
+        this->OTAPassword = value.as<std::string>();
+      } else if (field == "OTAPort") {
+        this->OTAPort = value.as<int>();
+      }
+    }
   };
 
   struct MDNSConfig_t {
     std::string hostname;
     std::string service;
     std::string toRepresentation();
+
+    void update(std::string field, JsonVariant value) {
+      if (field == "hostname") {
+        this->hostname = std::move(value.as<std::string>());
+      } else if (field == "service") {
+        this->service = std::move(value.as<std::string>());
+      }
+    }
   };
 
   struct CameraConfig_t {
+   public:
     uint8_t vflip;
     uint8_t href;
     uint8_t framesize;
     uint8_t quality;
     uint8_t brightness;
+    uint8_t fps;
 
     std::string toRepresentation();
+
+    void update(std::string field, JsonVariant value) {
+      if (field == "vflip") {
+        this->vflip = value.as<uint8_t>();
+      } else if (field == "href") {
+        this->href = value.as<uint8_t>();
+      } else if (field == "framesize") {
+        this->framesize = value.as<uint8_t>();
+      } else if (field == "quality") {
+        this->quality = value.as<uint8_t>();
+      } else if (field == "brightness") {
+        this->brightness = value.as<uint8_t>();
+      } else if (field == "fps") {
+        this->fps = value.as<uint8_t>();
+      }
+    }
   };
 
   struct WiFiConfig_t {
@@ -73,6 +116,22 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     bool adhoc;
 
     std::string toRepresentation();
+
+    void update(std::string field, JsonVariant value) {
+      if (field == "name") {
+        this->name = std::move(value.as<std::string>());
+      } else if (field == "ssid") {
+        this->ssid = std::move(value.as<std::string>());
+      } else if (field == "password") {
+        this->password = std::move(value.as<std::string>());
+      } else if (field == "channel") {
+        this->channel = value.as<uint8_t>();
+      } else if (field == "power") {
+        this->power = value.as<uint8_t>();
+      } else if (field == "adhoc") {
+        this->adhoc = value.as<bool>();
+      }
+    }
   };
 
   struct AP_WiFiConfig_t {
@@ -81,11 +140,23 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     uint8_t channel;
     bool adhoc;
     std::string toRepresentation();
+    void update(std::string field, JsonVariant value) {
+      if (field == "ssid") {
+        this->ssid = std::move(value.as<std::string>());
+      } else if (field == "password") {
+        this->password = std::move(value.as<std::string>());
+      } else if (field == "channel") {
+        this->channel = value.as<uint8_t>();
+      } else if (field == "adhoc") {
+        this->adhoc = value.as<bool>();
+      }
+    }
   };
 
   struct WiFiTxPower_t {
     uint8_t power;
     std::string toRepresentation();
+    void update(uint8_t power) { this->power = power; }
   };
 
   struct TrackerConfig_t {
@@ -104,31 +175,13 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
   MDNSConfig_t& getMDNSConfig();
   WiFiTxPower_t& getWiFiTxPowerConfig();
 
-  void setDeviceConfig(const std::string& OTALogin,
-                       const std::string& OTAPassword,
-                       int OTAPort,
-                       bool shouldNotify);
-  void setMDNSConfig(const std::string& hostname,
-                     const std::string& service,
-                     bool shouldNotify);
-  void setCameraConfig(uint8_t vflip,
-                       uint8_t framesize,
-                       uint8_t href,
-                       uint8_t quality,
-                       uint8_t brightness,
-                       bool shouldNotify);
-  void setWifiConfig(const std::string& networkName,
-                     const std::string& ssid,
-                     const std::string& password,
-                     uint8_t channel,
-                     uint8_t power,
-                     bool adhoc,
-                     bool shouldNotify);
-  void setAPWifiConfig(const std::string& ssid,
-                       const std::string& password,
-                       uint8_t channel,
-                       bool adhoc,
-                       bool shouldNotify);
+  void setDeviceConfig(JsonVariant& data, bool shouldNotify);
+
+  void setMDNSConfig(JsonVariant& data, bool shouldNotify);
+  void setCameraConfig(JsonVariant& data, bool shouldNotify);
+  void setWifiConfig(JsonVariant& data, bool shouldNotify);
+  void setAPWifiConfig(JsonVariant& data, bool shouldNotify);
+
   void setWiFiTxPower(uint8_t power, bool shouldNotify);
 
   void deleteWifiConfig(const std::string& networkName, bool shouldNotify);
