@@ -1,8 +1,4 @@
-#include "Command.hpp"
-
-CommandResult PingCommand::execute() {
-  return CommandResult::getSuccessResult("pong");
-}
+#include "ConfigCommands.hpp"
 
 CommandResult SetWiFiCommand::validate() {
   if (!data.containsKey("ssid"))
@@ -31,9 +27,18 @@ CommandResult SetMDNSCommand::validate() {
 }
 
 CommandResult SetMDNSCommand::execute() {
-  projectConfig.setMDNSConfig(data["hostname"], "openiristracker", false);
+  projectConfig.setMDNSConfig(data, false);
   return CommandResult::getSuccessResult("MDNS set to:" +
                                          data["hostname"].as<std::string>());
+}
+
+CommandResult SetDeviceConfigCommand::validate() {
+  return CommandResult::getSuccessResult("");
+}
+
+CommandResult SetDeviceConfigCommand::execute() {
+  projectConfig.setDeviceConfig(data, false);
+  return CommandResult::getSuccessResult("Device config updated.");
 }
 
 CommandResult SaveConfigCommand::execute() {
@@ -49,23 +54,7 @@ CommandResult SetFPSCommand::validate() {
 }
 
 CommandResult SetFPSCommand::execute() {
-  // handle FPS here, poc of the interface:
-  // auto defaultCameraSettings = projectConfig.getDefaultCameraSettings();
-  // projectConfig.setCamera(..defaultCameraSettings, data["fps"]);
+  projectConfig.setCameraConfig("fps", data["fps"]);
   return CommandResult::getSuccessResult("FPS set to:" +
                                          data["fps"].as<std::string>());
-}
-
-CommandResult ToggleStreamCommand::validate() {
-  if (!data.containsKey("state"))
-    return CommandResult::getErrorResult("Missing state field");
-
-  return CommandResult::getSuccessResult("");
-}
-
-CommandResult ToggleStreamCommand::execute() {
-  this->streamServer.toggleTCPStream(data["state"].as<bool>());
-
-  return CommandResult::getSuccessResult("TCP Stream state set to:" +
-                                         data["state"].as<std::string>());
 }

@@ -2,18 +2,18 @@
 #ifndef TASK_MANAGER_HPP
 #define TASK_MANAGER_HPP
 #include <ArduinoJson.h>
-#include <optional>
-#include <string>
-#include <unordered_map>
-#include <variant>
 
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <sstream>
+#include <string>
+#include <unordered_map>
+#include <variant>
 #include <vector>
 
-#include "data/CommandManager/Command.hpp"
+#include "data/CommandManager/BaseCommand.hpp"
 #include "data/config/project_config.hpp"
 #include "network/stream/streamServer.hpp"
 
@@ -41,10 +41,10 @@ const std::unordered_map<std::string, CommandType> commandMap = {
 
 class CommandManager {
  private:
-  ProjectConfig& projectConfig;
-  StreamServer& streamServer;
+  ProjectConfig &projectConfig;
+  StreamServer &streamServer;
 
-  std::string join_strings(std::vector<std::string> const& strings,
+  std::string join_strings(std::vector<std::string> const &strings,
                            std::string delim) {
     std::stringstream ss;
     std::copy(strings.begin(), strings.end(),
@@ -52,21 +52,21 @@ class CommandManager {
     return ss.str();
   }
 
-  bool hasDataField(JsonVariant& command);
+  bool hasDataField(JsonVariant &command);
   std::unique_ptr<ICommand> createCommand(CommandType commandType,
-                                          JsonVariant& data);
+                                          JsonVariant &data);
 
   std::variant<std::unique_ptr<ICommand>, CommandResult>
-  createCommandFromJsonVariant(JsonVariant& command);
+  createCommandFromJsonVariant(JsonVariant &command);
 
-  CommandType getCommandType(JsonVariant& command);
+  CommandType getCommandType(JsonVariant &command);
 
   //   // TODO rewrite the API
   //   // TODO add FPS/ Freq / cropping to the API
   //   // TODO rewrite camera handler to be simpler and easier to change
 
  public:
-  CommandManager(ProjectConfig& projectConfig, StreamServer& streamServer)
+  CommandManager(ProjectConfig &projectConfig, StreamServer &streamServer)
       : projectConfig(projectConfig), streamServer(streamServer) {};
 
   CommandResult handleSingleCommand(CommandsPayload commandsPayload);

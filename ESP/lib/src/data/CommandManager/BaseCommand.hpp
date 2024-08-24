@@ -1,9 +1,11 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 #include <ArduinoJson.h>
+
 #include <optional>
 #include <string>
 #include <variant>
+
 #include "data/config/project_config.hpp"
 #include "network/stream/streamServer.hpp"
 
@@ -53,54 +55,6 @@ class PingCommand : public ICommand {
   CommandResult validate() override {
     return CommandResult::getSuccessResult("");
   };
-  CommandResult execute() override;
-};
-
-class SetWiFiCommand : public ICommand {
-  ProjectConfig& projectConfig;
-  JsonVariant data;
-
- public:
-  SetWiFiCommand(ProjectConfig& projectConfig, JsonVariant data)
-      : projectConfig(projectConfig), data(data) {}
-  CommandResult validate() override;
-  CommandResult execute() override;
-};
-
-class SetMDNSCommand : public ICommand {
-  ProjectConfig& projectConfig;
-  JsonVariant data;
-
- public:
-  SetMDNSCommand(ProjectConfig& projectConfig, JsonVariant data)
-      : projectConfig(projectConfig), data(data) {}
-  CommandResult validate() override;
-  CommandResult execute() override;
-};
-
-class SaveConfigCommand : public ICommand {
-  ProjectConfig& projectConfig;
-
- public:
-  SaveConfigCommand(ProjectConfig& projectConfig)
-      : projectConfig(projectConfig) {}
-
-  CommandResult validate() override {
-    return CommandResult::getSuccessResult("");
-  };
-
-  CommandResult execute() override;
-};
-
-class SetFPSCommand : public ICommand {
-  ProjectConfig& projectConfig;
-  JsonVariant data;
-
- public:
-  SetFPSCommand(ProjectConfig& projectConfig, JsonVariant data)
-      : projectConfig(projectConfig), data(data) {}
-
-  CommandResult validate() override;
   CommandResult execute() override;
 };
 
