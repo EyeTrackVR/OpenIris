@@ -45,37 +45,15 @@ void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting MDNS Handler");
   mdnsHandler.startMDNS();
 
-  switch (wifiStateManager.getCurrentState()) {
-    case WiFiState_e::WiFiState_Disconnected: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_ADHOC: {
+  auto wifiState = wifiStateManager.getCurrentState();
+  if (wifiState == WiFiState_e::WiFiState_ADHOC ||
+      wifiState == WiFiState_e::WiFiState_Connected) {
 #ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
+    log_d("[SETUP]: Starting Stream Server");
+    streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      log_d("[SETUP]: Starting API Server");
-      apiServer.setup();
-      break;
-    }
-    case WiFiState_e::WiFiState_Connected: {
-#ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
-#endif  // SIM_ENABLED
-      log_d("[SETUP]: Starting API Server");
-      apiServer.setup();
-      break;
-    }
-    case WiFiState_e::WiFiState_Connecting: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_Error: {
-      //! TODO: Implement
-      break;
-    }
+    log_d("[SETUP]: Starting API Server");
+    apiServer.setup();
   }
 }
 #endif  // ETVR_EYE_TRACKER_WEB_API
@@ -86,16 +64,17 @@ void setup() {
   Logo::printASCII();
   ledManager.begin();
 
-  #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to 100%.  
-    const int ledPin = 1;                       // Replace this with a command endpoint eventually.
-    const int freq = 5000;
-    const int ledChannel = 0;
-    const int resolution = 8;
-    const int dutyCycle = 255;
-    ledcSetup(ledChannel, freq, resolution);
-    ledcAttachPin(1, ledChannel);
-    ledcWrite(ledChannel, dutyCycle); 
-  #endif
+#ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to
+                                              // 100%.
+  const int ledPin = 1;  // Replace this with a command endpoint eventually.
+  const int freq = 5000;
+  const int ledChannel = 0;
+  const int resolution = 8;
+  const int dutyCycle = 255;
+  ledcSetup(ledChannel, freq, resolution);
+  ledcAttachPin(1, ledChannel);
+  ledcWrite(ledChannel, dutyCycle);
+#endif
 
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);

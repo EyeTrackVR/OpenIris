@@ -63,8 +63,8 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
           ssid(std::move(ssid)),
           password(std::move(password)),
           channel(channel),
-          adhoc(adhoc),
-          power(power) {}
+          power(power),
+          adhoc(adhoc) {}
     std::string name;
     std::string ssid;
     std::string password;

@@ -164,10 +164,6 @@ void BaseAPI::getJsonConfig(AsyncWebServerRequest* request) {
 
 void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
-    case GET: {
-      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
-      break;
-    }
     case POST: {
       int params = request->params();
 
@@ -175,7 +171,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       std::string service;
       std::string ota_password;
       std::string ota_login;
-      int ota_port;
+      int ota_port = 3232;
 
       for (int i = 0; i < params; i++) {
         AsyncWebParameter* param = request->getParam(i);
@@ -203,6 +199,11 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       projectConfig.setMDNSConfig(hostname, service, true);
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Device Config has been set.\"}");
+
+      break;
+    }
+    default: {
+      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
     }
   }
 }
@@ -225,6 +226,10 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
       projectConfig.wifiTxPowerConfigSave();
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. TX Power has been set.\"}");
+      break;
+    }
+    default: {
+      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
     }
   }
 }
@@ -234,6 +239,7 @@ void BaseAPI::rebootDevice(AsyncWebServerRequest* request) {
     case GET: {
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
       OpenIrisTasks::ScheduleRestart(2000);
+      break;
     }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
@@ -248,6 +254,7 @@ void BaseAPI::factoryReset(AsyncWebServerRequest* request) {
       log_d("Factory Reset");
       projectConfig.reset();
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Factory Reset\"}");
+      break;
     }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
