@@ -10,23 +10,19 @@
 #include "esp_camera.h"
 #include "esp_http_server.h"
 #include "esp_timer.h"
-#include "fb_gfx.h"
 #include "img_converters.h"
 
-namespace StreamHelpers
-{
-	esp_err_t stream(httpd_req_t *req);
+namespace StreamHelpers {
+  esp_err_t stream(httpd_req_t* req);
 }
-class StreamServer
-{
+class StreamServer {
+ private:
+  httpd_handle_t camera_stream = nullptr;
+  int STREAM_SERVER_PORT;
 
-private:
-	httpd_handle_t camera_stream = nullptr;
-	int STREAM_SERVER_PORT;
-
-public:
-	StreamServer(const int STREAM_PORT = 80);
-	int startStreamServer();
+ public:
+  StreamServer(const int STREAM_PORT = 80);
+  int startStreamServer();
 };
 
-#endif // STREAM_SERVER_HPP
+#endif  // STREAM_SERVER_HPP

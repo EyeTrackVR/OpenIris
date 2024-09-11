@@ -18,10 +18,11 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
-
-  // just to be sure, we reeset everything before we do anything, some boards were having problems otherwise
+  // just to be sure, we reeset everything before we do anything, some boards
+  // were having problems otherwise
   WiFi.disconnect();
-  // we purposefully set the lowest min required security level, some boards have problems connecting otherwise
+  // we purposefully set the lowest min required security level, some boards
+  // have problems connecting otherwise
   // https://github.com/espressif/arduino-esp32/issues/8770
   WiFi.setMinSecurity(WIFI_AUTH_WEP);
 
@@ -33,7 +34,9 @@ void WiFiHandler::begin() {
     return;
   }
 
-  log_d("ADHOC is disabled, setting up STA network and checking transmission power \n\r");
+  log_d(
+      "ADHOC is disabled, setting up STA network and checking transmission "
+      "power \n\r");
   auto txpower = configManager.getWiFiTxPowerConfig();
   log_d("Setting Wifi Power to: %d", txpower.power);
   log_d("Setting WiFi sleep mode to NONE \n\r");
@@ -46,14 +49,9 @@ void WiFiHandler::begin() {
 
   if (networks.empty()) {
     log_i("No networks found in config, trying the default one \n\r");
-    
-    if (this->iniSTA(
-          this->ssid,
-          this->password,
-          this->channel, 
-          (wifi_power_t)txpower.power
-        )
-    ) {
+
+    if (this->iniSTA(this->ssid, this->password, this->channel,
+                     (wifi_power_t)txpower.power)) {
       return;
     }
 
@@ -139,12 +137,11 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
                          const std::string& password,
                          uint8_t channel,
                          wifi_power_t power) {
-  
-  // since networks may not have a password, we only need to check if we have an ssid
-  // bail if we don't  
-  if (ssid == ""){
+  // since networks may not have a password, we only need to check if we have an
+  // ssid bail if we don't
+  if (ssid == "") {
     log_d("ssid missing, bailing");
-    return false; 
+    return false;
   }
 
   unsigned long currentMillis = millis();
@@ -159,8 +156,9 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
               INADDR_NONE);  // need to call before setting hostname
   log_d("Setting hostname %s \n\r");
   WiFi.setHostname(mdnsConfig.hostname.c_str());
-    log_i("Setting TX power to: %d \n\r", (uint8_t)power);
-  WiFi.setTxPower(power); // https://github.com/espressif/arduino-esp32/issues/5698
+  log_i("Setting TX power to: %d \n\r", (uint8_t)power);
+  WiFi.setTxPower(
+      power);  // https://github.com/espressif/arduino-esp32/issues/5698
   WiFi.begin(ssid.c_str(), password.c_str(), channel);
 
   log_d("Waiting for WiFi to connect... \n\r");

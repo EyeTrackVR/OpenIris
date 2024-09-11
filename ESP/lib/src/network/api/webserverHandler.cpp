@@ -28,11 +28,10 @@ void APIServer::setup() {
            "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$",
            this->api_url.c_str());
   log_d("API URL: %s", buffer);
-  server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
-      handleRequest(request);
-  });
+  server.on(buffer, 0b01111111,
+            [&](AsyncWebServerRequest* request) { handleRequest(request); });
 #ifndef SIM_ENABLED
-    //this->_authRequired = true;
+  // this->_authRequired = true;
 #endif  // SIM_ENABLED
   beginOTA();
   server.begin();
@@ -85,30 +84,26 @@ void APIServer::addRouteMap(const std::string& index,
 }
 
 void APIServer::handleRequest(AsyncWebServerRequest* request) {
-  try {
-    // Get the route
-    log_i("Request URL: %s", request->url().c_str());
-    log_i("Request: %s", request->pathArg(0).c_str());
-    log_i("Request: %s", request->pathArg(1).c_str());
+  // Get the route
+  log_i("Request URL: %s", request->url().c_str());
+  log_i("Request: %s", request->pathArg(0).c_str());
+  log_i("Request: %s", request->pathArg(1).c_str());
 
-    auto it_map = route_map.find(request->pathArg(0).c_str());
-    auto it_method = it_map->second.find(request->pathArg(1).c_str());
+  auto it_map = route_map.find(request->pathArg(0).c_str());
+  auto it_method = it_map->second.find(request->pathArg(1).c_str());
 
-    if (it_map != route_map.end()) {
-      if (it_method != it_map->second.end()) {
-        log_d("We are trying to execute the function");
-        (*this.*(it_method->second))(request);
-      } else {
-        log_e("Invalid Command");
-        request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
-        return;
-      }
+  if (it_map != route_map.end()) {
+    if (it_method != it_map->second.end()) {
+      log_d("We are trying to execute the function");
+      (*this.*(it_method->second))(request);
     } else {
-      log_e("Invalid Map Index");
-      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
+      log_e("Invalid Command");
+      request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Command\"}");
       return;
     }
-  } catch (...) {
-    log_e("Error handling request");
+  } else {
+    log_e("Invalid Map Index");
+    request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Map Index\"}");
+    return;
   }
 }

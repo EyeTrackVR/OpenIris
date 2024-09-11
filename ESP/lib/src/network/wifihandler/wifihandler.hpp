@@ -29,11 +29,11 @@ class WiFiHandler : public IObserver<ConfigState_e> {
 
   ProjectConfig& configManager;
 
-
-  bool _enable_adhoc;
   std::string ssid;
   std::string password;
   uint8_t channel;
+
   uint8_t power;
+  bool _enable_adhoc;
 };
 #endif  // WIFIHANDLER_HPP

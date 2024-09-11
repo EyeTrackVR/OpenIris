@@ -3,7 +3,6 @@
 
 //! Warning do not format this file with clang-format or it will break the code
 
-#include <unordered_map>
 #include <string>
 #include <unordered_map>
 
@@ -43,7 +42,6 @@ constexpr int HTTP_ANY = 0b01111111;
 
 class BaseAPI {
  protected:
-  std::string api_url;
   bool _authRequired;
 
   static const char* MIMETYPE_HTML;
@@ -54,7 +52,6 @@ class BaseAPI {
   /* static const char *MIMETYPE_ICO; */
   static const char* MIMETYPE_JSON;
 
- protected:
   /* Commands */
   void setWiFi(AsyncWebServerRequest* request);
   void setWiFiTXPower(AsyncWebServerRequest* request);
@@ -100,33 +97,36 @@ class BaseAPI {
   typedef std::unordered_map<std::string, WebRequestMethodComposite>
       networkMethodsMap_t;
 
-	ProjectConfig &projectConfig;
-	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-    AsyncWebServer server;
-#ifndef SIM_ENABLED
-        CameraHandler &camera;
-#endif  // SIM_ENABLED
+  /// @brief Local instance of the AsyncWebServer - so that we dont need to use
+  /// new and delete
+  AsyncWebServer server;
+  ProjectConfig& projectConfig;
 
-public :
-    BaseAPI(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
-            CameraHandler& camera,
+  CameraHandler& camera;
 #endif  // SIM_ENABLED
-            const std::string& api_url,
+  std::string api_url;
+
+ public:
+  BaseAPI(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
-            int port = 81
+          CameraHandler& camera,
+#endif  // SIM_ENABLED
+          const std::string& api_url,
+#ifndef SIM_ENABLED
+          int port = 81
 #else
-            int port = 80
+          int port = 80
 #endif
   );
 
- virtual ~BaseAPI();
- virtual void begin();
- void checkAuthentication(AsyncWebServerRequest* request,
-                          const char* login,
-                          const char* password);
- void beginOTA();
- void notFound(AsyncWebServerRequest* request) const;
+  virtual ~BaseAPI();
+  virtual void begin();
+  void checkAuthentication(AsyncWebServerRequest* request,
+                           const char* login,
+                           const char* password);
+  void beginOTA();
+  void notFound(AsyncWebServerRequest* request) const;
 };
 
 #endif  // BASEAPI_HPP

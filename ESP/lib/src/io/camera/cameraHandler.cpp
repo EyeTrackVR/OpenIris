@@ -197,13 +197,7 @@ void CameraHandler::loadConfigData() {
 
 int CameraHandler::setCameraResolution(framesize_t frameSize) {
   if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
-    try {
-      return camera_sensor->set_framesize(camera_sensor, frameSize);
-    } catch (...) {
-      // they sent us a malformed or unsupported frameSize - rather than crash -
-      // tell them about it
-      return -1;
-    }
+    return camera_sensor->set_framesize(camera_sensor, frameSize);
   }
   return -1;
 }

@@ -6,7 +6,8 @@ MDNSHandler::MDNSHandler(ProjectConfig& configManager)
 bool MDNSHandler::startMDNS() {
   const std::string service = "_openiristracker";
   auto mdnsConfig = configManager.getMDNSConfig();
-  if (!MDNS.begin(mdnsConfig.hostname.c_str()))  // lowercase only - as this will be the url
+  if (!MDNS.begin(mdnsConfig.hostname
+                      .c_str()))  // lowercase only - as this will be the url
   {
     mdnsStateManager.setState(MDNSState_e::MDNSState_Error);
     log_e("Error initializing MDNS");
@@ -15,7 +16,6 @@ bool MDNSHandler::startMDNS() {
 
   mdnsStateManager.setState(MDNSState_e::MDNSState_Starting);
   MDNS.addService(service.c_str(), "_tcp", 80);
-  char port[20];
   //! Add service needs leading _ on ESP32 implementation for some reason
   //! (according to the docs)
   MDNS.addServiceTxt(service.c_str(), "_tcp", "stream_port", "80");
