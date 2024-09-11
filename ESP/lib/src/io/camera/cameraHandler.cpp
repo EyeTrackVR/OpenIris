@@ -16,7 +16,8 @@ void CameraHandler::setupCameraPinout() {
   // 16500000 optimal freq on ESP32-CAM (default)
   // 20000000 max freq on ESP32-CAM
   // 24000000 optimal freq on ESP32-S3
-  int xclk_freq_hz = DEFAULT_XCLK_FREQ_HZ;
+  // int xclk_freq_hz = DEFAULT_XCLK_FREQ_HZ;
+  int xclk_freq_hz = USB_DEFAULT_XCLK_FREQ_HZ;
 
 #if CONFIG_CAMERA_MODULE_ESP_EYE
   /* IO13, IO14 is designed for JTAG by default,

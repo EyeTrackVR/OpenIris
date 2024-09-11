@@ -8,9 +8,7 @@
 #include <esp_camera.h>
 #include "data/CommandManager/CommandManager.hpp"
 #include "data/config/project_config.hpp"
-
-const char* const ETVR_HEADER = "\xff\xa0";
-const char* const ETVR_HEADER_FRAME = "\xff\xa1";
+#include "data/utilities/helpers.hpp"
 
 enum QueryAction {
   READY_TO_RECEIVE,

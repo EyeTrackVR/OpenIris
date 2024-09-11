@@ -102,17 +102,6 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       projectConfig.setWifiConfig(networkName, ssid, password, channel, power,
                                   adhoc, true);
 
-      /* if (WiFiStateManager->getCurrentState() ==
-      WiFiState_e::WiFiState_ADHOC)
-      {
-              projectConfig.setAPWifiConfig(ssid, password, &channel, adhoc,
-      true);
-      }
-      else
-      {
-
-      } */
-
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Wifi Creds have been set.\"}");
       break;

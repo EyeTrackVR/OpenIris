@@ -1,36 +1,38 @@
 #ifndef LEDMANAGER_HPP
 #define LEDMANAGER_HPP
-#include <vector>
 #include <Arduino.h>
 #include <data/StateManager/StateManager.hpp>
 #include <unordered_map>
+#include <vector>
 
-class LEDManager
-{
-public:
-	LEDManager(byte pin);
-	virtual ~LEDManager();
+class LEDManager {
+ public:
+  LEDManager(byte pin);
+  virtual ~LEDManager();
 
-	void begin();
-	void handleLED();
-	void toggleLED(bool state) const;
+  void begin();
+  void handleLED();
+  void toggleLED(bool state) const;
+#ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+  void setupBabbeLed();
+#endif
 
-private:
-	byte _ledPin;
-	unsigned long nextStateChangeMillis = 0;
-	bool _ledState;
+ private:
+  byte _ledPin;
+  unsigned long nextStateChangeMillis = 0;
+  bool _ledState;
 
-	struct BlinkPatterns_t
-	{
-		int state;
-		int delayTime;
-	};
+  struct BlinkPatterns_t {
+    int state;
+    int delayTime;
+  };
 
-	typedef std::unordered_map<LEDStates_e, std::vector<BlinkPatterns_t>> ledStateMap_t;
-	static ledStateMap_t ledStateMap;
-	static std::vector<LEDStates_e> keepAliveStates;
-	LEDStates_e currentState;
-	unsigned int currentPatternIndex = 0;
+  typedef std::unordered_map<LEDStates_e, std::vector<BlinkPatterns_t>>
+      ledStateMap_t;
+  static ledStateMap_t ledStateMap;
+  static std::vector<LEDStates_e> keepAliveStates;
+  LEDStates_e currentState;
+  unsigned int currentPatternIndex = 0;
 };
 
-#endif // LEDMANAGER_HPP
+#endif  // LEDMANAGER_HPP
