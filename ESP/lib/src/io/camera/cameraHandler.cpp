@@ -108,6 +108,10 @@ void CameraHandler::setupCameraSensor() {
   camera_sensor->set_aec2(camera_sensor, 0);         // 0 = disable , 1 = enable
   camera_sensor->set_ae_level(camera_sensor, 0);     // -2 to 2
   camera_sensor->set_aec_value(camera_sensor, 300);  // 0 to 1200
+  // Use a lower aec value for babble to better isolate the face with illuminators 
+  #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+    camera_sensor->set_aec_value(camera_sensor, 100);  // 0 to 1200
+  #endif
 
   // controls the gain
   camera_sensor->set_gain_ctrl(camera_sensor, 0);  // 0 = disable , 1 = enable
