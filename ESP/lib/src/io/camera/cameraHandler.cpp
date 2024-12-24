@@ -199,7 +199,29 @@ void CameraHandler::loadConfigData() {
   log_d("Loading camera config data done");
 }
 
-int CameraHandler::setCameraResolution(framesize_t frameSize) {
+#ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+int CameraHandler::setCameraResolution(framesize_t frameSize) {   // For Babble, use a firmware crop as shown by Physdude
+  if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
+    try {
+        int outputSize = 240;
+
+        int baseRes = 2; //CIF 
+        int ROIsize = 240; 
+        int startPointX = 80; 
+        int startPointY = 28; 
+
+        return camera_sensor->set_res_raw(camera_sensor, baseRes, 0, 0, 0, startPointX, startPointY, ROIsize, ROIsize, outputSize, outputSize, 0, 0);
+
+    } catch (...) {
+      // they sent us a malformed or unsupported frameSize - rather than crash -
+      // tell them about it
+      return -1;
+    }
+  }
+  return -1;
+}
+#else
+int CameraHandler::setCameraResolution(framesize_t frameSize) {   // By default, use the standard method. 
   if (camera_sensor->pixformat == PIXFORMAT_JPEG) {
     try {
       return camera_sensor->set_framesize(camera_sensor, frameSize);
@@ -211,6 +233,7 @@ int CameraHandler::setCameraResolution(framesize_t frameSize) {
   }
   return -1;
 }
+#endif
 
 int CameraHandler::setVFlip(int direction) {
   return camera_sensor->set_vflip(camera_sensor, direction);
