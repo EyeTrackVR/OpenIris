@@ -3,6 +3,22 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.7.0-beta.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.6.0...v2.7.0-beta.1) (2025-01-11)
+
+
+### 🍕 Features
+
+* Add support for ov5640 cameras ([14d2cb0](https://github.com/EyeTrackVR/OpenIris/commit/14d2cb0858cd65452f2ce1cee9a3a1f68d8f7f51))
+* Fix ov5640 support implementation after beta cleanup ([4894c22](https://github.com/EyeTrackVR/OpenIris/commit/4894c2205864d5a7d52e37c81b14ff7dc46517d4))
+* fix usb streaming on wroom boards, add support for babble custom board  ([049b160](https://github.com/EyeTrackVR/OpenIris/commit/049b16078ec5c07042652f2de3545ea6b69de6a9))
+* Move logging in serial streaming so that we at least attempt to get new frame ([53a3d4b](https://github.com/EyeTrackVR/OpenIris/commit/53a3d4bcd603e2fd07546621628e69de88e4139a))
+* Refactor commands and serial manager to support updated commands payload ([811a9f8](https://github.com/EyeTrackVR/OpenIris/commit/811a9f898a3f1bdb1e20ffd6f0d6e77a4533f52c))
+
+
+### 🐛 Bug Fixes
+
+* serial output for esp32cams and other boards not supporting higher frequency baud rate ([01e5e28](https://github.com/EyeTrackVR/OpenIris/commit/01e5e280ad26d2709231fe6aa2a96d1991cbf360))
+
 ## [2.6.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.5.0...v2.6.0) (2024-07-14)
 
 
