@@ -1,4 +1,5 @@
 #include "project_config.hpp"
+#include "sensor.h"
 
 ProjectConfig::ProjectConfig(const std::string& name,
                              const std::string& mdnsName)
@@ -53,7 +54,7 @@ void ProjectConfig::initConfig() {
   this->config.camera = {
       .vflip = 0,
       .href = 0,
-      .framesize = 4,
+      .framesize = (uint8_t)CAM_RESOLUTION,
       .quality = 7,
       .brightness = 2,
   };
@@ -200,7 +201,7 @@ void ProjectConfig::load() {
   /* Camera Config */
   this->config.camera.vflip = getInt("vflip", 0);
   this->config.camera.href = getInt("href", 0);
-  this->config.camera.framesize = getInt("framesize", 4);
+  this->config.camera.framesize = getInt("framesize", (uint8_t)CAM_RESOLUTION);
   this->config.camera.quality = getInt("quality", 7);
   this->config.camera.brightness = getInt("brightness", 2);
 

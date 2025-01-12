@@ -63,7 +63,7 @@ void CameraHandler::setupCameraPinout() {
 
 void CameraHandler::setupBasicResolution() {
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size = FRAMESIZE_240X240;
+  config.frame_size = CAM_RESOLUTION;
 
   if (!psramFound()) {
     log_e("[Camera]: Did not find psram, setting lower image quality");
