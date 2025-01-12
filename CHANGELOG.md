@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.7.0-beta.2](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0-beta.1...v2.7.0-beta.2) (2025-01-12)
+
+
+### 🍕 Features
+
+* Add camera resolution configuration support ([#79](https://github.com/EyeTrackVR/OpenIris/issues/79)) ([5c76e01](https://github.com/EyeTrackVR/OpenIris/commit/5c76e01c5e466c8cc7ef4cd43e78a763af00c06e))
+
 ## [2.7.0-beta.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.6.0...v2.7.0-beta.1) (2025-01-11)
 
 
