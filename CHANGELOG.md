@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.8.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0...v2.8.0) (2025-01-15)
+
+
+### 🍕 Features
+
+* Fix typo in SerialManager ([#84](https://github.com/EyeTrackVR/OpenIris/issues/84)) ([f460867](https://github.com/EyeTrackVR/OpenIris/commit/f4608674978edf5728e495824ed615d9d45f85fd))
+
 ## [2.7.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.6.0...v2.7.0) (2025-01-12)
 
 
