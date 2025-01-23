@@ -28,11 +28,10 @@ void APIServer::setup() {
            "^\\%s\\/([a-zA-Z0-9]+)\\/command\\/([a-zA-Z0-9]+)$",
            this->api_url.c_str());
   log_d("API URL: %s", buffer);
-  server.on(buffer, 0b01111111, [&](AsyncWebServerRequest* request) {
-      handleRequest(request);
-  });
+  server.on(buffer, 0b01111111,
+            [&](AsyncWebServerRequest* request) { handleRequest(request); });
 #ifndef SIM_ENABLED
-    //this->_authRequired = true;
+  // this->_authRequired = true;
 #endif  // SIM_ENABLED
   beginOTA();
   server.begin();

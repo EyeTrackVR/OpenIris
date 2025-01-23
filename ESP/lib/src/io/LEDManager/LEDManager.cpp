@@ -9,6 +9,7 @@
  *between blinks.
  */
 
+// TODO rethink this
 LEDManager::ledStateMap_t LEDManager::ledStateMap = {
     {LEDStates_e::_LedStateNone, {{0, 500}}},
     {LEDStates_e::_Improv_Error,
@@ -58,7 +59,7 @@ LEDManager::~LEDManager() {}
 
 void LEDManager::begin() {
   pinMode(_ledPin, OUTPUT);
-  // the defualt state is _LedStateNone so we're fine
+  // the default state is _LedStateNone so we're fine
   this->currentState = ledStateManager.getCurrentState();
   this->currentPatternIndex = 0;
   BlinkPatterns_t pattern =
@@ -66,7 +67,12 @@ void LEDManager::begin() {
   this->toggleLED(pattern.state);
   this->nextStateChangeMillis = pattern.delayTime;
 
-  log_d("begin %d", this->currentPatternIndex);
+  log_d("Led manager began with: %d", this->currentPatternIndex);
+
+#ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+  log_d("Setting up LED for the Babble board");
+  this->setupBabbeLed();
+#endif
 }
 
 /**
@@ -120,6 +126,19 @@ void LEDManager::handleLED() {
   log_d("updated stage %d", this->currentPatternIndex);
 }
 
+#ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
+void LEDManager::setupBabbeLed() {
+  // Set IR emitter strength to 100%.
+  const int ledPin = 1;  // Replace this with a command endpoint eventually.
+  const int freq = 5000;
+  const int ledChannel = 0;
+  const int resolution = 8;
+  const int dutyCycle = 255;
+  ledcSetup(ledChannel, freq, resolution);
+  ledcAttachPin(ledPin, ledChannel);
+  ledcWrite(ledChannel, dutyCycle);
+}
+#endif
 /**
  * @brief Turn the LED on or off
  *

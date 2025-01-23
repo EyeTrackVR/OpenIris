@@ -6,18 +6,14 @@
  * @param mdnsName The mDNS hostname to use
  */
 ProjectConfig deviceConfig("openiris", MDNS_HOSTNAME);
-CommandManager commandManager(&deviceConfig);
-SerialManager serialManager(&commandManager);
 
 #ifdef CONFIG_CAMERA_MODULE_ESP32S3_XIAO_SENSE
 LEDManager ledManager(LED_BUILTIN);
-
 #elif CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3
 LEDManager ledManager(38);
-
 #else
 LEDManager ledManager(33);
-#endif  // ESP32S3_XIAO_SENSE
+#endif
 
 #ifndef SIM_ENABLED
 CameraHandler cameraHandler(deviceConfig);
@@ -30,12 +26,15 @@ WiFiHandler wifiHandler(deviceConfig,
                         WIFI_CHANNEL,
                         ENABLE_ADHOC);
 MDNSHandler mdnsHandler(deviceConfig);
-#ifdef SIM_ENABLED
-APIServer apiServer(deviceConfig, wifiStateManager, "/control");
-#else
+
 APIServer apiServer(deviceConfig, cameraHandler, "/control");
-StreamServer streamServer;
+
+#ifndef SIM_ENABLED
+StreamServer streamServer(deviceConfig, 80, 82);
 #endif  // SIM_ENABLED
+
+CommandManager commandManager(deviceConfig, streamServer);
+SerialManager serialManager(&commandManager);
 
 void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting Network Handler");
@@ -45,37 +44,27 @@ void etvr_eye_tracker_web_init() {
   log_d("[SETUP]: Starting MDNS Handler");
   mdnsHandler.startMDNS();
 
-  switch (wifiStateManager.getCurrentState()) {
-    case WiFiState_e::WiFiState_Disconnected: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_ADHOC: {
+  auto wifiState = wifiStateManager.getCurrentState();
 #ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
-#endif  // SIM_ENABLED
+  if (wifiState == WiFiState_e::WiFiState_Connected ||
+      wifiState == WiFiState_e::WiFiState_ADHOC) {
+    {
+      log_d("[SETUP]: Starting HTTP Stream Server");
+      auto httpd_result = streamServer.startStreamServer();
+
+      log_d("[SETUP]: Starting TPC Stream Server");
+      auto tpc_result = streamServer.startTCPStreamServer();
+
+      log_d("[SETUP]: Stream Server states: HTTP: %s, TCP: %s",
+            httpd_result
+                ? "Failed to connect"
+                : "Connected",  // we return 0 in case of successful connection
+            tpc_result ? "Connected" : "Failed to connect");
+
       log_d("[SETUP]: Starting API Server");
       apiServer.setup();
-      break;
     }
-    case WiFiState_e::WiFiState_Connected: {
-#ifndef SIM_ENABLED
-      log_d("[SETUP]: Starting Stream Server");
-      streamServer.startStreamServer();
 #endif  // SIM_ENABLED
-      log_d("[SETUP]: Starting API Server");
-      apiServer.setup();
-      break;
-    }
-    case WiFiState_e::WiFiState_Connecting: {
-      //! TODO: Implement
-      break;
-    }
-    case WiFiState_e::WiFiState_Error: {
-      //! TODO: Implement
-      break;
-    }
   }
 }
 #endif  // ETVR_EYE_TRACKER_WEB_API
@@ -86,22 +75,10 @@ void setup() {
   Logo::printASCII();
   ledManager.begin();
 
-  #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to 100%.  
-    const int ledPin = 1;                       // Replace this with a command endpoint eventually.
-    const int freq = 5000;
-    const int ledChannel = 0;
-    const int resolution = 8;
-    const int dutyCycle = 255;
-    ledcSetup(ledChannel, freq, resolution);
-    ledcAttachPin(1, ledChannel);
-    ledcWrite(ledChannel, dutyCycle); 
-  #endif
-
 #ifndef SIM_ENABLED
   deviceConfig.attach(cameraHandler);
 #endif  // SIM_ENABLED
   deviceConfig.load();
-
   serialManager.init();
 
 #ifndef ETVR_EYE_TRACKER_USB_API
@@ -112,6 +89,9 @@ void setup() {
 }
 
 void loop() {
+#ifndef ETVR_EYE_TRACKER_USB_API
+  streamServer.sendTCPFrame();
+#endif
   ledManager.handleLED();
   serialManager.run();
 }

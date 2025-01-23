@@ -67,12 +67,30 @@ void SerialManager::run() {
 
     if (deserializationError) {
       log_e("Command deserialization failed: %s", deserializationError.c_str());
-
       return;
     }
 
     CommandsPayload commands = {doc};
-    this->commandManager->handleCommands(commands);
+    CommandResult result = CommandResult::getSuccessResult("");
+
+    if (doc.containsKey("command")) {
+      result = this->commandManager->handleSingleCommand(commands);
+    } else {
+      result = this->commandManager->handleBatchCommands(commands);
+    }
+
+    if (result.isSuccess()) {
+      Serial.printf("%s \n\r", result.getSuccessMessage().c_str());
+
+      // we also save the config if the commands were successful
+      JsonDocument saveCommanddDoc;
+      saveCommanddDoc["command"] = "save_config";
+      saveCommanddDoc["data"].to<JsonObject>();
+      CommandsPayload saveCommandPayload = {saveCommanddDoc};
+      this->commandManager->handleSingleCommand(saveCommandPayload);
+    } else {
+      Serial.printf("%s \n\r", result.getErrorMessage().c_str());
+    }
   }
 #ifdef ETVR_EYE_TRACKER_USB_API
   else {
