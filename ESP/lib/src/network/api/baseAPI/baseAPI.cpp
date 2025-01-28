@@ -1,13 +1,5 @@
 #include "baseAPI.hpp"
 
-//! These have to be called before the constructor of the class because they are
-//! static C++ 11 does not have inline variables, sadly. So we have to do this.
-// const char *BaseAPI::MIMETYPE_HTML{"text/html"};
-// const char *BaseAPI::MIMETYPE_CSS{"text/css"};
-// const char *BaseAPI::MIMETYPE_JS{"application/javascript"};
-// const char *BaseAPI::MIMETYPE_PNG{"image/png"};
-// const char *BaseAPI::MIMETYPE_JPG{"image/jpeg"};
-// const char *BaseAPI::MIMETYPE_ICO{"image/x-icon"};
 const char* BaseAPI::MIMETYPE_JSON{"application/json"};
 
 BaseAPI::BaseAPI(ProjectConfig& projectConfig,
@@ -79,7 +71,7 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
 
       log_d("Number of Params: %d", params);
       for (int i = 0; i < params; i++) {
-        AsyncWebParameter* param = request->getParam(i);
+        const AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "networkName") {
           networkName.assign(param->value().c_str());
         } else if (param->name() == "ssid") {
@@ -101,17 +93,6 @@ void BaseAPI::setWiFi(AsyncWebServerRequest* request) {
       // specific fields
       projectConfig.setWifiConfig(networkName, ssid, password, channel, power,
                                   adhoc, true);
-
-      /* if (WiFiStateManager->getCurrentState() ==
-      WiFiState_e::WiFiState_ADHOC)
-      {
-              projectConfig.setAPWifiConfig(ssid, password, &channel, adhoc,
-      true);
-      }
-      else
-      {
-
-      } */
 
       request->send(200, MIMETYPE_JSON,
                     "{\"msg\":\"Done. Wifi Creds have been set.\"}");
@@ -178,7 +159,7 @@ void BaseAPI::setDeviceConfig(AsyncWebServerRequest* request) {
       int ota_port;
 
       for (int i = 0; i < params; i++) {
-        AsyncWebParameter* param = request->getParam(i);
+        const AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "hostname") {
           std::string result = param->value().c_str();
 
@@ -216,7 +197,7 @@ void BaseAPI::setWiFiTXPower(AsyncWebServerRequest* request) {
       uint8_t txPower = 0;
 
       for (int i = 0; i < params; i++) {
-        AsyncWebParameter* param = request->getParam(i);
+        const AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "txpower" || param->name() == "txPower") {
           txPower = atoi(param->value().c_str());
         }
@@ -275,7 +256,7 @@ void BaseAPI::setCamera(AsyncWebServerRequest* request) {
       //! be set in a specific order This means the order of the URL params does
       //! not matter
       for (int i = 0; i < params; i++) {
-        AsyncWebParameter* param = request->getParam(i);
+        const AsyncWebParameter* param = request->getParam(i);
         if (param->name() == "framesize") {
           temp_camera_framesize = (uint8_t)param->value().toInt();
         } else if (param->name() == "vflip") {
@@ -392,7 +373,6 @@ void BaseAPI::beginOTA() {
                       "{\"id\": \"" + _id + "\", \"hardware\": \"ESP32\"}");
       });
 
-  // Note: HTT_GET
   server.on("/update", 0b00000001, [&](AsyncWebServerRequest* request) {
     log_d("[DEBUG] Free Heap: %d", ESP.getFreeHeap());
     checkAuthentication(request, login, password);
@@ -406,7 +386,8 @@ void BaseAPI::beginOTA() {
     response->addHeader("Content-Encoding", "gzip");
     request->send(response);
   });
-  // Note: HTT_POST
+
+  // HTTP_POST
   server.on(
       "/update", 0b00000010,
       [&](AsyncWebServerRequest* request) {
