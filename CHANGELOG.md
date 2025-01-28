@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.9.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.8.0...v2.9.0) (2025-01-28)
+
+
+### 🍕 Features
+
+* Fix AsyncWebServer dependency ([#85](https://github.com/EyeTrackVR/OpenIris/issues/85)) ([42c3311](https://github.com/EyeTrackVR/OpenIris/commit/42c33112972414cb5121b1052184fd0443de3164))
+
 ## [2.8.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0...v2.8.0) (2025-01-15)
 
 
