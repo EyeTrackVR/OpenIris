@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.9.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.9.0...v2.9.1) (2025-01-30)
+
+
+### 🐛 Bug Fixes
+
+* Add babble firmware to CI matrix ([#86](https://github.com/EyeTrackVR/OpenIris/issues/86)) ([28a053d](https://github.com/EyeTrackVR/OpenIris/commit/28a053d65323a4f48ad8de4992fe496ab3e63225))
+
 ## [2.9.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.8.0...v2.9.0) (2025-01-28)
 
 
