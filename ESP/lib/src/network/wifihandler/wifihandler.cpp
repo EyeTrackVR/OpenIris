@@ -18,7 +18,6 @@ WiFiHandler::WiFiHandler(ProjectConfig& configManager,
 WiFiHandler::~WiFiHandler() {}
 
 void WiFiHandler::begin() {
-
   // just to be sure, we reeset everything before we do anything, some boards were having problems otherwise
   WiFi.disconnect();
   // we purposefully set the lowest min required security level, some boards have problems connecting otherwise
@@ -26,6 +25,14 @@ void WiFiHandler::begin() {
   WiFi.setMinSecurity(WIFI_AUTH_WEP);
 
   log_i("Starting WiFi Handler \n\r");
+
+  // Check if we have valid WiFi credentials
+  if (this->ssid.empty()) {
+    log_i("No SSID configured, switching to USB mode \n\r");
+    wifiStateManager.setState(WiFiState_e::WiFiState_USB);
+    return;
+  }
+
   if (this->_enable_adhoc ||
       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_ADHOC) {
     log_d("ADHOC is enabled, setting up ADHOC network \n\r");
@@ -57,14 +64,17 @@ void WiFiHandler::begin() {
       return;
     }
 
-    log_i(
-        "Could not connect to the hardcoded network, setting up ADHOC "
-        "network \n\r");
-    this->setUpADHOC();
+    log_i("Could not connect to the hardcoded network, switching to USB mode \n\r");
+    wifiStateManager.setState(WiFiState_e::WiFiState_USB);
     return;
   }
 
   for (auto& network : networks) {
+    if (network.ssid.empty()) {
+      log_i("Found network config with empty SSID, skipping \n\r");
+      continue;
+    }
+
     log_i("Trying to connect to network: %s \n\r", network.ssid.c_str());
     if (this->iniSTA(network.ssid, network.password, network.channel,
                      (wifi_power_t)network.power)) {
@@ -72,21 +82,9 @@ void WiFiHandler::begin() {
     }
   }
 
-  // at this point, we've tried every network, let's just setup adhoc
-  log_i(
-      "We've gone through every network, each timed out. Trying to connect "
-      "to hardcoded network: %s \n\r",
-      this->ssid.c_str());
-  if (this->iniSTA(this->ssid, this->password, this->channel,
-                   (wifi_power_t)txpower.power)) {
-    log_i("Successfully connected to the hardcoded network. \n\r");
-    return;
-  }
-
-  log_i(
-      "Could not connect to the hardcoded network, setting up adhoc. "
-      "\n\r");
-  this->setUpADHOC();
+  // at this point, we've tried every network, switch to USB mode
+  log_i("Could not connect to any configured networks, switching to USB mode \n\r");
+  wifiStateManager.setState(WiFiState_e::WiFiState_USB);
 }
 
 void WiFiHandler::adhoc(const std::string& ssid,
