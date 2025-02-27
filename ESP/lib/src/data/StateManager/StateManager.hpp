@@ -38,6 +38,7 @@ struct DeviceStates {
     WiFiState_Connecting,
     WiFiState_Connected,
     WiFiState_ADHOC,
+    WiFiState_USB,
     WiFiState_Error
   };
 

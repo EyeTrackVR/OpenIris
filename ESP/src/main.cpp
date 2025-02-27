@@ -80,6 +80,10 @@ void etvr_eye_tracker_web_init() {
 }
 #endif  // ETVR_EYE_TRACKER_WEB_API
 
+bool isUSBConnected() {
+  return Serial.availableForWrite() > 0;
+}
+
 void setup() {
   setCpuFrequencyMhz(240);
   Serial.begin(115200);
@@ -104,11 +108,14 @@ void setup() {
 
   serialManager.init();
 
-#ifndef ETVR_EYE_TRACKER_USB_API
-  etvr_eye_tracker_web_init();
-#else   // ETVR_EYE_TRACKER_WEB_API
-  WiFi.disconnect(true);
-#endif  // ETVR_EYE_TRACKER_WEB_API
+  // Check if USB is connected
+  if (isUSBConnected()) {
+    log_i("USB connection detected, enabling USB mode");
+    WiFi.disconnect(true);
+  } else {
+    log_i("No USB connection detected, trying WiFi mode");
+    etvr_eye_tracker_web_init();
+  }
 }
 
 void loop() {
