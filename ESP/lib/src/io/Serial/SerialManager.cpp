@@ -1,9 +1,32 @@
 #include "SerialManager.hpp"
+#include "data/DeviceMode/DeviceMode.hpp"
 
 SerialManager::SerialManager(CommandManager* commandManager)
-    : commandManager(commandManager) {}
+    : commandManager(commandManager) {}  
 
-#ifdef ETVR_EYE_TRACKER_USB_API
+void SerialManager::sendQuery(QueryAction action, 
+                             QueryStatus status,
+                             std::string additional_info) {
+  JsonDocument doc;
+  doc["action"] = queryActionMap.at(action);
+  doc["status"] = static_cast<int>(status);
+  if (!additional_info.empty()) {
+    doc["info"] = additional_info;
+  }
+  
+  String output;
+  serializeJson(doc, output);
+  Serial.println(output);
+}
+
+void SerialManager::checkUSBMode() {
+  DeviceMode currentMode = DeviceModeManager::getInstance()->getMode();
+  if (currentMode == DeviceMode::USB_MODE) {
+    log_i("[SerialManager] USB mode active - auto-streaming enabled");
+
+  }
+}
+
 void SerialManager::send_frame() {
   if (!last_frame)
     last_frame = esp_timer_get_time();
@@ -49,7 +72,6 @@ void SerialManager::send_frame() {
   log_d("Size: %uKB, Time: %ums (%ifps)\n", len / 1024, latency,
         1000 / latency);
 }
-#endif
 
 void SerialManager::init() {
 #ifdef SERIAL_MANAGER_USE_HIGHER_FREQUENCY
@@ -58,25 +80,28 @@ void SerialManager::init() {
   if (SERIAL_FLUSH_ENABLED) {
     Serial.flush();
   }
+  
+  // Check if we're in USB mode and set up accordingly
+  checkUSBMode();
 }
 
 void SerialManager::run() {
+  // Process any available commands first to ensure mode changes are detected immediately
   if (Serial.available()) {
     JsonDocument doc;
     DeserializationError deserializationError = deserializeJson(doc, Serial);
 
     if (deserializationError) {
       log_e("Command deserialization failed: %s", deserializationError.c_str());
-
-      return;
+    } else {
+      CommandsPayload commands = {doc};
+      this->commandManager->handleCommands(commands);
     }
-
-    CommandsPayload commands = {doc};
-    this->commandManager->handleCommands(commands);
   }
-#ifdef ETVR_EYE_TRACKER_USB_API
-  else {
+  
+  // Check if we're in USB mode and automatically send frames
+  DeviceMode currentMode = DeviceModeManager::getInstance()->getMode();
+  if (currentMode == DeviceMode::USB_MODE) {
     this->send_frame();
   }
-#endif
 }

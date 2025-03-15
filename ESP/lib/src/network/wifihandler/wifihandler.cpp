@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include "data/StateManager/StateManager.hpp"
 #include "data/utilities/helpers.hpp"
+#include "data/DeviceMode/DeviceMode.hpp"
 
 WiFiHandler::WiFiHandler(ProjectConfig& configManager,
                          const std::string& ssid,
@@ -92,6 +93,7 @@ void WiFiHandler::begin() {
 void WiFiHandler::adhoc(const std::string& ssid,
                         uint8_t channel,
                         const std::string& password) {
+  
   wifiStateManager.setState(WiFiState_e::WiFiState_ADHOC);
 
   log_i("\n[INFO]: Configuring access point...\n");
@@ -169,6 +171,20 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
     currentMillis = millis();
     log_i(".");
     log_d("Progress: %d \n\r", progress);
+    
+    // Check if mode has been changed to USB mode during connection attempt
+    DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
+    if (deviceModeManager && deviceModeManager->getMode() == DeviceMode::USB_MODE) {
+      log_i("[WiFiHandler] Mode changed to USB during connection, aborting WiFi setup");
+      WiFi.disconnect(true);
+      wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+      return false;
+    }
+    
+    if (Serial.available()) {
+      yield();
+    }
+    
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());
