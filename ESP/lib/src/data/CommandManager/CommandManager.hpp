@@ -10,6 +10,9 @@ enum CommandType {
   PING,
   SET_WIFI,
   SET_MDNS,
+  SWITCH_MODE,
+  WIPE_WIFI_CREDS,
+  RESTART_DEVICE,
 };
 
 struct CommandsPayload {
@@ -22,6 +25,9 @@ class CommandManager {
       {"ping", CommandType::PING},
       {"set_wifi", CommandType::SET_WIFI},
       {"set_mdns", CommandType::SET_MDNS},
+      {"switch_mode", CommandType::SWITCH_MODE},
+      {"wipe_wifi_creds", CommandType::WIPE_WIFI_CREDS},
+      {"restart_device", CommandType::RESTART_DEVICE},
   };
 
   ProjectConfig* deviceConfig;
@@ -33,6 +39,7 @@ class CommandManager {
  public:
   CommandManager(ProjectConfig* deviceConfig);
   void handleCommands(CommandsPayload commandsPayload);
+  ProjectConfig* getDeviceConfig() { return deviceConfig; }
 };
 
 #endif

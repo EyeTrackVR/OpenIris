@@ -38,10 +38,33 @@ StreamServer streamServer;
 #endif  // SIM_ENABLED
 
 void etvr_eye_tracker_web_init() {
+  // Check if mode has been changed to USB mode before starting network initialization
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
+    log_i("[SETUP]: Mode changed to USB before network initialization, aborting");
+    WiFi.disconnect(true);
+    return;
+  }
+  
   log_d("[SETUP]: Starting Network Handler");
   deviceConfig.attach(mdnsHandler);
+  
+  // Check mode again before starting WiFi
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
+    log_i("[SETUP]: Mode changed to USB before WiFi initialization, aborting");
+    WiFi.disconnect(true);
+    return;
+  }
+  
   log_d("[SETUP]: Starting WiFi Handler");
   wifiHandler.begin();
+  
+  // Check mode again before starting MDNS
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
+    log_i("[SETUP]: Mode changed to USB before MDNS initialization, aborting");
+    WiFi.disconnect(true);
+    return;
+  }
+  
   log_d("[SETUP]: Starting MDNS Handler");
   mdnsHandler.startMDNS();
 
@@ -85,6 +108,8 @@ void setup() {
   Serial.begin(115200);
   Logo::printASCII();
   ledManager.begin();
+  
+  // Device mode is now managed by ProjectConfig
 
   #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to 100%.  
     const int ledPin = 1;                       // Replace this with a command endpoint eventually.
@@ -104,11 +129,20 @@ void setup() {
 
   serialManager.init();
 
-#ifndef ETVR_EYE_TRACKER_USB_API
-  etvr_eye_tracker_web_init();
-#else   // ETVR_EYE_TRACKER_WEB_API
-  WiFi.disconnect(true);
-#endif  // ETVR_EYE_TRACKER_WEB_API
+  DeviceMode currentMode = deviceConfig.getDeviceModeConfig().mode;
+  
+  if (currentMode == DeviceMode::WIFI_MODE) {
+    // Initialize WiFi mode
+    etvr_eye_tracker_web_init();
+    log_i("[SETUP]: Initialized in WiFi mode");
+  } else if (currentMode == DeviceMode::AP_MODE) {
+    // Initialize AP mode with serial commands enabled
+    etvr_eye_tracker_web_init();
+    log_i("[SETUP]: Initialized in AP mode with serial commands enabled");
+  } else {
+    WiFi.disconnect(true);
+    log_i("[SETUP]: Initialized in USB mode");
+  }
 }
 
 void loop() {

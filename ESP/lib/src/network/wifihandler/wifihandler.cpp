@@ -169,6 +169,19 @@ bool WiFiHandler::iniSTA(const std::string& ssid,
     currentMillis = millis();
     log_i(".");
     log_d("Progress: %d \n\r", progress);
+    
+    // Check if mode has been changed to USB mode during connection attempt
+    if (configManager.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
+      log_i("[WiFiHandler] Mode changed to USB during connection, aborting WiFi setup");
+      WiFi.disconnect(true);
+      wifiStateManager.setState(WiFiState_e::WiFiState_Disconnected);
+      return false;
+    }
+    
+    if (Serial.available()) {
+      yield(); // Allow other processes to run
+    }
+    
     if ((currentMillis - startingMillis) >= connectionTimeout) {
       wifiStateManager.setState(WiFiState_e::WiFiState_Error);
       log_e("Connection to: %s TIMEOUT \n\r", ssid.c_str());

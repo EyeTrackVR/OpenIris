@@ -35,12 +35,10 @@ class SerialManager {
   esp_err_t err = ESP_OK;
   CommandManager* commandManager;
 
-#ifdef ETVR_EYE_TRACKER_USB_API
   int64_t last_frame = 0;
   long last_request_time = 0;
 
   void send_frame();
-#endif
 
  public:
   SerialManager(CommandManager* commandManager);
@@ -49,6 +47,7 @@ class SerialManager {
                  std::string additional_info);
   void init();
   void run();
+  void checkUSBMode();
 };
 
 #endif

@@ -28,7 +28,8 @@ struct DeviceStates {
     networksConfigUpdated,
     apConfigUpdated,
     wifiTxPowerUpdated,
-    cameraConfigUpdated
+    cameraConfigUpdated,
+    deviceModeUpdated
   };
 
   enum WiFiState_e {

@@ -36,6 +36,8 @@ void BaseAPI::begin() {
 
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
 
+  // The restart_device endpoint has been removed in favor of using rebootDevice through POST
+
   // std::bind(&BaseAPI::notFound, &std::placeholders::_1);
   server.onNotFound([&](AsyncWebServerRequest* request) { notFound(request); });
 }
@@ -214,7 +216,15 @@ void BaseAPI::rebootDevice(AsyncWebServerRequest* request) {
   switch (_networkMethodsMap_enum[request->method()]) {
     case GET: {
       request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
+
       OpenIrisTasks::ScheduleRestart(2000);
+      break;
+    }
+    case POST: {
+      request->send(200, MIMETYPE_JSON, "{\"msg\":\"Rebooting Device\"}");
+
+      OpenIrisTasks::ScheduleRestart(2000);
+      break;
     }
     default: {
       request->send(400, MIMETYPE_JSON, "{\"msg\":\"Invalid Request\"}");
@@ -381,7 +391,7 @@ void BaseAPI::beginOTA() {
     esp_camera_deinit();                // deinitialize the camera driver
     digitalWrite(PWDN_GPIO_NUM, HIGH);  // turn power off to camera module
 
-    AsyncWebServerResponse* response = request->beginResponse_P(
+    AsyncWebServerResponse* response = request->beginResponse(
         200, "text/html", ELEGANT_HTML, ELEGANT_HTML_SIZE);
     response->addHeader("Content-Encoding", "gzip");
     request->send(response);

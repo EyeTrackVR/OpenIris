@@ -58,6 +58,12 @@ void ProjectConfig::initConfig() {
       .quality = 7,
       .brightness = 2,
   };
+  
+  // Initialize device mode with default values
+  this->config.deviceMode = {
+      .mode = DeviceMode::AUTO_MODE,
+      .hasWiFiCredentials = false,
+  };
 }
 
 void ProjectConfig::save() {
@@ -67,10 +73,12 @@ void ProjectConfig::save() {
   cameraConfigSave();
   wifiConfigSave();
   wifiTxPowerConfigSave();
-  end();  // we call end() here to close the connection to the NVS partition, we
-          // only do this because we call ESP.restart() next.
-  OpenIrisTasks::ScheduleRestart(2000);
+  deviceModeConfigSave();
+  end();  // we call end() here to close the connection to the NVS partition
+  // Removed automatic restart to allow explicit control via RESTART_DEVICE command
+  // OpenIrisTasks::ScheduleRestart(2000);
 }
+
 
 void ProjectConfig::wifiConfigSave() {
   log_d("Saving wifi config");
@@ -124,6 +132,15 @@ void ProjectConfig::mdnsConfigSave() {
 void ProjectConfig::wifiTxPowerConfigSave() {
   /* Device Config */
   putInt("txpower", this->config.txpower.power);
+}
+
+void ProjectConfig::deviceModeConfigSave() {
+  /* Device Mode Config */
+  putInt(MODE_KEY, static_cast<int>(this->config.deviceMode.mode));
+  putBool(HAS_WIFI_CREDS_KEY, this->config.deviceMode.hasWiFiCredentials);
+  log_i("[ProjectConfig] Device mode config saved: mode=%d, hasWiFiCredentials=%d", 
+        static_cast<int>(this->config.deviceMode.mode), 
+        this->config.deviceMode.hasWiFiCredentials);
 }
 
 void ProjectConfig::cameraConfigSave() {
@@ -204,6 +221,18 @@ void ProjectConfig::load() {
   this->config.camera.framesize = getInt("framesize", (uint8_t)CAM_RESOLUTION);
   this->config.camera.quality = getInt("quality", 7);
   this->config.camera.brightness = getInt("brightness", 2);
+  
+  int savedMode = getInt(MODE_KEY, static_cast<int>(DeviceMode::AUTO_MODE));
+  this->config.deviceMode.mode = static_cast<DeviceMode>(savedMode);
+  this->config.deviceMode.hasWiFiCredentials = getBool(HAS_WIFI_CREDS_KEY, false);
+  
+  if (this->config.deviceMode.mode == DeviceMode::AUTO_MODE) {
+    this->config.deviceMode.mode = determineMode();
+  }
+  
+  log_i("[ProjectConfig] Loaded device mode: %d, hasWiFiCredentials: %d", 
+        static_cast<int>(this->config.deviceMode.mode), 
+        this->config.deviceMode.hasWiFiCredentials);
 
   this->_already_loaded = true;
   this->notifyAll(ConfigState_e::configLoaded);
@@ -419,6 +448,14 @@ std::string ProjectConfig::WiFiTxPower_t::toRepresentation() {
   return json;
 }
 
+std::string ProjectConfig::DeviceModeConfig_t::toRepresentation() {
+  std::string json = Helpers::format_string(
+      "\"device_mode\": {\"mode\": %d, \"hasWiFiCredentials\": %s}",
+      static_cast<int>(this->mode),
+      this->hasWiFiCredentials ? "true" : "false");
+  return json;
+}
+
 //**********************************************************************************************************************
 //*
 //!                                                Get Methods
@@ -442,4 +479,33 @@ ProjectConfig::MDNSConfig_t& ProjectConfig::getMDNSConfig() {
 }
 ProjectConfig::WiFiTxPower_t& ProjectConfig::getWiFiTxPowerConfig() {
   return this->config.txpower;
+}
+
+ProjectConfig::DeviceModeConfig_t& ProjectConfig::getDeviceModeConfig() {
+  return this->config.deviceMode;
+}
+
+void ProjectConfig::setDeviceMode(DeviceMode mode, bool shouldNotify) {
+  this->config.deviceMode.mode = mode;
+  putInt(MODE_KEY, static_cast<int>(mode));
+  log_i("[ProjectConfig] Mode set to: %d", static_cast<int>(mode));
+  
+  if (shouldNotify) {
+    this->notifyAll(ConfigState_e::deviceModeUpdated);
+  }
+}
+
+void ProjectConfig::setHasWiFiCredentials(bool hasCredentials, bool shouldNotify) {
+  this->config.deviceMode.hasWiFiCredentials = hasCredentials;
+  putBool(HAS_WIFI_CREDS_KEY, hasCredentials);
+  log_i("[ProjectConfig] WiFi credentials status set to: %d", hasCredentials);
+  
+  if (shouldNotify) {
+    this->notifyAll(ConfigState_e::deviceModeUpdated);
+  }
+}
+
+DeviceMode ProjectConfig::determineMode() {
+  // If WiFi credentials are saved, use WiFi mode, otherwise use AP mode
+  return this->config.deviceMode.hasWiFiCredentials ? DeviceMode::WIFI_MODE : DeviceMode::AP_MODE;
 }
