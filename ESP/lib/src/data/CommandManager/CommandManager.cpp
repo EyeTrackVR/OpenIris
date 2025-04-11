@@ -1,5 +1,4 @@
 #include "CommandManager.hpp"
-#include "data/DeviceMode/DeviceMode.hpp"
 #include "tasks/tasks.hpp"
 
 
@@ -59,15 +58,9 @@ void CommandManager::handleCommand(JsonVariant command) {
                                         0,  // power, should this be zero?
                                         false, false);
       
-      DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
-      if (deviceModeManager) {
-        deviceModeManager->setHasWiFiCredentials(true);
-        
-        deviceModeManager->setMode(DeviceMode::WIFI_MODE);
-        log_i("[CommandManager] Switching to WiFi mode after receiving credentials");
-
-        OpenIrisTasks::ScheduleRestart(2000);
-      }
+      this->deviceConfig->setHasWiFiCredentials(true, false);
+      this->deviceConfig->setDeviceMode(DeviceMode::WIFI_MODE, true);
+      log_i("[CommandManager] Switching to WiFi mode after receiving credentials");
 
       break;
     }
@@ -97,29 +90,24 @@ void CommandManager::handleCommand(JsonVariant command) {
       
       int modeValue = command["data"]["mode"];
       DeviceMode newMode = static_cast<DeviceMode>(modeValue);
-      DeviceMode currentMode;
+      DeviceMode currentMode = this->deviceConfig->getDeviceModeConfig().mode;
       
-      DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
-      if (deviceModeManager) {
-        currentMode = deviceModeManager->getMode();
-        
-        // If switching to USB mode from WiFi or AP mode, disconnect WiFi immediately
-        if (newMode == DeviceMode::USB_MODE && 
-            (currentMode == DeviceMode::WIFI_MODE || currentMode == DeviceMode::AP_MODE)) {
-          log_i("[CommandManager] Immediately switching to USB mode");
-          WiFi.disconnect(true);
-        }
-        
-        deviceModeManager->setMode(newMode);
-        log_i("[CommandManager] Switching to mode: %d", modeValue);
-        
-        // Only schedule a restart if not switching to USB mode during WiFi/AP initialization
-        if (!(newMode == DeviceMode::USB_MODE && 
-              (currentMode == DeviceMode::WIFI_MODE || currentMode == DeviceMode::AP_MODE) && 
-              wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_Connecting)) {
-                OpenIrisTasks::ScheduleRestart(2000);
-        }
+      // If switching to USB mode from WiFi or AP mode, disconnect WiFi immediately
+      if (newMode == DeviceMode::USB_MODE && 
+          (currentMode == DeviceMode::WIFI_MODE || currentMode == DeviceMode::AP_MODE)) {
+        log_i("[CommandManager] Immediately switching to USB mode");
+        WiFi.disconnect(true);
       }
+      
+      this->deviceConfig->setDeviceMode(newMode, true);
+      log_i("[CommandManager] Switching to mode: %d", modeValue);
+      
+      // Removed automatic restart to allow explicit control via RESTART_DEVICE command
+      // if (!(newMode == DeviceMode::USB_MODE && 
+      //       (currentMode == DeviceMode::WIFI_MODE || currentMode == DeviceMode::AP_MODE) && 
+      //       wifiStateManager.getCurrentState() == WiFiState_e::WiFiState_Connecting)) {
+      //         OpenIrisTasks::ScheduleRestart(2000);
+      // }
       
       break;
     }
@@ -130,16 +118,16 @@ void CommandManager::handleCommand(JsonVariant command) {
         this->deviceConfig->deleteWifiConfig(network.name, false);
       }
       
-      DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
-      if (deviceModeManager) {
-        deviceModeManager->setHasWiFiCredentials(false);
-        
-        deviceModeManager->setMode(DeviceMode::USB_MODE);
-        log_i("[CommandManager] Switching to USB mode after wiping credentials");
-
-                                                    OpenIrisTasks::ScheduleRestart(2000);
-      }
+      this->deviceConfig->setHasWiFiCredentials(false, false);
+      this->deviceConfig->setDeviceMode(DeviceMode::USB_MODE, true);
+      log_i("[CommandManager] Switching to USB mode after wiping credentials");
+      // Removed automatic restart to allow processing of all commands in payload
       
+      break;
+    }
+    case CommandType::RESTART_DEVICE: {
+      log_i("[CommandManager] Explicit restart requested");
+      OpenIrisTasks::ScheduleRestart(2000);
       break;
     }
     default:

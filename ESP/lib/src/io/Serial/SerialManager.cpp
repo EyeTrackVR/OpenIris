@@ -1,5 +1,4 @@
 #include "SerialManager.hpp"
-#include "data/DeviceMode/DeviceMode.hpp"
 
 SerialManager::SerialManager(CommandManager* commandManager)
     : commandManager(commandManager) {}  
@@ -20,7 +19,8 @@ void SerialManager::sendQuery(QueryAction action,
 }
 
 void SerialManager::checkUSBMode() {
-  DeviceMode currentMode = DeviceModeManager::getInstance()->getMode();
+  // Get device mode from ProjectConfig via CommandManager
+  DeviceMode currentMode = this->commandManager->getDeviceConfig()->getDeviceModeConfig().mode;
   if (currentMode == DeviceMode::USB_MODE) {
     log_i("[SerialManager] USB mode active - auto-streaming enabled");
 
@@ -99,8 +99,7 @@ void SerialManager::run() {
     }
   }
   
-  // Check if we're in USB mode and automatically send frames
-  DeviceMode currentMode = DeviceModeManager::getInstance()->getMode();
+  DeviceMode currentMode = this->commandManager->getDeviceConfig()->getDeviceModeConfig().mode;
   if (currentMode == DeviceMode::USB_MODE) {
     this->send_frame();
   }

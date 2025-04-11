@@ -13,6 +13,14 @@
 #include "data/utilities/network_utilities.hpp"
 #include "tasks/tasks.hpp"
 
+// Enum to represent the device operating mode
+enum class DeviceMode {
+  USB_MODE,    // Device operates in USB mode only
+  WIFI_MODE,   // Device operates in WiFi mode only
+  AP_MODE,     // Device operates in AP mode with serial commands enabled
+  AUTO_MODE    // Device automatically selects mode based on saved credentials
+};
+
 class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
  public:
   ProjectConfig(const std::string& name = std::string(),
@@ -88,6 +96,12 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     std::string toRepresentation();
   };
 
+  struct DeviceModeConfig_t {
+    DeviceMode mode;
+    bool hasWiFiCredentials;
+    std::string toRepresentation();
+  };
+
   struct TrackerConfig_t {
     DeviceConfig_t device;
     CameraConfig_t camera;
@@ -95,6 +109,7 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
     AP_WiFiConfig_t ap_network;
     MDNSConfig_t mdns;
     WiFiTxPower_t txpower;
+    DeviceModeConfig_t deviceMode;
   };
 
   DeviceConfig_t& getDeviceConfig();
@@ -103,6 +118,7 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
   AP_WiFiConfig_t& getAPWifiConfig();
   MDNSConfig_t& getMDNSConfig();
   WiFiTxPower_t& getWiFiTxPowerConfig();
+  DeviceModeConfig_t& getDeviceModeConfig();
 
   void setDeviceConfig(const std::string& OTALogin,
                        const std::string& OTAPassword,
@@ -132,12 +148,24 @@ class ProjectConfig : public Preferences, public ISubject<ConfigState_e> {
   void setWiFiTxPower(uint8_t power, bool shouldNotify);
 
   void deleteWifiConfig(const std::string& networkName, bool shouldNotify);
+  
+  void setDeviceMode(DeviceMode mode, bool shouldNotify);
+  
+  void setHasWiFiCredentials(bool hasCredentials, bool shouldNotify);
+  
+  DeviceMode determineMode();
+  
+  void deviceModeConfigSave();
 
  private:
   TrackerConfig_t config;
   std::string _name;
   std::string _mdnsName;
   bool _already_loaded;
+  
+  // Device mode related constants
+  const char* MODE_KEY = "mode";
+  const char* HAS_WIFI_CREDS_KEY = "has_wifi_creds";
 };
 
 #endif  // PROJECT_CONFIG_HPP

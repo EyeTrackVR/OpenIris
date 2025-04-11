@@ -1,5 +1,4 @@
 #include <openiris.hpp>
-#include "data/DeviceMode/DeviceMode.hpp"
 /**
  * @brief ProjectConfig object
  * @brief This is the main configuration object for the project
@@ -40,8 +39,7 @@ StreamServer streamServer;
 
 void etvr_eye_tracker_web_init() {
   // Check if mode has been changed to USB mode before starting network initialization
-  DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
-  if (deviceModeManager && deviceModeManager->getMode() == DeviceMode::USB_MODE) {
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
     log_i("[SETUP]: Mode changed to USB before network initialization, aborting");
     WiFi.disconnect(true);
     return;
@@ -51,7 +49,7 @@ void etvr_eye_tracker_web_init() {
   deviceConfig.attach(mdnsHandler);
   
   // Check mode again before starting WiFi
-  if (deviceModeManager && deviceModeManager->getMode() == DeviceMode::USB_MODE) {
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
     log_i("[SETUP]: Mode changed to USB before WiFi initialization, aborting");
     WiFi.disconnect(true);
     return;
@@ -61,7 +59,7 @@ void etvr_eye_tracker_web_init() {
   wifiHandler.begin();
   
   // Check mode again before starting MDNS
-  if (deviceModeManager && deviceModeManager->getMode() == DeviceMode::USB_MODE) {
+  if (deviceConfig.getDeviceModeConfig().mode == DeviceMode::USB_MODE) {
     log_i("[SETUP]: Mode changed to USB before MDNS initialization, aborting");
     WiFi.disconnect(true);
     return;
@@ -111,8 +109,7 @@ void setup() {
   Logo::printASCII();
   ledManager.begin();
   
-  DeviceModeManager::createInstance();
-  DeviceModeManager* deviceModeManager = DeviceModeManager::getInstance();
+  // Device mode is now managed by ProjectConfig
 
   #ifdef CONFIG_CAMERA_MODULE_SWROOM_BABBLE_S3  // Set IR emitter strength to 100%.  
     const int ledPin = 1;                       // Replace this with a command endpoint eventually.
@@ -132,7 +129,7 @@ void setup() {
 
   serialManager.init();
 
-  DeviceMode currentMode = deviceModeManager->getMode();
+  DeviceMode currentMode = deviceConfig.getDeviceModeConfig().mode;
   
   if (currentMode == DeviceMode::WIFI_MODE) {
     // Initialize WiFi mode
