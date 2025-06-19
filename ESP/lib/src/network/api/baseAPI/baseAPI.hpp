@@ -3,7 +3,6 @@
 
 //! Warning do not format this file with clang-format or it will break the code
 
-#include <unordered_map>
 #include <string>
 #include <unordered_map>
 
@@ -11,16 +10,14 @@
 
 #define WEBSERVER_H
 
-/* #define XHTTP_GET 0b00000001;
-#define XHTTP_POST 0b00000010;
-#define XHTTP_DELETE 0b00000100;
-#define XHTTP_PUT 0b00001000;
-#define XHTTP_PATCH 0b00010000;
-#define XHTTP_HEAD 0b00100000;
-#define XHTTP_OPTIONS 0b01000000;
-#define XHTTP_ANY 0b01111111; */
+// hack, we have to include it JUST so the macro executes and defines HTTP_*
+// methods cause it's beging included later in streamServer.hpp, but then the
+// macro executes too late and tries to redefine the methods, failing. but if we
+// don't include it here, then ESPAsyncWebServer fails to compile due to
+// WEBSERVER_H which has to be set because if it isn't, ESPAsyncWebServer will
+// define the methods and thus the circus continues
+#include <http_parser.h>
 
-// constexpr int HTTP_GET = 0b00000001;
 constexpr int HTTP_ANY = 0b01111111;
 
 #include <Update.h>
@@ -28,18 +25,15 @@ constexpr int HTTP_ANY = 0b01111111;
 #include <esp_task_wdt.h>
 
 #include <AsyncTCP.h>
-
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
 #include "Hash.h"
-
-#include "data/utilities/network_utilities.hpp"
-#include "tasks/tasks.hpp"
-
 #include "data/StateManager/StateManager.hpp"
 #include "data/config/project_config.hpp"
+#include "data/utilities/network_utilities.hpp"
 #include "elegantWebpage.h"
 #include "io/camera/cameraHandler.hpp"
+#include "tasks/tasks.hpp"
 
 class BaseAPI {
  protected:
@@ -47,11 +41,6 @@ class BaseAPI {
   bool _authRequired;
 
   static const char* MIMETYPE_HTML;
-  /* static const char *MIMETYPE_CSS; */
-  /* static const char *MIMETYPE_JS; */
-  /* static const char *MIMETYPE_PNG; */
-  /* static const char *MIMETYPE_JPG; */
-  /* static const char *MIMETYPE_ICO; */
   static const char* MIMETYPE_JSON;
 
  protected:
@@ -100,33 +89,34 @@ class BaseAPI {
   typedef std::unordered_map<std::string, WebRequestMethodComposite>
       networkMethodsMap_t;
 
-	ProjectConfig &projectConfig;
-	/// @brief Local instance of the AsyncWebServer - so that we dont need to use new and delete
-    AsyncWebServer server;
+  ProjectConfig& projectConfig;
+  /// @brief Local instance of the AsyncWebServer - so that we dont need to use
+  /// new and delete
+  AsyncWebServer server;
 #ifndef SIM_ENABLED
-        CameraHandler &camera;
+  CameraHandler& camera;
 #endif  // SIM_ENABLED
 
-public :
-    BaseAPI(ProjectConfig& projectConfig,
+ public:
+  BaseAPI(ProjectConfig& projectConfig,
 #ifndef SIM_ENABLED
-            CameraHandler& camera,
+          CameraHandler& camera,
 #endif  // SIM_ENABLED
-            const std::string& api_url,
+          const std::string& api_url,
 #ifndef SIM_ENABLED
-            int port = 81
+          int port = 81
 #else
-            int port = 80
+          int port = 80
 #endif
   );
 
- virtual ~BaseAPI();
- virtual void begin();
- void checkAuthentication(AsyncWebServerRequest* request,
-                          const char* login,
-                          const char* password);
- void beginOTA();
- void notFound(AsyncWebServerRequest* request) const;
+  virtual ~BaseAPI();
+  virtual void begin();
+  void checkAuthentication(AsyncWebServerRequest* request,
+                           const char* login,
+                           const char* password);
+  void beginOTA();
+  void notFound(AsyncWebServerRequest* request) const;
 };
 
 #endif  // BASEAPI_HPP

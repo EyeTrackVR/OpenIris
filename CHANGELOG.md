@@ -3,6 +3,34 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.9.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.9.0...v2.9.1) (2025-01-30)
+
+
+### 🐛 Bug Fixes
+
+* Add babble firmware to CI matrix ([#86](https://github.com/EyeTrackVR/OpenIris/issues/86)) ([28a053d](https://github.com/EyeTrackVR/OpenIris/commit/28a053d65323a4f48ad8de4992fe496ab3e63225))
+
+## [2.9.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.8.0...v2.9.0) (2025-01-28)
+
+
+### 🍕 Features
+
+* Fix AsyncWebServer dependency ([#85](https://github.com/EyeTrackVR/OpenIris/issues/85)) ([42c3311](https://github.com/EyeTrackVR/OpenIris/commit/42c33112972414cb5121b1052184fd0443de3164))
+
+## [2.8.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0...v2.8.0) (2025-01-15)
+
+
+### 🍕 Features
+
+* Fix typo in SerialManager ([#84](https://github.com/EyeTrackVR/OpenIris/issues/84)) ([f460867](https://github.com/EyeTrackVR/OpenIris/commit/f4608674978edf5728e495824ed615d9d45f85fd))
+
+## [2.7.0](https://github.com/EyeTrackVR/OpenIris/compare/v2.6.0...v2.7.0) (2025-01-12)
+
+
+### 🍕 Features
+
+* Release 2.7.0 ([#83](https://github.com/EyeTrackVR/OpenIris/issues/83)) ([c7aef84](https://github.com/EyeTrackVR/OpenIris/commit/c7aef8457eb68fef6713daaf81c6eb23491d9ec7))
+
 ## [2.7.0-beta.2](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0-beta.1...v2.7.0-beta.2) (2025-01-12)
 
 
