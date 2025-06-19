@@ -3,6 +3,13 @@
 [![semantic versioning](https://img.shields.io/badge/semantic%20versioning-2.0.0-green.svg)](https://semver.org)
 > All notable changes to this project will be documented in this file
 
+## [2.7.0-beta.3](https://github.com/EyeTrackVR/OpenIris/compare/v2.7.0-beta.2...v2.7.0-beta.3) (2025-06-19)
+
+
+### 🍕 Features
+
+* Feature/m5stack camera f ([#90](https://github.com/EyeTrackVR/OpenIris/issues/90)) ([26b4451](https://github.com/EyeTrackVR/OpenIris/commit/26b4451d9813cd703589be7054065ae1680bead3))
+
 ## [2.9.1](https://github.com/EyeTrackVR/OpenIris/compare/v2.9.0...v2.9.1) (2025-01-30)
 
 

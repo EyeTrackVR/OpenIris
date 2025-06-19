@@ -20,7 +20,7 @@
     "include": "/lib/src"
   },
   "dependencies": {},
-  "version": "2.9.1",
+  "version": "2.7.0",
   "frameworks": "arduino",
   "platforms": "espressif32"
 }
