@@ -6,9 +6,7 @@ The aim of this project is to provide a fast and performant firmware for streami
 
 # **NOTE**
 
-This is a work in progress project, things in the main branch are tested and should work just fine, but as it is in its very early stages it might not "just work".
-
-Nonetheless, pull requests and issues are welcome, let's get this cracking!
+This project is now archived and in upkeep mode. A new version, built from ground up, is being worked on here: https://github.com/lorow/openiris-espidf 
 
 # Features
 
